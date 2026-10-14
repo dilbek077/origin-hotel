@@ -35,3 +35,4 @@ src/
 - Band qilish formasi hozircha serverga ulanmagan: `Booking.tsx` ichidagi `onSubmit` da so'rovni o'z API'ngizga yuborishingiz mumkin.
 - Rasmlar Unsplash'dan olingan, o'zingizning rasmlaringizga almashtiring.
 # origin-hotel
+# origin-hotel
