@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Hotel,
@@ -10,10 +10,7 @@ import {
   Star,
   CheckCircle2,
   Wifi,
-  Tv,
   Coffee,
-  Wind,
-  ShieldCheck,
   UtensilsCrossed,
   Sparkles,
   ArrowRight,
@@ -152,16 +149,29 @@ export default function LandingPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [bookingModalRoom, setBookingModalRoom] = useState<Room | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookedRoomIds, setBookedRoomIds] = useState<number[]>(() => {
+    if (typeof window === 'undefined') return [];
+
+    try {
+      const saved = localStorage.getItem('origin-hotel-booked-rooms');
+      return saved ? (JSON.parse(saved) as number[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Quick search form state
   const [searchCheckIn, setSearchCheckIn] = useState('2026-10-16');
   const [searchCheckOut, setSearchCheckOut] = useState('2026-10-18');
   const [searchGuests, setSearchGuests] = useState('2');
-  const [searchCategory, setSearchCategory] = useState('all');
 
   // Booking modal form state
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('origin-hotel-booked-rooms', JSON.stringify(bookedRoomIds));
+  }, [bookedRoomIds]);
 
   const filteredRooms =
     activeCategory === 'all'
@@ -178,8 +188,12 @@ export default function LandingPage() {
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!guestName || !guestPhone) return;
+
+    if (!guestName || !guestPhone || !bookingModalRoom) return;
+
+    setBookedRoomIds((prev) => Array.from(new Set([...prev, bookingModalRoom.id])));
     setBookingSuccess(true);
+
     setTimeout(() => {
       setBookingSuccess(false);
       setBookingModalRoom(null);
@@ -479,7 +493,10 @@ export default function LandingPage() {
 
           {/* Rooms Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredRooms.map((room) => (
+            {filteredRooms.map((room) => {
+              const isBooked = bookedRoomIds.includes(room.id);
+
+              return (
               <div
                 key={room.id}
                 className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group"
@@ -498,6 +515,11 @@ export default function LandingPage() {
                     {room.popular && (
                       <span className="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-xs">
                         Tavsiya
+                      </span>
+                    )}
+                    {isBooked && (
+                      <span className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-xs font-bold shadow-xs">
+                        Band qilingan
                       </span>
                     )}
                   </div>
@@ -538,16 +560,26 @@ export default function LandingPage() {
                       </p>
                     </div>
 
-                    <button
-                      onClick={() => setBookingModalRoom(room)}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition shadow-sm"
-                    >
-                      Band qilish
-                    </button>
+                    {isBooked ? (
+                      <button
+                        disabled
+                        className="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-xs font-bold transition shadow-sm cursor-not-allowed"
+                      >
+                        Band qilingan
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setBookingModalRoom(room)}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                      >
+                        Band qilish
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -834,9 +866,14 @@ export default function LandingPage() {
                 <h3 className="text-xl font-black text-gray-900 mt-1 mb-2">
                   {bookingModalRoom.name}
                 </h3>
-                <p className="text-xs text-gray-500 mb-6">
+                <p className="text-xs text-gray-500 mb-2">
                   Narxi: <strong className="text-gray-900">{bookingModalRoom.price.toLocaleString('uz-UZ')} so‘m</strong> / kecha
                 </p>
+                {bookedRoomIds.includes(bookingModalRoom.id) && (
+                  <p className="text-xs text-red-600 font-semibold mb-4">
+                    Bu xona allaqachon band qilingan. Boshqa xona tanlang.
+                  </p>
+                )}
 
                 <form onSubmit={handleBookingSubmit} className="space-y-4">
                   <div>
@@ -892,9 +929,10 @@ export default function LandingPage() {
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition mt-2"
+                    disabled={bookedRoomIds.includes(bookingModalRoom.id)}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Buyurtmani tasdiqlash
+                    {bookedRoomIds.includes(bookingModalRoom.id) ? 'Bu xona band qilingan' : 'Buyurtmani tasdiqlash'}
                   </button>
                 </form>
               </div>
