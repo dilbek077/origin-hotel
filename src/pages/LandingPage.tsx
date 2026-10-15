@@ -186,6 +186,17 @@ export default function LandingPage() {
     }
   };
 
+  const handleNameInput = (value: string) => {
+    const sanitized = value.replace(/[^a-zA-ZA-Za-z\u00C0-\u024F\u0400-\u04FF\s'-]/g, '');
+    setGuestName(sanitized);
+  };
+
+  const handlePhoneInput = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 12);
+    const formatted = digits ? `+${digits}` : '';
+    setGuestPhone(formatted);
+  };
+
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -885,8 +896,10 @@ export default function LandingPage() {
                       required
                       placeholder="Jasur Aliyev"
                       value={guestName}
-                      onChange={(e) => setGuestName(e.target.value)}
+                      onChange={(e) => handleNameInput(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      inputMode="text"
+                      autoComplete="name"
                     />
                   </div>
 
@@ -897,10 +910,14 @@ export default function LandingPage() {
                     <input
                       type="tel"
                       required
-                      placeholder="+998 90 123 45 67"
+                      placeholder="+998901234567"
                       value={guestPhone}
-                      onChange={(e) => setGuestPhone(e.target.value)}
+                      onChange={(e) => handlePhoneInput(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      inputMode="numeric"
+                      pattern="\+[0-9]*"
+                      maxLength={14}
+                      autoComplete="tel"
                     />
                   </div>
 
