@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { ROOMS } from '@/data/roomsData';
 import type { Room } from '@/data/roomsData';
+import { StorageService } from '@/services/storage';
 
 export default function RoomDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -114,6 +115,30 @@ export default function RoomDetailPage() {
 
     setBookedRoomIds((prev) => Array.from(new Set([...prev, room.id])));
     setBookingSuccess(true);
+
+    try {
+      const guest = StorageService.addGuest({
+        fullName: guestName,
+        phone: guestPhone,
+        passport: "",
+        notes: "Xona tafsilotlari sahifasi orqali bron qilindi",
+      });
+
+      StorageService.addBooking({
+        guestId: guest.id,
+        guest: guest.fullName,
+        roomId: room.id,
+        room: `#${room.id}01 — ${room.name}`,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        nights: nights,
+        price: totalPrice,
+        status: "Kutilmoqda",
+        notes: `Mijoz tanlagan mehmonlar soni: ${guestCount} nafar`,
+      });
+    } catch {
+      // Ignore if mock storage has duplicate
+    }
   };
 
   const handlePhoneInput = (val: string) => {
