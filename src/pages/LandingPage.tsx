@@ -18,73 +18,11 @@ import {
   Clock,
   Car,
   ChevronRight,
+  Eye,
 } from 'lucide-react';
 
-interface Room {
-  id: number;
-  name: string;
-  category: 'standart' | 'deluxe' | 'suite' | 'president';
-  categoryLabel: string;
-  price: number;
-  capacity: string;
-  size: string;
-  description: string;
-  features: string[];
-  image: string;
-  popular?: boolean;
-}
-
-const ROOMS: Room[] = [
-  {
-    id: 1,
-    name: 'Standart Qulay Xona',
-    category: 'standart',
-    categoryLabel: 'Standart',
-    price: 350000,
-    capacity: '2 kishilik',
-    size: '28 m²',
-    description: "Sayohat va qisqa muddatli tashriflar uchun barcha qulayliklarga ega shinam xona.",
-    features: ['Tezkor Wi-Fi', 'Smart TV', 'Konditsioner', 'Bepul nonushta'],
-    image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 2,
-    name: 'Deluxe Shahar Manzarali',
-    category: 'deluxe',
-    categoryLabel: 'Deluxe',
-    price: 550000,
-    capacity: '2-3 kishilik',
-    size: '38 m²',
-    description: "Keng maydon, shahar panoramik manzarasi va mini-bar bilan jihozlangan lyuks xona.",
-    features: ['Panoramik oyna', 'Katta balkon', 'Mini-bar', 'Shved stoli nonushtasi'],
-    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80',
-    popular: true,
-  },
-  {
-    id: 3,
-    name: 'Premium Oila Suite',
-    category: 'suite',
-    categoryLabel: 'Suite',
-    price: 850000,
-    capacity: '4 kishilik',
-    size: '54 m²',
-    description: "Oilaviy dam olish uchun alohida mehmonxona va yotoqxona qismlariga ega keng suit.",
-    features: ['2 ta xona', 'Jakuzi vanna', 'Oshxona burchagi', 'VIP xizmat'],
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 4,
-    name: 'Prezident Apartamenti',
-    category: 'president',
-    categoryLabel: 'Prezident',
-    price: 1500000,
-    capacity: '4-6 kishilik',
-    size: '85 m²',
-    description: "Eksklyuziv dizayn, yuqori darajadagi xavfsizlik va shaxsiy xizmat ko'rsatuvchi xodim bilan ta'minlangan.",
-    features: ['Shaxsiy terras', 'Shaxsiy batler', 'Premium spa zonasi', 'Transfer bepul'],
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80',
-  },
-];
+import { ROOMS } from '@/data/roomsData';
+import type { Room } from '@/data/roomsData';
 
 const ADVANTAGES = [
   {
@@ -492,11 +430,15 @@ export default function LandingPage() {
                 className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group"
               >
                 {/* Room Image */}
-                <div className="relative h-56 overflow-hidden">
+                <Link
+                  to={`/rooms/${room.id}`}
+                  className="relative h-56 overflow-hidden cursor-pointer group/img block"
+                  title="Xona tafsilotlari va rasmlarini ko‘rish"
+                >
                   <img
                     src={room.image}
                     alt={room.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
                   />
                   {isBooked && (
                     <div className="absolute top-3 left-3 flex gap-2">
@@ -505,17 +447,20 @@ export default function LandingPage() {
                       </span>
                     </div>
                   )}
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm text-white rounded-lg text-xs font-medium">
-                    {room.size} • {room.capacity}
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-medium">
+                    {room.roomCount} xona • {room.size} • {room.capacity}
                   </div>
-                </div>
+                </Link>
 
                 {/* Content */}
                 <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <Link
+                      to={`/rooms/${room.id}`}
+                      className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors cursor-pointer block"
+                    >
                       {room.name}
-                    </h3>
+                    </Link>
                     <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">
                       {room.description}
                     </p>
@@ -534,29 +479,46 @@ export default function LandingPage() {
                   </div>
 
                   {/* Price & Action */}
-                  <div className="pt-5 mt-5 border-t border-gray-100 flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] text-gray-400 font-medium">1 kecha uchun</p>
-                      <p className="text-base font-black text-gray-900">
-                        {room.price.toLocaleString('uz-UZ')} <span className="text-xs font-normal text-gray-500">so‘m</span>
-                      </p>
+                  <div className="pt-4 mt-4 border-t border-gray-100 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[11px] text-gray-400 font-medium">1 kecha uchun</p>
+                        <p className="text-base font-black text-gray-900">
+                          {room.price.toLocaleString('uz-UZ')} <span className="text-xs font-normal text-gray-500">so‘m</span>
+                        </p>
+                      </div>
+                      <span className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-600 border border-gray-200/60">
+                        {room.categoryLabel}
+                      </span>
                     </div>
 
-                    {isBooked ? (
-                      <button
-                        disabled
-                        className="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-xs font-bold transition shadow-sm cursor-not-allowed"
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        to={`/rooms/${room.id}`}
+                        className="w-full py-2.5 px-2 bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-bold transition-all shadow-xs hover:shadow flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                        title="Xona tafsilotlari va barcha rasmlarini ko‘rish"
                       >
-                        Band qilingan
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setBookingModalRoom(room)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition shadow-sm"
-                      >
-                        Band qilish
-                      </button>
-                    )}
+                        <Eye size={15} className="shrink-0 text-blue-600" />
+                        <span className="truncate">Xonani ko‘rish</span>
+                      </Link>
+
+                      {isBooked ? (
+                        <button
+                          disabled
+                          className="w-full py-2.5 px-2 bg-red-100 text-red-700 rounded-xl text-xs font-bold transition shadow-xs cursor-not-allowed flex items-center justify-center text-center"
+                        >
+                          Band qilingan
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setBookingModalRoom(room)}
+                          className="w-full py-2.5 px-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 hover:shadow flex items-center justify-center text-center cursor-pointer"
+                        >
+                          Band qilish
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
