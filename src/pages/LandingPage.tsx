@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { StorageService } from '@/services/storage';
 import {
   Hotel,
   Calendar,
@@ -203,6 +204,35 @@ export default function LandingPage() {
 
     setBookedRoomIds((prev) => Array.from(new Set([...prev, bookingModalRoom.id])));
     setBookingSuccess(true);
+
+    try {
+      const guest = StorageService.addGuest({
+        fullName: guestName,
+        phone: guestPhone,
+        passport: "",
+        notes: "Veb-sayt orqali bron qilindi",
+      });
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const nextThreeDays = new Date();
+      nextThreeDays.setDate(nextThreeDays.getDate() + 3);
+
+      StorageService.addBooking({
+        guestId: guest.id,
+        guest: guest.fullName,
+        roomId: bookingModalRoom.id,
+        room: `#${bookingModalRoom.id}01 — ${bookingModalRoom.name}`,
+        checkIn: tomorrow.toISOString().split("T")[0],
+        checkOut: nextThreeDays.toISOString().split("T")[0],
+        nights: 2,
+        price: bookingModalRoom.price * 2,
+        status: "Kutilmoqda",
+        notes: "Sayt orqali yuborilgan yangi ariza",
+      });
+    } catch {
+      // Ignore if mock storage has duplicate
+    }
 
     setTimeout(() => {
       setBookingSuccess(false);
