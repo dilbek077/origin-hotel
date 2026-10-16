@@ -460,15 +460,11 @@ export default function LandingPage() {
                 className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group"
               >
                 {/* Room Image */}
-                <Link
-                  to={`/rooms/${room.id}`}
-                  className="relative h-56 overflow-hidden cursor-pointer group/img block"
-                  title="Xona tafsilotlari va rasmlarini ko‘rish"
-                >
+                <div className="relative h-56 overflow-hidden">
                   <img
                     src={room.image}
                     alt={room.name}
-                    className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {isBooked && (
                     <div className="absolute top-3 left-3 flex gap-2">
@@ -478,19 +474,16 @@ export default function LandingPage() {
                     </div>
                   )}
                   <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-medium">
-                    {room.roomCount} xona • {room.size} • {room.capacity}
+                    {room.size} • {room.capacity}
                   </div>
-                </Link>
+                </div>
 
                 {/* Content */}
                 <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <Link
-                      to={`/rooms/${room.id}`}
-                      className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors cursor-pointer block"
-                    >
+                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
                       {room.name}
-                    </Link>
+                    </h3>
                     <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">
                       {room.description}
                     </p>
@@ -523,14 +516,13 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        to={`/rooms/${room.id}`}
+                      <button
+                        type="button"
                         className="w-full py-2.5 px-2 bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-bold transition-all shadow-xs hover:shadow flex items-center justify-center gap-1.5 cursor-pointer text-center"
-                        title="Xona tafsilotlari va barcha rasmlarini ko‘rish"
                       >
                         <Eye size={15} className="shrink-0 text-blue-600" />
                         <span className="truncate">Xonani ko‘rish</span>
-                      </Link>
+                      </button>
 
                       {isBooked ? (
                         <button
