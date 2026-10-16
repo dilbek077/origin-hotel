@@ -12,7 +12,6 @@ import {
   Wifi,
   Coffee,
   UtensilsCrossed,
-  Sparkles,
   ArrowRight,
   Menu,
   X,
@@ -215,13 +214,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-gray-800 font-sans">
-      {/* ─── Top announcement banner ────────────────────────────────────────────── */}
-      <div className="bg-blue-600 text-white text-xs py-2 px-4 text-center flex items-center justify-center gap-2">
-        <Sparkles size={14} className="text-amber-300" />
-        <span>Kuzgi chegirma: Sayt orqali bron qilganda <strong>15% chegirma</strong> va bepul nonushta!</span>
-        <span className="hidden md:inline text-blue-200">|</span>
-        <span className="hidden md:inline font-mono">Tel: +998 (71) 200-00-00</span>
-      </div>
 
       {/* ─── Navbar ───────────────────────────────────────────────────────────── */}
       <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs">
@@ -246,7 +238,6 @@ export default function LandingPage() {
             <a href="#hero" className="hover:text-blue-600 transition-colors">Bosh sahifa</a>
             <a href="#rooms-section" className="hover:text-blue-600 transition-colors">Xonalar</a>
             <a href="#advantages" className="hover:text-blue-600 transition-colors">Afzalliklar</a>
-            <a href="#services" className="hover:text-blue-600 transition-colors">Xizmatlar</a>
             <a href="#reviews" className="hover:text-blue-600 transition-colors">Sharhlar</a>
             <a href="#contact" className="hover:text-blue-600 transition-colors">Bog‘lanish</a>
           </div>
@@ -301,13 +292,6 @@ export default function LandingPage() {
               Afzalliklar
             </a>
             <a
-              href="#services"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-gray-700 py-2 font-medium"
-            >
-              Xizmatlar
-            </a>
-            <a
               href="#reviews"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-700 py-2 font-medium"
@@ -344,11 +328,6 @@ export default function LandingPage() {
       <section id="hero" className="relative pt-12 pb-24 overflow-hidden bg-gradient-to-b from-blue-50/60 via-white to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 text-blue-700 text-xs font-semibold mb-6">
-              <Star className="w-3.5 h-3.5 fill-blue-600 text-blue-600" />
-              <span>Toshkentdagi 5 yulduzli qulaylik & hashamat</span>
-            </div>
 
             {/* Title */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-[1.15] mb-6">
@@ -519,21 +498,13 @@ export default function LandingPage() {
                     alt={room.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-bold text-gray-800 shadow-xs">
-                      {room.categoryLabel}
-                    </span>
-                    {room.popular && (
-                      <span className="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-xs">
-                        Tavsiya
-                      </span>
-                    )}
-                    {isBooked && (
+                  {isBooked && (
+                    <div className="absolute top-3 left-3 flex gap-2">
                       <span className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-xs font-bold shadow-xs">
                         Band qilingan
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm text-white rounded-lg text-xs font-medium">
                     {room.size} • {room.capacity}
                   </div>
@@ -599,10 +570,7 @@ export default function LandingPage() {
       <section id="advantages" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-              Afzalliklarimiz
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mt-1">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900">
               Nega aynan Origin Hotelni tanlashadi?
             </h2>
             <p className="text-gray-500 text-sm mt-2">
@@ -634,88 +602,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Services Showcase ─────────────────────────────────────────────────── */}
-      <section id="services" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-                Premium Xizmatlar
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mt-1 mb-6 leading-tight">
-                Faqat xona emas, balki to‘laqonli maroqli xizmatlar majmui
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-100">
-                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 mt-1">
-                    <UtensilsCrossed size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">Origin Gourmet Restorani</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Ertalabki to‘yimli shved stoli va kechki romantik kechki ovqatlar uchun maxsus menyu.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-100">
-                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 mt-1">
-                    <Sparkles size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">Spa & Wellness markazi</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Issiq fin saunasi, yopiq suzish havzasi va professional massaj xizmatlari.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-100">
-                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 mt-1">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">Konferensiyalar & Biznes zallari</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Yuqori sifatli proyektor va audio-uskunalar bilan ta'minlangan biznes uchrashuv maydonlari.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Showcase image */}
-            <div className="relative">
-              <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
-                <img
-                  src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80"
-                  alt="Hotel service"
-                  className="w-full h-[450px] object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-gray-100 max-w-xs">
-                <div className="flex items-center gap-2 text-amber-500 mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-xs font-bold text-gray-800">
-                  "Toshkentdagi eng yoqimli va mehmondo‘st xizmat ko‘rsatuvchi maskan."
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ─── Reviews Section ───────────────────────────────────────────────────── */}
       <section id="reviews" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-              Mijozlar fikrlari
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mt-1">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900">
               Mehmonlarimiz biz haqimizda nima deyishadi?
             </h2>
             <p className="text-gray-500 text-sm mt-2">
@@ -796,7 +688,6 @@ export default function LandingPage() {
                 <li><a href="#hero" className="hover:text-white transition">Bosh sahifa</a></li>
                 <li><a href="#rooms-section" className="hover:text-white transition">Xonalar katalogi</a></li>
                 <li><a href="#advantages" className="hover:text-white transition">Nega aynan biz?</a></li>
-                <li><a href="#services" className="hover:text-white transition">Spa va Restoran</a></li>
                 <li><a href="#reviews" className="hover:text-white transition">Mehmonlar sharhlari</a></li>
               </ul>
             </div>
