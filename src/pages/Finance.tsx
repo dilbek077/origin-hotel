@@ -1,125 +1,177 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import {
   TrendingUp,
   TrendingDown,
   DollarSign,
-  ArrowUpRight,
-  ArrowDownRight,
-} from 'lucide-react';
-
-const incomeData = [
-  { id: 1, date: '2024-01-05', description: "Xona ijarasi - 101", category: 'Xona', amount: 850000 },
-  { id: 2, date: '2024-01-06', description: "Xona ijarasi - 205", category: 'Xona', amount: 1200000 },
-  { id: 3, date: '2024-01-07', description: 'Restoran xizmati', category: 'Restoran', amount: 320000 },
-  { id: 4, date: '2024-01-08', description: 'Konferens zal ijarasi', category: "Zal", amount: 500000 },
-  { id: 5, date: '2024-01-09', description: "Spa va sog'lomlashtirish", category: 'Spa', amount: 275000 },
-  { id: 6, date: '2024-01-10', description: "Xona ijarasi - 310", category: 'Xona', amount: 950000 },
-  { id: 7, date: '2024-01-11', description: 'Minibar xizmati', category: 'Qo\'shimcha', amount: 145000 },
-];
-
-const expenseData = [
-  { id: 1, date: '2024-01-05', description: "Ish haqi - iyun", category: 'Ish haqi', amount: 4500000 },
-  { id: 2, date: '2024-01-06', description: "Elektr energiyasi", category: 'Kommunal', amount: 780000 },
-  { id: 3, date: '2024-01-07', description: "Oziq-ovqat mahsulotlari", category: 'Oziq-ovqat', amount: 1200000 },
-  { id: 4, date: '2024-01-08', description: "Ta'mirlash ishlari", category: "Ta'mirlash", amount: 350000 },
-  { id: 5, date: '2024-01-09', description: "Internet va aloqa", category: 'Kommunal', amount: 120000 },
-  { id: 6, date: '2024-01-10', description: "Tozalovchi vositalar", category: 'Materiallar', amount: 95000 },
-];
+  Plus,
+  Trash2,
+  Calendar,
+} from "lucide-react";
+import type { Transaction } from "@/types/finance";
+import { StorageService } from "@/services/storage";
+import TransactionModal from "@/components/finance/TransactionModal";
 
 const formatCurrency = (amount: number) =>
-  amount.toLocaleString('uz-UZ') + " so'm";
-
-const totalIncome = incomeData.reduce((s, r) => s + r.amount, 0);
-const totalExpense = expenseData.reduce((s, r) => s + r.amount, 0);
-const netProfit = totalIncome - totalExpense;
+  amount.toLocaleString("uz-UZ") + " so‘m";
 
 export default function Finance() {
-  const [activeTab, setActiveTab] = useState<'income' | 'expense'>('income');
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">("all");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"income" | "expense">("income");
+
+  const loadTransactions = () => {
+    setTransactions(StorageService.getTransactions());
+  };
+
+  useEffect(() => {
+    loadTransactions();
+    const handleStorageChange = () => loadTransactions();
+    window.addEventListener("origin-hotel-storage-change", handleStorageChange);
+    return () => window.removeEventListener("origin-hotel-storage-change", handleStorageChange);
+  }, []);
+
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const netProfit = totalIncome - totalExpense;
+
+  const handleOpenAdd = (type: "income" | "expense") => {
+    setModalType(type);
+    setModalOpen(true);
+  };
+
+  const handleSave = (data: Omit<Transaction, "id">) => {
+    return StorageService.addTransaction(data);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Haqiqatan ham bu yozuvni o‘chirmoqchimisiz?")) {
+      StorageService.deleteTransaction(id);
+    }
+  };
+
+  const filtered = transactions.filter((t) => {
+    if (activeTab === "all") return true;
+    return t.type === activeTab;
+  });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 min-h-screen bg-gray-50">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Moliya</h1>
-        <p className="text-sm text-gray-500 mt-1">Daromad va xarajatlar boshqaruvi</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Moliya (Kirim va Chiqimlar)</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Mehmonxonaning to‘liq moliyaviy hisob-kitoblari va kassa amallari
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => handleOpenAdd("income")}
+            className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+          >
+            <Plus size={16} />
+            + Kirim qo‘shish
+          </button>
+          <button
+            onClick={() => handleOpenAdd("expense")}
+            className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+          >
+            <Plus size={16} />
+            - Chiqim qo‘shish
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Jami daromad */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4 shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-6 h-6 text-green-600" />
+        <div className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Jami daromad</p>
-            <p className="text-xl font-bold text-green-600">{formatCurrency(totalIncome)}</p>
-            <span className="inline-flex items-center gap-1 text-xs text-green-500 mt-0.5">
-              <ArrowUpRight className="w-3 h-3" /> +12.4% o'tgan oyga nisbatan
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jami kirim (Daromad)</p>
+            <p className="text-2xl font-black text-green-600 mt-0.5">{formatCurrency(totalIncome)}</p>
+            <span className="text-xs text-gray-400">
+              {transactions.filter((t) => t.type === "income").length} ta tranzaksiya
             </span>
           </div>
         </div>
 
         {/* Jami xarajat */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4 shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-            <TrendingDown className="w-6 h-6 text-red-500" />
+        <div className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
+            <TrendingDown className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Jami xarajat</p>
-            <p className="text-xl font-bold text-red-500">{formatCurrency(totalExpense)}</p>
-            <span className="inline-flex items-center gap-1 text-xs text-red-400 mt-0.5">
-              <ArrowDownRight className="w-3 h-3" /> +5.1% o'tgan oyga nisbatan
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jami chiqim (Xarajat)</p>
+            <p className="text-2xl font-black text-red-600 mt-0.5">{formatCurrency(totalExpense)}</p>
+            <span className="text-xs text-gray-400">
+              {transactions.filter((t) => t.type === "expense").length} ta tranzaksiya
             </span>
           </div>
         </div>
 
         {/* Sof foyda */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4 shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <DollarSign className="w-6 h-6 text-blue-600" />
+        <div className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 shadow-sm">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+            netProfit >= 0 ? "bg-blue-100 text-blue-600" : "bg-amber-100 text-amber-600"
+          }`}>
+            <DollarSign className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Sof foyda</p>
-            <p className={`text-xl font-bold ${netProfit >= 0 ? 'text-blue-600' : 'text-red-500'}`}>
-              {formatCurrency(Math.abs(netProfit))}
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sof natija (Foyda)</p>
+            <p className={`text-2xl font-black mt-0.5 ${netProfit >= 0 ? "text-blue-600" : "text-red-500"}`}>
+              {formatCurrency(netProfit)}
             </p>
-            <span className="inline-flex items-center gap-1 text-xs text-blue-400 mt-0.5">
-              <ArrowUpRight className="w-3 h-3" /> +8.7% o'tgan oyga nisbatan
+            <span className="text-xs text-gray-400">
+              Kirim − Chiqim farqi
             </span>
           </div>
         </div>
       </div>
 
       {/* Tabs + Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {/* Tab Bar */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-100 px-6 pt-3 gap-2">
           <button
-            onClick={() => setActiveTab('income')}
-            className={`px-6 py-4 text-sm font-medium transition-colors relative ${
-              activeTab === 'income'
-                ? 'text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
+            onClick={() => setActiveTab("all")}
+            className={`pb-3 px-4 text-xs font-bold transition-all relative ${
+              activeTab === "all"
+                ? "text-blue-600 border-b-2 border-blue-600"
+                : "text-gray-500 hover:text-gray-900"
             }`}
           >
-            Daromadlar
-            {activeTab === 'income' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-t" />
-            )}
+            Barchasi ({transactions.length})
           </button>
           <button
-            onClick={() => setActiveTab('expense')}
-            className={`px-6 py-4 text-sm font-medium transition-colors relative ${
-              activeTab === 'expense'
-                ? 'text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
+            onClick={() => setActiveTab("income")}
+            className={`pb-3 px-4 text-xs font-bold transition-all relative ${
+              activeTab === "income"
+                ? "text-green-600 border-b-2 border-green-600"
+                : "text-gray-500 hover:text-gray-900"
             }`}
           >
-            Xarajatlar
-            {activeTab === 'expense' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-t" />
-            )}
+            Kirimlar (5 ta kategoriya)
+          </button>
+          <button
+            onClick={() => setActiveTab("expense")}
+            className={`pb-3 px-4 text-xs font-bold transition-all relative ${
+              activeTab === "expense"
+                ? "text-red-600 border-b-2 border-red-600"
+                : "text-gray-500 hover:text-gray-900"
+            }`}
+          >
+            Chiqimlar (5 ta kategoriya)
           </button>
         </div>
 
@@ -127,52 +179,73 @@ export default function Finance() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-gray-500 text-left">
-                <th className="px-6 py-3 font-medium">№</th>
-                <th className="px-6 py-3 font-medium">Sana</th>
-                <th className="px-6 py-3 font-medium">Tavsif</th>
-                <th className="px-6 py-3 font-medium">Kategoriya</th>
-                <th className="px-6 py-3 font-medium text-right">Summa</th>
+              <tr className="bg-gray-50/70 text-gray-500 text-left text-xs uppercase font-semibold">
+                <th className="px-6 py-3.5">№</th>
+                <th className="px-6 py-3.5">Sana</th>
+                <th className="px-6 py-3.5">Turi</th>
+                <th className="px-6 py-3.5">Kategoriya</th>
+                <th className="px-6 py-3.5">Tavsif / Izoh</th>
+                <th className="px-6 py-3.5 text-right">Summa</th>
+                <th className="px-6 py-3.5 text-center">Amal</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {(activeTab === 'income' ? incomeData : expenseData).map((row, idx) => (
-                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-400">{idx + 1}</td>
-                  <td className="px-6 py-4 text-gray-600">{row.date}</td>
-                  <td className="px-6 py-4 text-gray-900 font-medium">{row.description}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                      activeTab === 'income'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-600'
-                    }`}>
-                      {row.category}
-                    </span>
-                  </td>
-                  <td className={`px-6 py-4 text-right font-semibold ${
-                    activeTab === 'income' ? 'text-green-600' : 'text-red-500'
-                  }`}>
-                    {activeTab === 'income' ? '+' : '-'} {formatCurrency(row.amount)}
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-12 text-gray-400">
+                    Ma’lumot topilmadi
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map((row, idx) => (
+                  <tr key={row.id} className="hover:bg-blue-50/30 transition-colors">
+                    <td className="px-6 py-4 text-gray-400 font-medium">{idx + 1}</td>
+                    <td className="px-6 py-4 text-gray-600 font-mono text-xs flex items-center gap-1.5">
+                      <Calendar size={13} className="text-gray-400" />
+                      {row.date}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                          row.type === "income"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {row.type === "income" ? "+ Kirim" : "- Chiqim"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-gray-800">{row.category}</td>
+                    <td className="px-6 py-4 text-gray-600 max-w-xs truncate">{row.description}</td>
+                    <td className="px-6 py-4 text-right font-black whitespace-nowrap">
+                      <span className={row.type === "income" ? "text-green-600" : "text-red-600"}>
+                        {row.type === "income" ? "+" : "-"} {formatCurrency(row.amount)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => handleDelete(row.id)}
+                        title="O‘chirish"
+                        className="w-7 h-7 inline-flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
-            <tfoot>
-              <tr className="bg-gray-50 border-t-2 border-gray-200">
-                <td colSpan={4} className="px-6 py-4 font-semibold text-gray-700">Jami</td>
-                <td className={`px-6 py-4 text-right font-bold text-base ${
-                  activeTab === 'income' ? 'text-green-600' : 'text-red-500'
-                }`}>
-                  {formatCurrency(
-                    activeTab === 'income' ? totalIncome : totalExpense
-                  )}
-                </td>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </div>
+
+      {/* Add Income/Expense Modal */}
+      <TransactionModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSave}
+        defaultType={modalType}
+      />
     </div>
   );
 }

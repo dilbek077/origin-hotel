@@ -1,55 +1,78 @@
-import { useState } from "react";
-import { Plus, Search, BedDouble, Eye, Edit } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, BedDouble, Eye, Edit, Trash2, Users } from "lucide-react";
+import type { Room, RoomStatus } from "@/types/room";
+import { StorageService } from "@/services/storage";
+import RoomModal from "@/components/rooms/RoomModal";
+import Modal from "@/components/common/Modal";
 
-type RoomStatus = "Bo'sh" | "Band" | "Ta'mirda";
-type RoomType = "Standart" | "Deluxe" | "Suite" | "President";
-
-interface Room {
-  id: number;
-  number: string;
-  type: RoomType;
-  pricePerNight: number;
-  status: RoomStatus;
-  floor: number;
-}
-
-const mockRooms: Room[] = [
-  { id: 1, number: "101", type: "Standart",  pricePerNight: 350000,  status: "Bo'sh",    floor: 1 },
-  { id: 2, number: "102", type: "Deluxe",    pricePerNight: 550000,  status: "Band",     floor: 1 },
-  { id: 3, number: "203", type: "Suite",     pricePerNight: 900000,  status: "Bo'sh",    floor: 2 },
-  { id: 4, number: "204", type: "Standart",  pricePerNight: 350000,  status: "Ta'mirda", floor: 2 },
-  { id: 5, number: "305", type: "Deluxe",    pricePerNight: 550000,  status: "Band",     floor: 3 },
-  { id: 6, number: "306", type: "President", pricePerNight: 1500000, status: "Bo'sh",    floor: 3 },
-  { id: 7, number: "407", type: "Suite",     pricePerNight: 900000,  status: "Band",     floor: 4 },
-  { id: 8, number: "408", type: "Standart",  pricePerNight: 350000,  status: "Bo'sh",    floor: 4 },
-];
-
-const STATUS_OPTIONS = ["Barchasi", "Bo'sh", "Band", "Ta'mirda"] as const;
+const STATUS_OPTIONS = ["Barchasi", "Bo'sh", "Band", "Tozalashda", "Ta'mirda"] as const;
 
 const statusStyles: Record<RoomStatus, string> = {
-  "Bo'sh":    "bg-green-100 text-green-700",
-  "Band":     "bg-red-100 text-red-700",
-  "Ta'mirda": "bg-yellow-100 text-yellow-700",
+  "Bo'sh": "bg-emerald-100 text-emerald-800 border border-emerald-200",
+  "Band": "bg-red-100 text-red-800 border border-red-200",
+  "Tozalashda": "bg-amber-100 text-amber-800 border border-amber-200",
+  "Ta'mirda": "bg-purple-100 text-purple-800 border border-purple-200",
 };
 
-const typeColors: Record<RoomType, string> = {
-  Standart:  "bg-blue-50 text-blue-600",
-  Deluxe:    "bg-purple-50 text-purple-600",
-  Suite:     "bg-indigo-50 text-indigo-600",
-  President: "bg-amber-50 text-amber-600",
+const typeColors: Record<string, string> = {
+  Standart: "bg-blue-50 text-blue-700 border border-blue-100",
+  Deluxe: "bg-purple-50 text-purple-700 border border-purple-100",
+  Suite: "bg-indigo-50 text-indigo-700 border border-indigo-100",
+  President: "bg-amber-50 text-amber-700 border border-amber-100",
 };
 
 function formatPrice(amount: number): string {
-  return amount.toLocaleString("uz-UZ") + " so'm";
+  return amount.toLocaleString("uz-UZ") + " so‘m";
 }
 
 export default function Rooms() {
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("Barchasi");
 
-  const filtered = mockRooms.filter((room) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+
+  const [viewRoom, setViewRoom] = useState<Room | null>(null);
+
+  const loadRooms = () => {
+    setRooms(StorageService.getRooms());
+  };
+
+  useEffect(() => {
+    loadRooms();
+    const handleStorageChange = () => loadRooms();
+    window.addEventListener("origin-hotel-storage-change", handleStorageChange);
+    return () => window.removeEventListener("origin-hotel-storage-change", handleStorageChange);
+  }, []);
+
+  const handleOpenAdd = () => {
+    setEditingRoom(null);
+    setModalOpen(true);
+  };
+
+  const handleOpenEdit = (room: Room) => {
+    setEditingRoom(room);
+    setModalOpen(true);
+  };
+
+  const handleSave = (roomData: Omit<Room, "id"> | Room) => {
+    if ("id" in roomData) {
+      return StorageService.updateRoom(roomData as Room);
+    } else {
+      return StorageService.addRoom(roomData);
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Haqiqatan ham bu xonani o‘chirmoqchimisiz?")) {
+      StorageService.deleteRoom(id);
+    }
+  };
+
+  const filtered = rooms.filter((room) => {
     const matchesSearch =
-      room.number.includes(search) ||
+      room.number.toLowerCase().includes(search.toLowerCase()) ||
       room.type.toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === "Barchasi" || room.status === statusFilter;
@@ -59,16 +82,19 @@ export default function Rooms() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Xonalar</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Jami {mockRooms.length} ta xona
+            Jami {rooms.length} ta xona (Bo‘sh: {rooms.filter((r) => r.status === "Bo'sh").length}, Band: {rooms.filter((r) => r.status === "Band").length})
           </p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors shadow-sm">
+        <button
+          onClick={handleOpenAdd}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-sm self-start sm:self-auto cursor-pointer"
+        >
           <Plus size={18} />
-          Yangi xona qo'shish
+          Yangi xona qo‘shish
         </button>
       </div>
 
@@ -85,7 +111,7 @@ export default function Rooms() {
             placeholder="Xona raqami yoki turi..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 text-gray-700"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700 shadow-xs"
           />
         </div>
 
@@ -93,7 +119,7 @@ export default function Rooms() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2.5 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 cursor-pointer"
+          className="px-3 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 cursor-pointer shadow-xs"
         >
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
@@ -105,71 +131,152 @@ export default function Rooms() {
 
       {/* Room Cards Grid */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100">
           <BedDouble size={48} className="mb-3 opacity-40" />
-          <p className="text-base font-medium">Xona topilmadi</p>
-          <p className="text-sm">Qidiruv yoki filtrni o'zgartiring</p>
+          <p className="text-base font-semibold text-gray-700">Xona topilmadi</p>
+          <p className="text-xs text-gray-400 mt-1">Qidiruv yoki filtr mezonlarini o‘zgartiring</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filtered.map((room) => (
             <div
               key={room.id}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-4"
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between group"
             >
-              {/* Card Top */}
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <BedDouble size={20} className="text-blue-500" />
+              <div>
+                {/* Card Top */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold">
+                      <BedDouble size={22} />
+                    </div>
+                    <div>
+                      <p className="text-xl font-black text-gray-900 leading-none">
+                        #{room.number}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {room.floor}-qavat
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xl font-bold text-gray-900 leading-none">
-                      #{room.number}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {room.floor}-qavat
-                    </p>
-                  </div>
+
+                  {/* Status Badge */}
+                  <span
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${statusStyles[room.status]}`}
+                  >
+                    {room.status}
+                  </span>
                 </div>
 
-                {/* Status Badge */}
-                <span
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyles[room.status]}`}
-                >
-                  {room.status}
-                </span>
+                {/* Details */}
+                <div className="flex flex-wrap gap-2 my-3">
+                  <span
+                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-md ${typeColors[room.type] || "bg-gray-100 text-gray-700"}`}
+                  >
+                    {room.type}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md bg-gray-100 text-gray-600">
+                    <Users size={12} />
+                    {room.capacity}
+                  </span>
+                </div>
               </div>
 
-              {/* Room Type */}
-              <span
-                className={`self-start text-xs font-semibold px-2.5 py-1 rounded-md ${typeColors[room.type]}`}
-              >
-                {room.type}
-              </span>
+              <div>
+                {/* Price */}
+                <div className="border-t border-gray-100 pt-3 mb-4">
+                  <p className="text-[11px] text-gray-400 font-medium">1 kecha uchun narx</p>
+                  <p className="text-base font-bold text-gray-900">
+                    {formatPrice(room.pricePerNight)}
+                  </p>
+                </div>
 
-              {/* Price */}
-              <div className="border-t border-gray-100 pt-3">
-                <p className="text-xs text-gray-400 mb-0.5">Bir kecha narxi</p>
-                <p className="text-base font-bold text-gray-800">
-                  {formatPrice(room.pricePerNight)}
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 mt-auto">
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 py-2 rounded-lg transition-colors">
-                  <Eye size={14} />
-                  Ko'rish
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 py-2 rounded-lg transition-colors">
-                  <Edit size={14} />
-                  Tahrirlash
-                </button>
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 pt-2 border-t border-gray-50">
+                  <button
+                    onClick={() => setViewRoom(room)}
+                    title="Ko‘rish"
+                    className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded-xl transition"
+                  >
+                    <Eye size={14} />
+                    Ko‘rish
+                  </button>
+                  <button
+                    onClick={() => handleOpenEdit(room)}
+                    title="Tahrirlash"
+                    className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 py-2 rounded-xl transition"
+                  >
+                    <Edit size={14} />
+                    Tahrir
+                  </button>
+                  <button
+                    onClick={() => handleDelete(room.id)}
+                    title="O‘chirish"
+                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {/* Add / Edit Modal */}
+      <RoomModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSave}
+        initialData={editingRoom}
+      />
+
+      {/* View Details Modal */}
+      {viewRoom && (
+        <Modal
+          isOpen={!!viewRoom}
+          onClose={() => setViewRoom(null)}
+          title={`Xona #${viewRoom.number} tafsilotlari`}
+        >
+          <div className="space-y-4">
+            <div className="p-4 bg-gray-50 rounded-xl space-y-2.5 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Xona raqami:</span>
+                <span className="font-bold text-gray-900">#{viewRoom.number}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Xona turi:</span>
+                <span className="font-semibold text-gray-800">{viewRoom.type}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Qavat:</span>
+                <span className="font-semibold text-gray-800">{viewRoom.floor}-qavat</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Sig‘imi:</span>
+                <span className="font-semibold text-gray-800">{viewRoom.capacity}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Holati:</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${statusStyles[viewRoom.status]}`}>
+                  {viewRoom.status}
+                </span>
+              </div>
+              <div className="flex justify-between pt-2 border-t border-gray-200">
+                <span className="text-gray-500">Bir kecha narxi:</span>
+                <span className="font-bold text-blue-600 text-base">{formatPrice(viewRoom.pricePerNight)}</span>
+              </div>
+            </div>
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setViewRoom(null)}
+                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition"
+              >
+                Yopish
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );
