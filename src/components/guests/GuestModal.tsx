@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Guest } from "@/types/guest";
+import { useTranslation } from "@/i18n";
+import { useTheme } from "@/theme";
 
 interface GuestModalProps {
   isOpen: boolean;
@@ -15,6 +17,8 @@ export default function GuestModal({
   onSave,
   initialData,
 }: GuestModalProps) {
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [passport, setPassport] = useState("");
@@ -42,7 +46,7 @@ export default function GuestModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim()) {
-      setError("Ism-familiyani kiritish shart!");
+      setError(t('guests.name') + " *");
       return;
     }
 
@@ -67,100 +71,109 @@ export default function GuestModal({
     if (ok) onClose();
   };
 
+  const labelClass = isDark ? "block text-xs font-semibold text-slate-300 mb-1" : "block text-xs font-semibold text-gray-700 mb-1";
+  const inputClass = isDark
+    ? "w-full px-3.5 py-2 text-sm border border-slate-700 bg-slate-800 text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+    : "w-full px-3.5 py-2 text-sm border border-gray-200 bg-white text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none";
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initialData ? "Mehmon ma’lumotlarini tahrirlash" : "Yangi mehmon qo‘shish"}
+      title={initialData ? t('guests.modalTitleEdit') : t('guests.modalTitleAdd')}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-medium border border-red-200">
+          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            F.I.O (Ism-Familiya) *
+          <label className={labelClass}>
+            {t('guests.name')} *
           </label>
           <input
             type="text"
             required
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Masalan, Aliyev Jasur Baxtiyorovich"
-            className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            placeholder="Jasur Aliyev"
+            className={inputClass}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Telefon raqami (ixtiyoriy)
+            <label className={labelClass}>
+              {t('common.phone')}
             </label>
             <input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+998 90 123 45 67"
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Passport raqami (test ma’lumoti)
+            <label className={labelClass}>
+              {t('guests.passport')}
             </label>
             <input
               type="text"
               value={passport}
               onChange={(e) => setPassport(e.target.value.toUpperCase())}
               placeholder="AA 1234567"
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono"
+              className={`${inputClass} uppercase font-mono`}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Manzil (shahar / viloyat)
+          <label className={labelClass}>
+            {t('common.address')}
           </label>
           <input
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="Qarshi shahri..."
-            className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            placeholder="Qarshi"
+            className={inputClass}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Izoh (Eslatma / Maxsus talablar)
+          <label className={labelClass}>
+            {t('common.notes')}
           </label>
           <textarea
             rows={3}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Mehmon haqida qo‘shimcha eslatmalar..."
-            className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+            placeholder="..."
+            className={`${inputClass} resize-none`}
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition"
+            className={
+              isDark
+                ? "px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 rounded-xl transition cursor-pointer"
+                : "px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition cursor-pointer"
+            }
           >
-            Bekor qilish
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
-            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition"
+            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
-            {initialData ? "Saqlash" : "Qo‘shish"}
+            {t('common.save')}
           </button>
         </div>
       </form>

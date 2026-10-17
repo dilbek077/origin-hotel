@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Room, RoomStatus, RoomType } from "@/types/room";
+import { useTranslation } from "@/i18n";
+import { useTheme } from "@/theme";
 
 interface RoomModalProps {
   isOpen: boolean;
@@ -18,6 +20,8 @@ export default function RoomModal({
   onSave,
   initialData,
 }: RoomModalProps) {
+  const { t, translateStatus, translateRoomType } = useTranslation();
+  const { isDark } = useTheme();
   const [number, setNumber] = useState("");
   const [type, setType] = useState<RoomType>("Standart");
   const [pricePerNight, setPricePerNight] = useState<number>(350000);
@@ -50,11 +54,11 @@ export default function RoomModal({
     setError(null);
 
     if (!number.trim()) {
-      setError("Xona raqamini kiriting!");
+      setError(t('rooms.number') + " !");
       return;
     }
     if (pricePerNight <= 0) {
-      setError("Narx 0 dan katta bo‘lishi kerak!");
+      setError("Price > 0 !");
       return;
     }
 
@@ -85,37 +89,42 @@ export default function RoomModal({
     }
   };
 
+  const labelClass = isDark ? "block text-xs font-semibold text-slate-300 mb-1" : "block text-xs font-semibold text-gray-700 mb-1";
+  const inputClass = isDark
+    ? "w-full px-3.5 py-2 text-sm border border-slate-700 bg-slate-800 text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+    : "w-full px-3.5 py-2 text-sm border border-gray-200 bg-white text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none";
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initialData ? "Xonani tahrirlash" : "Yangi xona qo‘shish"}
+      title={initialData ? t('rooms.modalTitleEdit') : t('rooms.modalTitleAdd')}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-medium border border-red-200">
+          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
             {error}
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Xona raqami *
+            <label className={labelClass}>
+              {t('rooms.number')} *
             </label>
             <input
               type="text"
               required
               value={number}
               onChange={(e) => setNumber(e.target.value)}
-              placeholder="Masalan, 101"
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="101"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Qavat
+            <label className={labelClass}>
+              {t('rooms.floor')}
             </label>
             <input
               type="number"
@@ -123,47 +132,47 @@ export default function RoomModal({
               max={20}
               value={floor}
               onChange={(e) => setFloor(Number(e.target.value))}
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              className={inputClass}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Xona turi
+            <label className={labelClass}>
+              {t('rooms.type')}
             </label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value as RoomType)}
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+              className={inputClass}
             >
-              {ROOM_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {ROOM_TYPES.map((tItem) => (
+                <option key={tItem} value={tItem} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                  {translateRoomType(tItem)}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Sig‘imi (kishilik) *
+            <label className={labelClass}>
+              {t('rooms.capacity')} *
             </label>
             <input
               type="text"
               value={capacity}
               onChange={(e) => setCapacity(e.target.value)}
-              placeholder="Masalan, 2 kishilik"
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="2 kishilik"
+              className={inputClass}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Bir kecha narxi (so‘m) *
+            <label className={labelClass}>
+              {t('rooms.price')} *
             </label>
             <input
               type="number"
@@ -171,41 +180,45 @@ export default function RoomModal({
               step={10000}
               value={pricePerNight}
               onChange={(e) => setPricePerNight(Number(e.target.value))}
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Holati
+            <label className={labelClass}>
+              {t('common.status')}
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as RoomStatus)}
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+              className={inputClass}
             >
               {ROOM_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
+                <option key={s} value={s} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                  {translateStatus(s)}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-800">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition"
+            className={
+              isDark
+                ? "px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800 rounded-xl transition cursor-pointer"
+                : "px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition cursor-pointer"
+            }
           >
-            Bekor qilish
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
-            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition"
+            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-sm rounded-xl transition shadow-xs cursor-pointer"
           >
-            {initialData ? "Saqlash" : "Qo‘shish"}
+            {t('common.save')}
           </button>
         </div>
       </form>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Transaction, IncomeCategory, ExpenseCategory } from "@/types/finance";
+import { useTranslation } from "@/i18n";
+import { useTheme } from "@/theme";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -31,6 +33,8 @@ export default function TransactionModal({
   onSave,
   defaultType = "income",
 }: TransactionModalProps) {
+  const { t, translateCategory } = useTranslation();
+  const { isDark } = useTheme();
   const [type, setType] = useState<"income" | "expense">(defaultType);
   const [category, setCategory] = useState<string>(INCOME_CATEGORIES[0]);
   const [amount, setAmount] = useState<number | "">("");
@@ -58,11 +62,11 @@ export default function TransactionModal({
 
     const numAmount = Number(amount);
     if (!numAmount || numAmount <= 0) {
-      setError("Summa 0 dan katta bo‘lishi shart!");
+      setError(t('common.amount') + " > 0 !");
       return;
     }
     if (!description.trim()) {
-      setError("Tavsif yoki izoh kiritilishi shart!");
+      setError(t('common.description') + " !");
       return;
     }
 
@@ -75,129 +79,139 @@ export default function TransactionModal({
     });
 
     if (!res.success) {
-      setError(res.error || "Xatolik yuz berdi");
+      setError(res.error || "Error");
     } else {
       onClose();
     }
   };
 
+  const labelClass = isDark ? "block text-xs font-semibold text-slate-300 mb-1" : "block text-xs font-semibold text-gray-700 mb-1";
+  const inputClass = isDark
+    ? "w-full px-3.5 py-2 text-sm border border-slate-700 bg-slate-800 text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+    : "w-full px-3.5 py-2 text-sm border border-gray-200 bg-white text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none";
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={type === "income" ? "Yangi kirim kiritish" : "Yangi chiqim kiritish"}
+      title={type === "income" ? t('finance.modalIncomeTitle') : t('finance.modalExpenseTitle')}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-medium border border-red-200">
+          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
             {error}
           </div>
         )}
 
         {/* Type toggle */}
-        <div className="flex bg-gray-100 p-1 rounded-xl">
+        <div className={isDark ? "flex bg-slate-800 p-1 rounded-xl" : "flex bg-gray-100 p-1 rounded-xl"}>
           <button
             type="button"
             onClick={() => handleTypeChange("income")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition ${
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer ${
               type === "income"
-                ? "bg-white text-green-700 shadow-xs"
-                : "text-gray-500 hover:text-gray-800"
+                ? isDark
+                  ? "bg-slate-900 text-green-400 shadow-xs"
+                  : "bg-white text-green-700 shadow-xs"
+                : "text-gray-400 hover:text-white"
             }`}
           >
-            + Kirim (Daromad)
+            + {t('status.income')}
           </button>
           <button
             type="button"
             onClick={() => handleTypeChange("expense")}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition ${
+            className={`flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer ${
               type === "expense"
-                ? "bg-white text-red-700 shadow-xs"
-                : "text-gray-500 hover:text-gray-800"
+                ? isDark
+                  ? "bg-slate-900 text-red-400 shadow-xs"
+                  : "bg-white text-red-700 shadow-xs"
+                : "text-gray-400 hover:text-white"
             }`}
           >
-            - Chiqim (Xarajat)
+            - {t('status.expense')}
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Kategoriya (TZ bo‘yicha 5 ta) *
+            <label className={labelClass}>
+              {t('common.category')} *
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+              className={inputClass}
             >
               {(type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => (
-                <option key={c} value={c}>
-                  {c}
+                <option key={c} value={c} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                  {translateCategory(c)}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Sana *
+            <label className={labelClass}>
+              {t('common.amount')} ({t('common.currency')}) *
             </label>
             <input
-              type="date"
+              type="number"
+              min={100}
+              step={1000}
               required
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value === "" ? "" : Number(e.target.value))}
+              placeholder="100000"
+              className={inputClass}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Summa (so‘m, manfiy bo‘lmasin) *
+          <label className={labelClass}>
+            {t('common.date')} *
           </label>
           <input
-            type="number"
-            min={1}
+            type="date"
             required
-            placeholder="Masalan, 500000"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-            className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-semibold text-gray-900"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className={inputClass}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
-            Tavsif / Izoh *
+          <label className={labelClass}>
+            {t('common.description')} *
           </label>
           <input
             type="text"
             required
-            placeholder="To‘lov sababi yoki maqsadini yozing..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3.5 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            placeholder="..."
+            className={inputClass}
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition"
+            className={
+              isDark
+                ? "px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 rounded-xl transition cursor-pointer"
+                : "px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition cursor-pointer"
+            }
           >
-            Bekor qilish
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
-            className={`px-5 py-2 text-sm font-semibold text-white rounded-xl shadow-sm transition ${
-              type === "income"
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-red-600 hover:bg-red-700"
-            }`}
+            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
-            {type === "income" ? "Kirimni saqlash" : "Chiqimni saqlash"}
+            {t('common.save')}
           </button>
         </div>
       </form>

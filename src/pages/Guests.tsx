@@ -48,7 +48,7 @@ export default function Guests() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Haqiqatan ham bu mehmonni o‘chirmoqchimisiz?")) {
+    if (window.confirm(t('guests.deleteConfirm'))) {
       StorageService.deleteGuest(id);
     }
   };
@@ -66,12 +66,14 @@ export default function Guests() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Users className="w-6 h-6" />
           </div>
           <div>
             <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.guests')}</h1>
-            <p className="text-sm text-gray-500">Jami {guests.length} ta mehmon ro‘yxatda</p>
+            <p className="text-sm text-gray-500 dark:text-slate-400">
+              {t('guests.total').replace('{n}', String(guests.length))}
+            </p>
           </div>
         </div>
         <button
@@ -79,110 +81,102 @@ export default function Guests() {
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-sm self-start sm:self-auto cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
-          Yangi mehmon qo‘shish
+          {t('guests.new')}
         </button>
       </div>
 
       {/* Search */}
       <div className="relative mb-6 max-w-md">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
         <input
           type="text"
-          placeholder="Ism, telefon, passport yoki izoh bo‘yicha..."
+          placeholder={t('guests.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 shadow-xs"
+          className={
+            isDark
+              ? "w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-500 shadow-xs"
+              : "w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 shadow-xs"
+          }
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className={isDark ? "bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden" : "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50/80 border-b border-gray-100">
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
-                  #
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
-                  F.I.O
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
-                  Telefon
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
-                  Passport
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
-                  Izoh (Eslatma)
-                </th>
-                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">
-                  Amallar
-                </th>
+              <tr className={isDark ? "bg-slate-800/80 border-b border-slate-800 text-slate-300 text-xs font-semibold uppercase tracking-wider" : "bg-gray-50/80 border-b border-gray-100 text-gray-500 text-xs font-semibold uppercase tracking-wider"}>
+                <th className="text-left px-6 py-4">#</th>
+                <th className="text-left px-6 py-4">{t('guests.name')}</th>
+                <th className="text-left px-6 py-4">{t('common.phone')}</th>
+                <th className="text-left px-6 py-4">{t('guests.passport')}</th>
+                <th className="text-left px-6 py-4">{t('common.notes')}</th>
+                <th className="text-left px-6 py-4">{t('common.actions')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-50"}`}>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400">
-                    Mehmon topilmadi
+                  <td colSpan={6} className="text-center py-12 text-gray-400 dark:text-slate-500">
+                    {t('rooms.notFound')}
                   </td>
                 </tr>
               ) : (
                 filtered.map((guest, index) => (
                   <tr
                     key={guest.id}
-                    className="hover:bg-blue-50/30 transition-colors group"
+                    className={isDark ? "hover:bg-slate-800/50 transition-colors group" : "hover:bg-blue-50/30 transition-colors group"}
                   >
-                    <td className="px-6 py-4 text-gray-400 font-medium">{index + 1}</td>
+                    <td className="px-6 py-4 text-gray-400 dark:text-slate-500 font-medium">{index + 1}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          <span className="text-blue-600 font-bold text-sm">
+                        <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                          <span className="text-blue-600 dark:text-sky-300 font-bold text-sm">
                             {guest.fullName.charAt(0)}
                           </span>
                         </div>
-                        <span className="font-semibold text-gray-900">{guest.fullName}</span>
+                        <span className={isDark ? "font-semibold text-white" : "font-semibold text-gray-900"}>{guest.fullName}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 font-medium">
-                      {guest.phone || <span className="text-gray-400 italic">Mavjud emas</span>}
+                    <td className={isDark ? "px-6 py-4 text-slate-300 font-medium" : "px-6 py-4 text-gray-600 font-medium"}>
+                      {guest.phone || <span className="text-gray-400 dark:text-slate-500 italic">—</span>}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-mono text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                      <span className={isDark ? "font-mono text-sky-300 bg-slate-800 px-2.5 py-1 rounded-lg text-xs font-semibold" : "font-mono text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg text-xs font-semibold"}>
                         {guest.passport || "—"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 max-w-[240px] truncate">
+                    <td className="px-6 py-4 text-gray-500 dark:text-slate-400 max-w-[240px] truncate">
                       {guest.notes ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+                        <span className={isDark ? "inline-flex items-center gap-1.5 text-xs text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-800/50" : "inline-flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100"}>
                           <FileText size={12} />
                           {guest.notes}
                         </span>
                       ) : (
-                        <span className="text-gray-400 text-xs">Izoh yo‘q</span>
+                        <span className="text-gray-400 dark:text-slate-500 text-xs">—</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => setViewGuest(guest)}
-                          title="Ko‘rish"
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-100 text-gray-400 hover:text-blue-600 transition"
+                          title={t('common.view')}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-100 dark:hover:bg-blue-950/40 text-gray-400 hover:text-blue-600 transition cursor-pointer"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleOpenEdit(guest)}
-                          title="Tahrirlash"
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-amber-100 text-gray-400 hover:text-amber-600 transition"
+                          title={t('common.edit')}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 text-gray-400 hover:text-amber-600 transition cursor-pointer"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(guest.id)}
-                          title="O‘chirish"
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-100 text-gray-400 hover:text-red-600 transition"
+                          title={t('common.delete')}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 text-gray-400 hover:text-red-600 transition cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -196,9 +190,9 @@ export default function Guests() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-          <span className="text-xs text-gray-500 font-medium">
-            Jami {filtered.length} ta mehmon ko‘rsatilmoqda
+        <div className={`px-6 py-3 border-t flex items-center justify-between ${isDark ? "border-slate-800 bg-slate-900/60" : "border-gray-100 bg-gray-50/50"}`}>
+          <span className="text-xs text-gray-400 dark:text-slate-400 font-medium">
+            {t('guests.total').replace('{n}', String(filtered.length))}
           </span>
         </div>
       </div>
@@ -216,39 +210,43 @@ export default function Guests() {
         <Modal
           isOpen={!!viewGuest}
           onClose={() => setViewGuest(null)}
-          title="Mehmon ma’lumotlari"
+          title={t('guests.detailsTitle')}
         >
           <div className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-xl space-y-3 text-sm">
+            <div className={isDark ? "p-4 bg-slate-800/80 rounded-xl space-y-3 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-3 text-sm"}>
               <div className="flex justify-between">
-                <span className="text-gray-500">F.I.O:</span>
-                <span className="font-bold text-gray-900">{viewGuest.fullName}</span>
+                <span className="text-gray-400 dark:text-slate-400">{t('guests.name')}:</span>
+                <span className="font-bold text-gray-900 dark:text-white">{viewGuest.fullName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Telefon:</span>
-                <span className="font-semibold text-gray-800">{viewGuest.phone || "—"}</span>
+                <span className="text-gray-400 dark:text-slate-400">{t('common.phone')}:</span>
+                <span className="font-semibold text-gray-800 dark:text-slate-200">{viewGuest.phone || "—"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Pasport raqami:</span>
-                <span className="font-mono font-bold text-blue-600">{viewGuest.passport || "—"}</span>
+                <span className="text-gray-400 dark:text-slate-400">{t('guests.passport')}:</span>
+                <span className="font-mono font-bold text-blue-600 dark:text-sky-400">{viewGuest.passport || "—"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Manzil:</span>
-                <span className="font-medium text-gray-800">{viewGuest.address || "Ko‘rsatilmagan"}</span>
+                <span className="text-gray-400 dark:text-slate-400">{t('common.address')}:</span>
+                <span className="font-medium text-gray-800 dark:text-slate-200">{viewGuest.address || "—"}</span>
               </div>
-              <div className="pt-2 border-t border-gray-200">
-                <span className="block text-gray-500 mb-1">Izoh / Maxsus eslatma:</span>
-                <p className="text-gray-800 bg-white p-3 rounded-lg border border-gray-200 text-xs leading-relaxed">
-                  {viewGuest.notes || "Izoh mavjud emas."}
+              <div className={`pt-2 border-t ${isDark ? "border-slate-700" : "border-gray-200"}`}>
+                <span className="block text-gray-400 dark:text-slate-400 mb-1">{t('common.notes')}:</span>
+                <p className={isDark ? "text-slate-200 bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs leading-relaxed" : "text-gray-800 bg-white p-3 rounded-lg border border-gray-200 text-xs leading-relaxed"}>
+                  {viewGuest.notes || "—"}
                 </p>
               </div>
             </div>
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setViewGuest(null)}
-                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition"
+                className={
+                  isDark
+                    ? "px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl transition cursor-pointer"
+                    : "px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition cursor-pointer"
+                }
               >
-                Yopish
+                {t('common.close')}
               </button>
             </div>
           </div>

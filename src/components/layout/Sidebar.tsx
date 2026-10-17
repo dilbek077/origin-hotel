@@ -9,11 +9,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  MoonStar,
-  SunMedium,
 } from 'lucide-react';
-import { LANGUAGES, useTranslation, type LanguageCode } from '@/i18n';
-import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 
 interface NavItem {
   labelKey: string;
@@ -41,8 +38,7 @@ const staffNavItems: NavItem[] = [
 export default function Sidebar() {
   const navigate = useNavigate();
   const role = localStorage.getItem('role') ?? 'STAFF';
-  const { t, locale, setLocale } = useTranslation();
-  const { isDark, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const navItems = role === 'ADMIN' ? adminNavItems : staffNavItems;
 
   const handleLogout = () => {
@@ -80,32 +76,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-3 py-4 border-t border-white/10 space-y-3">
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="flex w-full items-center justify-between rounded-lg border border-white/15 bg-sky-950/40 px-3 py-2 text-sm text-white hover:bg-sky-950/60 transition cursor-pointer"
-        >
-          <span>{isDark ? t('common.lightMode') : t('common.darkMode')}</span>
-          {isDark ? <SunMedium size={16} /> : <MoonStar size={16} />}
-        </button>
-
-        <label className="block text-xs uppercase tracking-wider text-sky-200/80" htmlFor="sidebar-language">
-          {t('common.language')}
-        </label>
-        <select
-          id="sidebar-language"
-          value={locale}
-          onChange={(event) => setLocale(event.target.value as LanguageCode)}
-          className="w-full rounded-lg border border-white/15 bg-sky-950/40 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer"
-        >
-          {LANGUAGES.map((language) => (
-            <option key={language.code} value={language.code} className="text-slate-900 bg-white">
-              {language.label}
-            </option>
-          ))}
-        </select>
-
+      <div className="px-3 py-4 border-t border-white/10">
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-200 hover:bg-red-500/15 transition-colors duration-150 cursor-pointer"
