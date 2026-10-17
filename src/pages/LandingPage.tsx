@@ -48,8 +48,8 @@ export default function LandingPage() {
   });
 
   // Quick search form state
-  const [searchCheckIn, setSearchCheckIn] = useState('2026-10-16');
-  const [searchCheckOut, setSearchCheckOut] = useState('2026-10-18');
+  const [searchCheckIn, setSearchCheckIn] = useState(() => new Date().toISOString().split('T')[0]);
+  const [searchCheckOut, setSearchCheckOut] = useState(() => new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0]);
   const [searchGuests, setSearchGuests] = useState('2');
 
   // Booking modal form state
@@ -814,7 +814,7 @@ export default function LandingPage() {
           </p>
           <a
             href="#rooms-section"
-            className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 font-black px-8 py-4 rounded-xl shadow-lg transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 keep-white !bg-white !text-blue-600 hover:!bg-blue-50 font-black px-8 py-4 rounded-xl shadow-lg transition-all hover:scale-105"
           >
             <span>{t('landing.cta.btn')}</span>
             <ArrowRight size={18} />
@@ -1042,7 +1042,7 @@ export default function LandingPage() {
                       </label>
                       <input
                         type="date"
-                        defaultValue="2026-10-16"
+                        defaultValue={searchCheckIn}
                         className={
                           isDark
                             ? 'w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-xs text-white'
@@ -1056,7 +1056,7 @@ export default function LandingPage() {
                       </label>
                       <input
                         type="date"
-                        defaultValue="2026-10-18"
+                        defaultValue={searchCheckOut}
                         className={
                           isDark
                             ? 'w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-xs text-white'

@@ -66,23 +66,23 @@ html.dark body {
 }
 
 /* Global dark mode fallbacks for complete site consistency */
-html.dark .bg-white,
-html.dark .bg-white\/95,
-html.dark .bg-white\/90,
-html.dark .bg-white\/80 {
+html.dark .bg-white:not(.keep-white):not(.btn-white),
+html.dark .bg-white\/95:not(.keep-white),
+html.dark .bg-white\/90:not(.keep-white),
+html.dark .bg-white\/80:not(.keep-white) {
   background-color: rgba(15, 23, 42, 0.95) !important;
 }
 
-html.dark .bg-gray-50,
-html.dark .bg-gray-100,
-html.dark .bg-slate-50 {
+html.dark .bg-gray-50:not(.keep-bg),
+html.dark .bg-gray-100:not(.keep-bg),
+html.dark .bg-slate-50:not(.keep-bg) {
   background-color: rgba(30, 41, 59, 0.7) !important;
 }
 
-html.dark .text-gray-900,
-html.dark .text-slate-900,
-html.dark .text-gray-800,
-html.dark .text-slate-800 {
+html.dark .text-gray-900:not(.keep-text),
+html.dark .text-slate-900:not(.keep-text),
+html.dark .text-gray-800:not(.keep-text),
+html.dark .text-slate-800:not(.keep-text) {
   color: #f8fafc !important;
 }
 
@@ -120,9 +120,47 @@ html.dark textarea::placeholder {
   color: #64748b;
 }
 
+html.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+html.dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+html.dark select option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
 html.dark .shadow-xs,
 html.dark .shadow-sm,
 html.dark .shadow-md,
 html.dark .shadow-xl {
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45) !important;
+}
+
+/* Dark mode custom scrollbar */
+html.dark {
+  scrollbar-color: #334155 #090d16;
+}
+
+html.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
