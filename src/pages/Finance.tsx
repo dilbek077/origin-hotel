@@ -10,11 +10,15 @@ import {
 import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
 import TransactionModal from "@/components/finance/TransactionModal";
+import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 
 const formatCurrency = (amount: number) =>
   amount.toLocaleString("uz-UZ") + " so‘m";
 
 export default function Finance() {
+  const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">("all");
   const [modalOpen, setModalOpen] = useState(false);
@@ -62,11 +66,11 @@ export default function Finance() {
   });
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-gray-50">
+    <div className={isDark ? "p-6 space-y-6 min-h-screen bg-slate-950 text-slate-100" : "p-6 space-y-6 min-h-screen bg-gray-50 text-gray-900"}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Moliya (Kirim va Chiqimlar)</h1>
+          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.finance')}</h1>
           <p className="text-sm text-gray-500 mt-1">
             Mehmonxonaning to‘liq moliyaviy hisob-kitoblari va kassa amallari
           </p>

@@ -10,6 +10,8 @@ import {
   TrendingDown,
   Clock,
 } from "lucide-react";
+import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 import type { Room } from "@/types/room";
 import type { Booking } from "@/types/booking";
 import type { Guest } from "@/types/guest";
@@ -29,6 +31,8 @@ const statusStyles: Record<string, string> = {
 const formatCurrency = (n: number) => n.toLocaleString("uz-UZ") + " so‘m";
 
 export default function Dashboard() {
+  const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -105,11 +109,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 space-y-8">
+    <div className={isDark ? "min-h-screen bg-slate-950 p-6 space-y-8 text-slate-100" : "min-h-screen bg-gray-50 p-6 space-y-8 text-gray-900"}>
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Boshqaruv paneli (Dashboard)</h1>
+          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.dashboard')}</h1>
           <p className="text-sm text-gray-500 mt-1">
             Bugun:{" "}
             {new Date().toLocaleDateString("uz-UZ", {

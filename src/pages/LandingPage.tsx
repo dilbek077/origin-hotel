@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { MoonStar, SunMedium } from 'lucide-react';
+import { LANGUAGES, useTranslation, type LanguageCode } from '@/i18n';
 import { StorageService } from '@/services/storage';
+import { useTheme } from '@/theme';
 import {
   Hotel,
   Calendar,
@@ -29,7 +32,7 @@ const ADVANTAGES = [
   {
     icon: MapPin,
     title: 'Markaziy joylashuv',
-    desc: 'Toshkent markazida, metro, restoranlar va diqqatga sazovor joylarga bir necha qadam.',
+    desc: 'Qarshi markazida, metro, restoranlar va diqqatga sazovor joylarga bir necha qadam.',
   },
   {
     icon: Coffee,
@@ -61,7 +64,7 @@ const ADVANTAGES = [
 const REVIEWS = [
   {
     name: 'Jasurbek Oripov',
-    city: 'Toshkent',
+    city: 'Qarshi',
     rating: 5,
     text: "Origin Hotelda 3 kun turdik. Xonalar juda toza, xodimlar samimiy va nonushta ajoyib darajada mazali edi. Keyingi safar ham albatta shu yerni tanlaymiz!",
     date: 'Oktyabr, 2026',
@@ -77,12 +80,14 @@ const REVIEWS = [
     name: 'Alexey Morozov',
     city: 'Moskva',
     rating: 5,
-    text: "Отличный отель в центре Ташкента! Номера новые, стильные, матрасы невероятно удобные. Завтрак превзошел все ожидания. Рекомендую 10/10!",
+    text: "Отличный отель в центре Карши! Номера новые, стильные, матрасы невероятно удобные. Завтрак превзошел все ожидания. Рекомендую 10/10!",
     date: 'Oktyabr, 2026',
   },
 ];
 
 export default function LandingPage() {
+  const { t, locale, setLocale } = useTranslation();
+  const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [bookingModalRoom, setBookingModalRoom] = useState<Room | null>(null);
@@ -181,10 +186,9 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 font-sans">
+    <div className={isDark ? 'min-h-screen bg-slate-950 text-slate-100 font-sans' : 'min-h-screen bg-white text-gray-800 font-sans'}>
 
-      {/* ─── Navbar ───────────────────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs">
+      <nav className={isDark ? 'sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-xs' : 'sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs'}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
@@ -201,28 +205,45 @@ export default function LandingPage() {
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-            <a href="#hero" className="hover:text-blue-600 transition-colors">Bosh sahifa</a>
-            <a href="#rooms-section" className="hover:text-blue-600 transition-colors">Xonalar</a>
-            <a href="#advantages" className="hover:text-blue-600 transition-colors">Afzalliklar</a>
-            <a href="#reviews" className="hover:text-blue-600 transition-colors">Sharhlar</a>
-            <a href="#contact" className="hover:text-blue-600 transition-colors">Bog‘lanish</a>
+            <a href="#hero" className="hover:text-blue-600 transition-colors">{t('nav.home')}</a>
+            <a href="#rooms-section" className="hover:text-blue-600 transition-colors">{t('nav.rooms')}</a>
+            <a href="#advantages" className="hover:text-blue-600 transition-colors">{t('nav.advantages')}</a>
+            <a href="#reviews" className="hover:text-blue-600 transition-colors">{t('nav.reviews')}</a>
+            <a href="#contact" className="hover:text-blue-600 transition-colors">{t('nav.contact')}</a>
           </div>
 
-          {/* Right Action buttons */}
           <div className="hidden md:flex items-center gap-3">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={isDark ? 'p-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-100' : 'p-2 rounded-lg border border-slate-200 bg-white text-slate-700'}
+              aria-label="Toggle theme"
+            >
+              {isDark ? <SunMedium size={18} /> : <MoonStar size={18} />}
+            </button>
+            <select
+              value={locale}
+              onChange={(event) => setLocale(event.target.value as LanguageCode)}
+              className={isDark ? 'rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-2 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-blue-500' : 'rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500'}
+            >
+              {LANGUAGES.map((language) => (
+                <option key={language.code} value={language.code}>
+                  {language.label}
+                </option>
+              ))}
+            </select>
             <Link
               to="/login"
               className="text-sm font-semibold text-gray-700 hover:text-blue-600 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition"
             >
-              Tizimga kirish
+              {t('nav.login')}
             </Link>
             <a
               href="#rooms-section"
               className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-blue-600/20 transition-all hover:shadow-lg active:scale-95"
             >
-              Xona band qilish
+              {t('nav.rooms')}
             </a>
           </div>
 
@@ -243,49 +264,67 @@ export default function LandingPage() {
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-700 py-2 font-medium"
             >
-              Bosh sahifa
+              {t('nav.home')}
             </a>
             <a
               href="#rooms-section"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-700 py-2 font-medium"
             >
-              Xonalar
+              {t('nav.rooms')}
             </a>
             <a
               href="#advantages"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-700 py-2 font-medium"
             >
-              Afzalliklar
+              {t('nav.advantages')}
             </a>
             <a
               href="#reviews"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-700 py-2 font-medium"
             >
-              Sharhlar
+              {t('nav.reviews')}
             </a>
             <a
               href="#contact"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-gray-700 py-2 font-medium"
             >
-              Bog‘lanish
+              {t('nav.contact')}
             </a>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={isDark ? 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-slate-100' : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700'}
+            >
+              {isDark ? 'Light mode' : 'Dark mode'}
+            </button>
+            <select
+              value={locale}
+              onChange={(event) => setLocale(event.target.value as LanguageCode)}
+              className={isDark ? 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-blue-500' : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500'}
+            >
+              {LANGUAGES.map((language) => (
+                <option key={language.code} value={language.code}>
+                  {language.label}
+                </option>
+              ))}
+            </select>
             <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
               <Link
                 to="/login"
                 className="w-full text-center py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-800"
               >
-                Tizimga kirish
+                {t('nav.login')}
               </Link>
               <a
                 href="#rooms-section"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-md"
               >
-                Xona band qilish
+                {t('nav.rooms')}
               </a>
             </div>
           </div>
@@ -669,7 +708,7 @@ export default function LandingPage() {
                 <span className="text-2xl font-black text-white">Origin Hotel</span>
               </div>
               <p className="text-xs text-gray-400 leading-relaxed">
-                Toshkent markazidagi zamonaviy premium mehmonxona. Haqiqiy mehmondo‘stlik va 5 yulduzli qulaylik maskani.
+                Qarshi markazidagi zamonaviy premium mehmonxona. Haqiqiy mehmondo‘stlik va 5 yulduzli qulaylik maskani.
               </p>
             </div>
 
@@ -705,7 +744,7 @@ export default function LandingPage() {
               <div className="space-y-2.5 text-xs text-gray-400">
                 <p className="flex items-start gap-2.5">
                   <MapPin size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>Amir Temur shoh ko‘chasi 15, Yunusobod tumani, Toshkent</span>
+                  <span>Amir Temur shoh ko‘chasi 15, Yunusobod tumani, Qarshi</span>
                 </p>
                 <p className="flex items-center gap-2.5">
                   <Phone size={16} className="text-blue-500 flex-shrink-0" />
@@ -720,7 +759,7 @@ export default function LandingPage() {
           </div>
 
           <div className="pt-8 border-t border-gray-800 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© 2026 Origin Hotel Tashkent. Barcha huquqlar himoyalangan.</p>
+            <p>© 2026 Origin Hotel Qarshi. Barcha huquqlar himoyalangan.</p>
             <div className="flex gap-6 text-gray-400">
               <a href="#" className="hover:text-white transition">Maxfiylik siyosati</a>
               <a href="#" className="hover:text-white transition">Foydalanish shartlari</a>

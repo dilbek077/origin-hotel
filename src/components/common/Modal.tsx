@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
+import { useTheme } from "@/theme";
 
 interface ModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export default function Modal({
   children,
   maxWidth = "max-w-lg",
 }: ModalProps) {
+  const { isDark } = useTheme();
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -33,17 +36,29 @@ export default function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className={`bg-white rounded-2xl shadow-2xl w-full ${maxWidth} overflow-hidden flex flex-col max-h-[90vh]`}
+        className={`rounded-2xl shadow-2xl w-full ${maxWidth} overflow-hidden flex flex-col max-h-[90vh] ${
+          isDark
+            ? "bg-slate-900 border border-slate-700 text-slate-100"
+            : "bg-white border border-gray-100 text-gray-900"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+        <div
+          className={`flex items-center justify-between px-6 py-4 border-b ${
+            isDark ? "border-slate-800" : "border-gray-100"
+          }`}
+        >
+          <h3 className={`text-lg font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{title}</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+              isDark
+                ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+            }`}
           >
             <X size={18} />
           </button>

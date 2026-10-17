@@ -10,11 +10,15 @@ import {
   Save,
   CheckCircle2,
 } from 'lucide-react';
+import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 
 export default function Settings() {
+  const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [hotelForm, setHotelForm] = useState({
-    name: 'Origin Hotel Tashkent',
-    address: "Amir Temur ko'chasi 15, Toshkent",
+    name: 'Origin Hotel Qarshi',
+    address: "Amir Temur ko'chasi 15, Qarshi",
     phone: '+998 71 200 00 00',
     email: 'info@originhotel.uz',
   });
@@ -40,10 +44,10 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className={isDark ? 'p-6 space-y-6 bg-slate-950 text-slate-100 min-h-screen' : 'p-6 space-y-6 bg-white text-gray-900 min-h-screen'}>
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Sozlamalar</h1>
+        <h1 className={isDark ? 'text-2xl font-bold text-white' : 'text-2xl font-bold text-gray-900'}>{t('nav.settings')}</h1>
         <p className="text-sm text-gray-500 mt-1">Mehmonxona va foydalanuvchi ma'lumotlarini boshqarish</p>
       </div>
 

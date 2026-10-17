@@ -26,7 +26,7 @@ const initialGuests: Guest[] = [
     phone: "+998 90 123 45 67",
     passport: "AA 1234567",
     notes: "Doimiy mehmon, sokin xonalarni xush ko‘radi",
-    address: "Toshkent, Yunusobod tumani",
+    address: "Qarshi, Yunusobod tumani",
     lastVisit: "2026-10-12",
   },
   {

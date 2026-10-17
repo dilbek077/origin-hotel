@@ -4,8 +4,12 @@ import type { Guest } from "@/types/guest";
 import { StorageService } from "@/services/storage";
 import GuestModal from "@/components/guests/GuestModal";
 import Modal from "@/components/common/Modal";
+import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 
 export default function Guests() {
+  const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [guests, setGuests] = useState<Guest[]>([]);
   const [search, setSearch] = useState("");
 
@@ -58,7 +62,7 @@ export default function Guests() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className={isDark ? "min-h-screen bg-slate-950 p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
@@ -66,7 +70,7 @@ export default function Guests() {
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mehmonlar</h1>
+            <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.guests')}</h1>
             <p className="text-sm text-gray-500">Jami {guests.length} ta mehmon ro‘yxatda</p>
           </div>
         </div>

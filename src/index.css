@@ -1,1 +1,128 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --brand-900: #0a2342;
+  --brand-800: #123d68;
+  --brand-700: #1d5da8;
+  --brand-600: #2d7fe8;
+  --brand-500: #5bb6ff;
+  --brand-100: #eaf6ff;
+  --bg-soft: #f4f9ff;
+  --bg-panel: rgba(255, 255, 255, 0.72);
+  --text-strong: #11263d;
+  --text-muted: #5c7187;
+  --line: rgba(17, 38, 61, 0.09);
+  font-family: Inter, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text-strong);
+  background: var(--bg-soft);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: linear-gradient(180deg, #f5f9ff 0%, #eef5ff 28%, #eaf3ff 100%);
+  color-scheme: light;
+}
+
+html.dark {
+  background: linear-gradient(180deg, #020817 0%, #0f172a 30%, #111827 100%);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.96), rgba(219,234,255,0.82) 22%, rgba(234,244,255,0.9) 50%, rgba(244,248,255,1) 100%);
+  color: var(--text-strong);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+html.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(14,116,144,0.18), transparent 18%),
+    linear-gradient(180deg, #020817 0%, #0f172a 36%, #111827 100%);
+  color: #f1f5f9;
+}
+
+#root {
+  min-height: 100vh;
+  background: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.card {
+  cursor: pointer;
+}
+
+/* Global dark mode fallbacks for complete site consistency */
+html.dark .bg-white,
+html.dark .bg-white\/95,
+html.dark .bg-white\/90,
+html.dark .bg-white\/80 {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-gray-100,
+html.dark .bg-slate-50 {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-slate-900,
+html.dark .text-gray-800,
+html.dark .text-slate-800 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-slate-700,
+html.dark .text-gray-600,
+html.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-slate-500,
+html.dark .text-gray-400,
+html.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-slate-100,
+html.dark .border-slate-200 {
+  border-color: rgba(51, 65, 85, 0.8) !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b;
+}
+
+html.dark .shadow-xs,
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-xl {
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45) !important;
+}

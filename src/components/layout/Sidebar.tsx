@@ -9,34 +9,40 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  MoonStar,
+  SunMedium,
 } from 'lucide-react';
+import { LANGUAGES, useTranslation, type LanguageCode } from '@/i18n';
+import { useTheme } from '@/theme';
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   path: string;
   icon: React.ReactNode;
 }
 
 const adminNavItems: NavItem[] = [
-  { label: 'Dashboard',   path: '/admin',              icon: <LayoutDashboard size={18} /> },
-  { label: 'Xonalar',     path: '/admin/xonalar',      icon: <BedDouble size={18} /> },
-  { label: 'Mehmonlar',   path: '/admin/mehmonlar',    icon: <Users size={18} /> },
-  { label: 'Bronlar',     path: '/admin/bronlar',      icon: <CalendarCheck size={18} /> },
-  { label: 'Moliya',      path: '/admin/moliya',       icon: <Wallet size={18} /> },
-  { label: 'Hisobotlar',  path: '/admin/hisobotlar',   icon: <BarChart3 size={18} /> },
-  { label: 'Sozlamalar',  path: '/admin/sozlamalar',   icon: <Settings size={18} /> },
+  { labelKey: 'nav.dashboard', path: '/admin', icon: <LayoutDashboard size={18} /> },
+  { labelKey: 'nav.rooms', path: '/admin/xonalar', icon: <BedDouble size={18} /> },
+  { labelKey: 'nav.guests', path: '/admin/mehmonlar', icon: <Users size={18} /> },
+  { labelKey: 'nav.bookings', path: '/admin/bronlar', icon: <CalendarCheck size={18} /> },
+  { labelKey: 'nav.finance', path: '/admin/moliya', icon: <Wallet size={18} /> },
+  { labelKey: 'nav.reports', path: '/admin/hisobotlar', icon: <BarChart3 size={18} /> },
+  { labelKey: 'nav.settings', path: '/admin/sozlamalar', icon: <Settings size={18} /> },
 ];
 
 const staffNavItems: NavItem[] = [
-  { label: 'Dashboard', path: '/staff',           icon: <LayoutDashboard size={18} /> },
-  { label: 'Xonalar',   path: '/staff/xonalar',   icon: <BedDouble size={18} /> },
-  { label: 'Mehmonlar', path: '/staff/mehmonlar', icon: <Users size={18} /> },
-  { label: 'Bronlar',   path: '/staff/bronlar',   icon: <CalendarCheck size={18} /> },
+  { labelKey: 'nav.dashboard', path: '/staff', icon: <LayoutDashboard size={18} /> },
+  { labelKey: 'nav.rooms', path: '/staff/xonalar', icon: <BedDouble size={18} /> },
+  { labelKey: 'nav.guests', path: '/staff/mehmonlar', icon: <Users size={18} /> },
+  { labelKey: 'nav.bookings', path: '/staff/bronlar', icon: <CalendarCheck size={18} /> },
 ];
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const role = localStorage.getItem('role') ?? 'STAFF';
+  const { t, locale, setLocale } = useTranslation();
+  const { isDark, toggleTheme } = useTheme();
   const navItems = role === 'ADMIN' ? adminNavItems : staffNavItems;
 
   const handleLogout = () => {
@@ -45,16 +51,14 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex flex-col w-64 min-h-screen bg-white border-r border-gray-200 shadow-sm">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-500 text-white">
+    <aside className="flex flex-col w-64 min-h-screen bg-[linear-gradient(180deg,#0a192f_0%,#0f2b48_50%,#0c2138_100%)] border-r border-sky-400/10 shadow-[0_12px_30px_rgba(15,35,64,0.25)] select-none">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-sky-400/20 text-sky-200 ring-1 ring-white/20">
           <Hotel size={20} />
         </div>
-        <span className="text-lg font-bold text-gray-800 tracking-tight">Origin Hotel</span>
+        <span className="text-lg font-bold text-white tracking-tight">Origin Hotel</span>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
@@ -65,25 +69,49 @@ export default function Sidebar() {
               [
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150',
                 isActive
-                  ? 'bg-blue-500 text-white shadow-sm'
-                  : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600',
+                  ? 'bg-sky-400 text-slate-950 font-semibold shadow-sm'
+                  : 'text-sky-100/80 hover:bg-white/10 hover:text-white',
               ].join(' ')
             }
           >
             {item.icon}
-            {item.label}
+            {t(item.labelKey)}
           </NavLink>
         ))}
       </nav>
 
-      {/* Logout */}
-      <div className="px-3 py-4 border-t border-gray-100">
+      <div className="px-3 py-4 border-t border-white/10 space-y-3">
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="flex w-full items-center justify-between rounded-lg border border-white/15 bg-sky-950/40 px-3 py-2 text-sm text-white hover:bg-sky-950/60 transition cursor-pointer"
+        >
+          <span>{isDark ? t('common.lightMode') : t('common.darkMode')}</span>
+          {isDark ? <SunMedium size={16} /> : <MoonStar size={16} />}
+        </button>
+
+        <label className="block text-xs uppercase tracking-wider text-sky-200/80" htmlFor="sidebar-language">
+          {t('common.language')}
+        </label>
+        <select
+          id="sidebar-language"
+          value={locale}
+          onChange={(event) => setLocale(event.target.value as LanguageCode)}
+          className="w-full rounded-lg border border-white/15 bg-sky-950/40 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer"
+        >
+          {LANGUAGES.map((language) => (
+            <option key={language.code} value={language.code} className="text-slate-900 bg-white">
+              {language.label}
+            </option>
+          ))}
+        </select>
+
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors duration-150"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-200 hover:bg-red-500/15 transition-colors duration-150 cursor-pointer"
         >
           <LogOut size={18} />
-          Chiqish
+          {t('nav.logout')}
         </button>
       </div>
     </aside>

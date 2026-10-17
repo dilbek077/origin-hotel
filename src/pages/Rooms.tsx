@@ -4,6 +4,8 @@ import type { Room, RoomStatus } from "@/types/room";
 import { StorageService } from "@/services/storage";
 import RoomModal from "@/components/rooms/RoomModal";
 import Modal from "@/components/common/Modal";
+import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 
 const STATUS_OPTIONS = ["Barchasi", "Bo'sh", "Band", "Tozalashda", "Ta'mirda"] as const;
 
@@ -26,6 +28,8 @@ function formatPrice(amount: number): string {
 }
 
 export default function Rooms() {
+  const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("Barchasi");
@@ -80,11 +84,11 @@ export default function Rooms() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className={isDark ? "min-h-screen bg-slate-950 p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Xonalar</h1>
+          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.rooms')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">
             Jami {rooms.length} ta xona (Bo‘sh: {rooms.filter((r) => r.status === "Bo'sh").length}, Band: {rooms.filter((r) => r.status === "Band").length})
           </p>

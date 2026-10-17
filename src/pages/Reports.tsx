@@ -10,10 +10,14 @@ import {
 import { StorageService } from "@/services/storage";
 import type { Transaction } from "@/types/finance";
 import type { Room } from "@/types/room";
+import { useTheme } from '@/theme';
+import { useTranslation } from '@/i18n';
 
 const formatCurrency = (n: number) => n.toLocaleString("uz-UZ") + " so‘m";
 
 export default function Reports() {
+  const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
 
@@ -94,11 +98,11 @@ export default function Reports() {
   };
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-gray-50">
+    <div className={isDark ? "p-6 space-y-6 min-h-screen bg-slate-950 text-slate-100" : "p-6 space-y-6 min-h-screen bg-gray-50 text-gray-900"}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Hisobotlar va Tahlil</h1>
+          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.reports')}</h1>
           <p className="text-sm text-gray-500 mt-1">
             Tanlangan davr bo‘yicha Kirim, Chiqim, Sof natija va Bandlik ko‘rsatkichlari
           </p>
