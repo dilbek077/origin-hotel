@@ -676,68 +676,6 @@ export default function RoomDetailPage() {
               )}
             </section>
 
-            {/* ─── 4 VIP Exclusive Privileges ────────────────────────────────────── */}
-            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-6">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
-                  Origin Eksklyuziv
-                </span>
-                <h2 className="text-xl sm:text-2xl font-black text-gray-900 mt-1">
-                  Har bir mehmon uchun kafolatlangan xizmatlar
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border border-blue-100 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
-                    <Coffee size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900">VIP Shved Stoli Nonushtasi</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Restoranimizda yangi pishiriqlar, sara pishloqlar va xushbo‘y qahva har tong bepul.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border border-blue-100 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
-                    <Car size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900">Aeroportdan Qulay Transfer</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Islom Karimov nomidagi Toshkent aeroportidan premium avtomobilda kutib olish xizmati.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border border-blue-100 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900">24/7 Shaxsiy Xona Xizmati</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Kunning istalgan vaqtida taomlar yetkazish, kiyim parvarishi va konsyerj ko‘magi.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border border-blue-100 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
-                    <Wifi size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900">Ultra Tezkor Wi-Fi 6</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      500 Mb/s gacha shaxsiy shifrlangan optik tolali cheksiz internet aloqasi.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             {/* ─── Full Room Story & Details ─────────────────────────────────────── */}
             <section className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-4">
               <h2 className="text-xl sm:text-2xl font-black text-gray-900">
@@ -934,64 +872,14 @@ export default function RoomDetailPage() {
               </div>
             </section>
 
-            {/* ─── Hotel Policies & FAQ Accordion ────────────────────────────────── */}
-            <section className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-4">
-              <h2 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2">
-                <Info size={20} className="text-blue-600" />
-                <span>Tez-tez so‘raladigan savollar va qoidalar</span>
-              </h2>
-
-              <div className="space-y-2.5 pt-2">
-                {[
-                  {
-                    q: 'Kirish (Check-in) va Chiqish (Check-out) vaqtlari qanday?',
-                    a: 'Mehmonxonaga kirish 14:00 dan boshlab amalga oshiriladi. Chiqish vaqti 12:00 gacha. Agar siz erta kelish yoki kechroq chiqishni rejalashtirsangiz, oldindan xabar bering, imkoniyatga qarab bepul tashkillashtiramiz.',
-                  },
-                  {
-                    q: 'Nonushta narxga kiritilganmi?',
-                    a: 'Ha, Origin Hotelda barcha toifadagi xonalar uchun har tong soat 07:00 dan 10:30 gacha VIP Shved stoli nonushtasi to‘liq bepul taqdim etiladi.',
-                  },
-                  {
-                    q: 'Buyurtmani bepul bekor qilish mumkinmi?',
-                    a: 'Ha, belgilangan kirish sanasidan 24 soat oldin buyurtmangizni hech qanday jarimasiz bepul bekor qilishingiz mumkin.',
-                  },
-                  {
-                    q: 'Bolalar bilan joylashish shartlari qanday?',
-                    a: '6 yoshgacha bo‘lgan bolalar mavjud to‘shaklarda bepul joylashishi mumkin. Talabingizga binoan chaqaloqlar uchun qo‘shimcha xavfsiz krovat bepul yetkazib beriladi.',
-                  },
-                ].map((faq, idx) => (
-                  <div
-                    key={idx}
-                    className="border border-gray-200/70 rounded-2xl overflow-hidden transition"
-                  >
-                    <button
-                      onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                      className="w-full p-4 text-left font-bold text-xs sm:text-sm text-gray-900 hover:text-blue-600 flex items-center justify-between gap-3 bg-gray-50/50 hover:bg-gray-50 cursor-pointer"
-                    >
-                      <span>{faq.q}</span>
-                      <ChevronDown
-                        size={18}
-                        className={`text-gray-400 transition-transform ${
-                          openFaq === idx ? 'rotate-180 text-blue-600' : ''
-                        }`}
-                      />
-                    </button>
-                    {openFaq === idx && (
-                      <div className="p-4 bg-white text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100">
-                        {faq.a}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Left Column Ends */}
           </div>
 
-          {/* ─── Right Column: Interactive Luxury Sticky Booking Card ──────────── */}
+          {/* ─── Right Column: Interactive Luxury Booking Card & Essential Info ──── */}
           <div className="space-y-6">
             <div
               id="booking-card"
-              className="sticky top-28 bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-2xl space-y-5 ring-1 ring-black/5"
+              className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-xl space-y-5 ring-1 ring-black/5"
             >
               {/* Header: Price */}
               <div className="flex items-baseline justify-between border-b border-gray-100 pb-5">
@@ -1297,6 +1185,191 @@ export default function RoomDetailPage() {
                   <p className="text-[10px] text-gray-400 font-medium">Savollar bormi? Resepshn bilan bog‘laning</p>
                   <p className="text-xs font-bold text-gray-900 font-mono">+998 (71) 200-00-00</p>
                 </div>
+              </div>
+            </div>
+
+            {/* ─── Origin VIP Eksklyuziv Imtiyozlar ────────────────────────────── */}
+            <section className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-sm space-y-4">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+                  Origin Eksklyuziv
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-gray-900 mt-0.5">
+                  Har bir mehmon uchun kafolatlangan xizmatlar
+                </h3>
+              </div>
+
+              <div className="space-y-3 pt-1">
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-indigo-50/40 border border-blue-100 flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+                    <Coffee size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-900">VIP Shved Stoli Nonushtasi</h4>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
+                      Restoranimizda yangi pishiriqlar, sara pishloqlar va xushbo‘y qahva har tong bepul.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-indigo-50/40 border border-blue-100 flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+                    <Car size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-900">Aeroportdan Qulay Transfer</h4>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
+                      Islom Karimov nomidagi Toshkent aeroportidan premium avtomobilda kutib olish xizmati.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-indigo-50/40 border border-blue-100 flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+                    <Clock size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-900">24/7 Shaxsiy Xona Xizmati</h4>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
+                      Kunning istalgan vaqtida taomlar yetkazish, kiyim parvarishi va konsyerj ko‘magi.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/70 to-indigo-50/40 border border-blue-100 flex items-start gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+                    <Wifi size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-900">Ultra Tezkor Wi-Fi 6</h4>
+                    <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
+                      500 Mb/s gacha shaxsiy shifrlangan optik tolali cheksiz internet aloqasi.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ─── Mehmonxona Qoidalari va Shartlari ──────────────────────────── */}
+            <section className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-sm space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <h3 className="text-lg sm:text-xl font-black text-gray-900">
+                  Mehmonxona qoidalari
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Kirish (Check-in)</p>
+                  <p className="font-black text-gray-900 mt-0.5 text-base">14:00 dan</p>
+                  <p className="text-[10px] text-gray-500 mt-1">24 soat resepshn faol</p>
+                </div>
+                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Chiqish (Check-out)</p>
+                  <p className="font-black text-gray-900 mt-0.5 text-base">12:00 gacha</p>
+                  <p className="text-[10px] text-gray-500 mt-1">Kechki chiqish imkoni</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-1 text-xs">
+                <div className="flex items-center gap-2.5 text-gray-700 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                  <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
+                  <span><strong>Bepul bekor qilish:</strong> 24 soat oldin jarimasiz</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-gray-700 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                  <Users size={16} className="text-blue-600 shrink-0" />
+                  <span><strong>Bolalar siyosati:</strong> 6 yoshgacha bepul joylashuv</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-gray-700 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                  <Car size={16} className="text-blue-600 shrink-0" />
+                  <span><strong>Avtoturargoh:</strong> Mehmonlar uchun bepul qo‘riqlanadigan joy</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-gray-700 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                  <Sparkles size={16} className="text-amber-500 shrink-0" />
+                  <span><strong>Tozalik xizmati:</strong> Har kuni to‘liq tozalash va almashtirish</span>
+                </div>
+              </div>
+            </section>
+
+            {/* ─── FAQ Accordion (Savollar va javoblar) ─────────────────────────── */}
+            <section className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-100 shadow-sm space-y-4">
+              <h3 className="text-lg sm:text-xl font-black text-gray-900 flex items-center gap-2">
+                <Info size={18} className="text-blue-600" />
+                <span>Tez-tez so‘raladigan savollar</span>
+              </h3>
+
+              <div className="space-y-2 pt-1">
+                {[
+                  {
+                    q: 'Kirish va chiqish vaqtlari qanday?',
+                    a: 'Mehmonxonaga kirish 14:00 dan boshlab amalga oshiriladi. Chiqish vaqti 12:00 gacha. Erta kelish yoki kechroq chiqish bo‘yicha oldindan murojaat qilsangiz, imkoniyatga qarab bepul tashkillashtiramiz.',
+                  },
+                  {
+                    q: 'Nonushta narxga kiritilganmi?',
+                    a: 'Ha, Origin Hotelda barcha toifadagi xonalar uchun har tong soat 07:00 dan 10:30 gacha VIP Shved stoli nonushtasi to‘liq bepul taqdim etiladi.',
+                  },
+                  {
+                    q: 'Buyurtmani bepul bekor qilish mumkinmi?',
+                    a: 'Ha, belgilangan kirish sanasidan 24 soat oldin buyurtmangizni hech qanday jarimasiz bepul bekor qilishingiz mumkin.',
+                  },
+                  {
+                    q: 'Bolalar bilan joylashish shartlari qanday?',
+                    a: '6 yoshgacha bo‘lgan bolalar mavjud to‘shaklarda bepul joylashishi mumkin. Chaqaloqlar uchun qo‘shimcha krovat bepul yetkazib beriladi.',
+                  },
+                ].map((faq, idx) => (
+                  <div
+                    key={idx}
+                    className="border border-gray-200/70 rounded-2xl overflow-hidden transition"
+                  >
+                    <button
+                      onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                      className="w-full p-3.5 text-left font-bold text-xs text-gray-900 hover:text-blue-600 flex items-center justify-between gap-3 bg-gray-50/60 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <span className="leading-snug">{faq.q}</span>
+                      <ChevronDown
+                        size={16}
+                        className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                          openFaq === idx ? 'rotate-180 text-blue-600' : ''
+                        }`}
+                      />
+                    </button>
+                    {openFaq === idx && (
+                      <div className="p-3.5 bg-white text-xs text-gray-600 leading-relaxed border-t border-gray-100 animate-in fade-in duration-150">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ─── 24/7 Luxury Concierge & Assistance ───────────────────────────── */}
+            <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white rounded-3xl p-6 sm:p-7 shadow-xl space-y-4 relative overflow-hidden">
+              <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-blue-600/80 flex items-center justify-center text-white shadow-md">
+                  <Phone size={18} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-white">Savollaringiz bormi?</h4>
+                  <p className="text-[11px] text-blue-200">24/7 Resepshn va Konsyerj xizmati</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Maxsus istaklar, individual transfer yoki boshqa savollar bo‘yicha istalgan vaqtda qo‘ng‘iroq qilishingiz mumkin.
+              </p>
+
+              <div className="pt-1">
+                <a
+                  href="tel:+998712000000"
+                  className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-2 shadow-md shadow-blue-500/25 cursor-pointer"
+                >
+                  <Phone size={14} />
+                  <span>+998 (71) 200-00-00 ga qo‘ng‘iroq qilish</span>
+                </a>
               </div>
             </div>
           </div>
