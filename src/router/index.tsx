@@ -6,6 +6,7 @@ import { lazyWithRetry } from "@/shared/lib"
 import MainLayout from "@/layouts/MainLayout"
 import LoginPage from "@/pages/authentication/LoginPage"
 import LandingPage from "@/pages/LandingPage"
+import RoomDetailPage from "@/pages/RoomDetailPage"
 
 // Sahifani Suspense bilan o'rash
 const withSuspense = (Component: React.LazyExoticComponent<any>, message?: string) => (
@@ -39,6 +40,18 @@ const router = createBrowserRouter([
     path: "/",
     errorElement: <RouteError />,
     element: <LandingPage />,
+  },
+
+  // Hashamatli Xona Detail Sahifasi
+  {
+    path: "/rooms/:id",
+    errorElement: <RouteError />,
+    element: <RoomDetailPage />,
+  },
+  {
+    path: "/xona/:id",
+    errorElement: <RouteError />,
+    element: <RoomDetailPage />,
   },
 
   // Auth (login) sahifasi

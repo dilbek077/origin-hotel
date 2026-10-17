@@ -27,6 +27,7 @@ export interface Room {
   fullDescription: string;
   features: string[];
   image: string;
+  gallery: string[];
   popular?: boolean;
   spaces: RoomSpace[];
   amenities: {
@@ -57,6 +58,13 @@ export const ROOMS: Room[] = [
     fullDescription: "Standart toifasidagi ushbu xona biznes safari yoki shahar bo'ylab sayohatga kelgan mehmonlar uchun ayni muddao. Ergonomik jihozlangan xona maydoni, qulay ortopedik to'shak va zamonaviy dush xonasi sizga to'laqonli dam olish imkoniyatini beradi. Har bir detal mehmonlarning tinchligi va farovonligi uchun puxta o'ylangan.",
     features: ['Tezkor Wi-Fi', 'Smart TV', 'Konditsioner', 'Bepul nonushta'],
     image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+    ],
     spaces: [
       {
         id: 'std-bedroom',
@@ -113,6 +121,13 @@ export const ROOMS: Room[] = [
     features: ['Panoramik oyna', 'Katta balkon', 'Mini-bar', 'Shved stoli nonushtasi'],
     image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
     popular: true,
+    gallery: [
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+    ],
     spaces: [
       {
         id: 'dlx-bedroom',
@@ -177,6 +192,13 @@ export const ROOMS: Room[] = [
     fullDescription: "Butun oila a'zolari birgalikda bekamu-ko'st hordiq chiqarishi uchun yaratilgan 3 xonali keng Suite. Asosiy yotoqxona, bolalar/mehmonlar uchun alohida ikkinchi yotoqxona, katta oilaviy yashash zali hamda mini-oshxona to'liq qulaylikni ta'minlaydi. Gidromassajli jakuzi esa kun so'ngida charchoqni chiqarish uchun ajoyib imkoniyat.",
     features: ['2 ta xona', 'Jakuzi vanna', 'Oshxona burchagi', 'VIP xizmat'],
     image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+    ],
     spaces: [
       {
         id: 'ste-living',
@@ -250,6 +272,14 @@ export const ROOMS: Room[] = [
     fullDescription: "Origin Hotelning eng hashamatli va nufuzli apartamenti. 4 ta alohida xonani o'z ichiga olgan 120 metr kvadratlik bu qasr mehmonlarga mutlaq erkinlik, yuqori darajadagi xavfsizlik, shaxsiy terras va shaxsiy batler xizmatini taqdim etadi. Yuqori martabali mehmonlar, davlat arboblari va lyuks hayot ixlosmandlari uchun ideal tanlov.",
     features: ['Shaxsiy terras', 'Shaxsiy batler', 'Premium spa zonasi', 'Transfer bepul'],
     image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
+    ],
     spaces: [
       {
         id: 'prs-grand-hall',
