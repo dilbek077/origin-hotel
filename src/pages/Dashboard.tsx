@@ -2,27 +2,47 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   BedDouble,
+  DollarSign,
+  TrendingUp,
+  Clock,
   PlusCircle,
   UserPlus,
-  LogIn,
-  LogOut,
-  TrendingUp,
-  TrendingDown,
-  Clock,
+  ArrowUpRight,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+  Wrench,
+  Sparkles,
 } from "lucide-react";
-import { useTheme } from '@/theme';
-import { useTranslation } from '@/i18n';
+
+// shadcn/ui components
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+
+// Types & Services
 import type { Room } from "@/types/room";
 import type { Booking } from "@/types/booking";
 import type { Guest } from "@/types/guest";
 import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
+
+// Dashboard subcomponents
+import { OverviewChart } from "@/components/dashboard/OverviewChart";
+import { RecentBookings } from "@/components/dashboard/RecentBookings";
 import BookingModal from "@/components/bookings/BookingModal";
 import GuestModal from "@/components/guests/GuestModal";
 
+const formatCurrency = (n: number) => n.toLocaleString("uz-UZ") + " so‘m";
+
 export default function Dashboard() {
-  const { isDark } = useTheme();
-  const { t, locale, translateStatus } = useTranslation();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -47,7 +67,7 @@ export default function Dashboard() {
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Room counts
+  // Room metrics
   const totalRooms = rooms.length;
   const occupiedRooms = rooms.filter((r) => r.status === "Band").length;
   const vacantRooms = rooms.filter((r) => r.status === "Bo'sh").length;
@@ -60,7 +80,7 @@ export default function Dashboard() {
   const todayCheckIns = bookings.filter((b) => b.checkIn === todayStr).length;
   const todayCheckOuts = bookings.filter((b) => b.checkOut === todayStr).length;
 
-  // Income and Expense sums
+  // Income & Expense totals
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -69,8 +89,7 @@ export default function Dashboard() {
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const formatCurrency = (n: number) =>
-    n.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'en-US') + ' ' + t('common.currency');
+  const netProfit = totalIncome - totalExpense;
 
   const handleSaveBooking = (data: Omit<Booking, "id"> | Booking) => {
     if ("id" in data) {
@@ -90,46 +109,34 @@ export default function Dashboard() {
   };
 
   const handleCheckIn = (id: number) => {
-    if (window.confirm(t('dashboard.confirmCheckIn'))) {
+    if (window.confirm("Mehmonni ro‘yxatga olish (Check-in) va xonani Band qilishni tasdiqlaysizmi?")) {
       StorageService.checkInBooking(id);
     }
   };
 
   const handleCheckOut = (id: number) => {
-    if (window.confirm(t('dashboard.confirmCheckOut'))) {
+    if (window.confirm("Mehmonni chiqarish (Check-out) va xonani tozalashga o‘tkazishni tasdiqlaysizmi?")) {
       StorageService.checkOutBooking(id);
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const text = translateStatus(status);
-    let colorClass = "bg-gray-100 text-gray-700 border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
-    if (status === "Yashamoqda") {
-      colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30";
-    } else if (status === "Tasdiqlangan") {
-      colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30";
-    } else if (status === "Kutilmoqda") {
-      colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30";
-    } else if (status === "Bekor") {
-      colorClass = "bg-red-100 text-red-600 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30";
-    }
-    return <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${colorClass}`}>{text}</span>;
-  };
-
-  const dateLocaleCode =
-    locale === 'uz' ? 'uz-UZ' : locale === 'ru' ? 'ru-RU' : locale === 'de' ? 'de-DE' : locale === 'fr' ? 'fr-FR' : 'en-US';
-
   return (
-    <div className={isDark ? "min-h-screen bg-slate-950 p-6 space-y-8 text-slate-100" : "min-h-screen bg-gray-50 p-6 space-y-8 text-gray-900"}>
-      {/* Page Header */}
+    <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8 min-h-screen bg-background text-foreground">
+      {/* Top Heading */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>
-            {t('nav.dashboard')}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            {t('dashboard.today')}{" "}
-            {new Date().toLocaleDateString(dateLocaleCode, {
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Boshqaruv paneli
+            </h1>
+            <Badge variant="outline" className="hidden sm:inline-flex items-center gap-1 border-primary/20 text-primary">
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              Demo tizim
+            </Badge>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Bugun:{" "}
+            {new Date().toLocaleDateString("uz-UZ", {
               weekday: "long",
               year: "numeric",
               month: "long",
@@ -138,190 +145,358 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Action Buttons using shadcn Button */}
         <div className="flex items-center gap-2.5">
-          <button
+          <Button
             onClick={() => setBookingModalOpen(true)}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+            className="gap-2 shadow-sm font-semibold cursor-pointer"
           >
-            <PlusCircle size={16} />
-            {t('dashboard.newBooking')}
-          </button>
-          <button
+            <PlusCircle className="h-4 w-4" />
+            Yangi bron
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => setGuestModalOpen(true)}
-            className={
-              isDark
-                ? "flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
-                : "flex items-center gap-1.5 bg-white hover:bg-gray-50 active:scale-95 text-gray-700 border border-gray-200 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
-            }
+            className="gap-2 shadow-sm font-semibold cursor-pointer"
           >
-            <UserPlus size={16} className="text-purple-500" />
-            {t('dashboard.newGuest')}
-          </button>
+            <UserPlus className="h-4 w-4 text-purple-600" />
+            Yangi mehmon
+          </Button>
         </div>
       </div>
 
-      {/* 4 Core Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* 1. Xonalar jami & bandlik */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-5 flex items-center gap-4" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4"}>
-          <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl p-3.5">
-            <BedDouble className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('dashboard.totalRooms')}</p>
-            <p className="text-2xl font-black text-gray-900 dark:text-white leading-tight mt-0.5">{totalRooms} {t('dashboard.roomsCount')}</p>
-            <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">
-              {t('status.vacant')}: {vacantRooms} | {t('status.occupied')}: {occupiedRooms}
+      {/* 4 Stat Cards using shadcn Card */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Card 1: Jami Kirim */}
+        <Card className="hover:shadow-md transition-shadow border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Jami Kirim (Daromad)
+            </CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">
+              {formatCurrency(totalIncome)}
+            </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <span className="text-emerald-600 font-semibold flex items-center">
+                <ArrowUpRight className="h-3.5 w-3.5" /> +14.2%
+              </span>
+              <span>o‘tgan davrga nisbatan</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Chiqim & Sof Foyda */}
+        <Card className="hover:shadow-md transition-shadow border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Sof Natija / Chiqim
+            </CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <DollarSign className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${netProfit >= 0 ? "text-blue-600" : "text-destructive"}`}>
+              {formatCurrency(netProfit)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Chiqimlar: <span className="font-semibold text-rose-500">{formatCurrency(totalExpense)}</span>
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* 2. Bugungi kirish va chiqishlar */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-5 flex items-center gap-4" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4"}>
-          <div className="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl p-3.5">
-            <Clock className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('dashboard.todayInOut')}</p>
-            <p className="text-2xl font-black text-gray-900 dark:text-white leading-tight mt-0.5">
-              {todayCheckIns} / {todayCheckOuts}
+        {/* Card 3: Xonalar bandligi */}
+        <Card className="hover:shadow-md transition-shadow border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Xonalar Bandligi
+            </CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+              <BedDouble className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {occupancyPercent}%
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {occupiedRooms} band / {vacantRooms} bo‘sh ({totalRooms} jami)
             </p>
-            <p className="text-xs text-purple-600 dark:text-purple-400 font-semibold mt-0.5">
-              {t('dashboard.checkIn')}: {todayCheckIns} | {t('dashboard.checkOut')}: {todayCheckOuts}
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Bugungi Kirish/Chiqish */}
+        <Card className="hover:shadow-md transition-shadow border-border">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Bugungi Kirish/Chiqish
+            </CardTitle>
+            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <Clock className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {todayCheckIns} <span className="text-muted-foreground text-sm font-normal">kirish</span> / {todayCheckOuts} <span className="text-muted-foreground text-sm font-normal">chiqish</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Kutilayotgan umumiy amallar
             </p>
-          </div>
-        </div>
-
-        {/* 3. Kirim yig'indisi */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-5 flex items-center gap-4" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4"}>
-          <div className="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl p-3.5">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('dashboard.totalIncome')}</p>
-            <p className="text-xl font-black text-green-600 dark:text-green-400 leading-tight mt-0.5">{formatCurrency(totalIncome)}</p>
-            <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{t('dashboard.allRevenue')}</p>
-          </div>
-        </div>
-
-        {/* 4. Chiqim yig'indisi */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-5 flex items-center gap-4" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4"}>
-          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-2xl p-3.5">
-            <TrendingDown className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('dashboard.totalExpense')}</p>
-            <p className="text-xl font-black text-red-600 dark:text-red-400 leading-tight mt-0.5">{formatCurrency(totalExpense)}</p>
-            <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">{t('dashboard.allExpenses')}</p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Room Status Breakdown Bar */}
-      <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-6" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-6"}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <div>
-            <h2 className={isDark ? "text-base font-bold text-white" : "text-base font-bold text-gray-900"}>{t('dashboard.monitoring')}</h2>
-            <p className="text-xs text-gray-400 dark:text-slate-400">{t('dashboard.currentOccupancy')} {occupancyPercent}%</p>
-          </div>
-          <Link
-            to="/admin/xonalar"
-            className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:underline mt-2 sm:mt-0"
-          >
-            {t('dashboard.viewAllRooms')}
-          </Link>
-        </div>
+      {/* Tabs navigation using shadcn Tabs */}
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="bg-muted p-1">
+          <TabsTrigger value="overview" className="cursor-pointer font-semibold">
+            Umumiy ko‘rinish
+          </TabsTrigger>
+          <TabsTrigger value="rooms" className="cursor-pointer font-semibold">
+            Xonalar holati
+          </TabsTrigger>
+          <TabsTrigger value="finance" className="cursor-pointer font-semibold">
+            Moliyaviy taqsimot
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Progress bar */}
-        <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden mb-5">
-          <div
-            className="h-3 rounded-full bg-blue-600 transition-all duration-500"
-            style={{ width: `${occupancyPercent}%` }}
-          />
-        </div>
+        {/* Tab 1: Overview */}
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            {/* Overview Chart (4 cols) */}
+            <Card className="col-span-4 border-border">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Moliyaviy o‘sish grafigi</CardTitle>
+                    <CardDescription>Oylik kirim va chiqim ko‘rsatkichlari (ming so‘mda)</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs">
+                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                      Kirim
+                    </span>
+                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                      Chiqim
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <OverviewChart transactions={transactions} />
+              </CardContent>
+            </Card>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          <div className={isDark ? "bg-emerald-950/40 rounded-xl py-3 px-2 border border-emerald-800/40" : "bg-emerald-50 rounded-xl py-3 px-2 border border-emerald-100"}>
-            <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">{vacantRooms}</p>
-            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-300 mt-0.5">{t('status.vacant')}</p>
+            {/* Recent Bookings (3 cols) */}
+            <Card className="col-span-3 border-border">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>So‘nggi bronlar</CardTitle>
+                  <CardDescription>
+                    Mehmonlar va xona holati
+                  </CardDescription>
+                </div>
+                <Link to="/admin/bronlar">
+                  <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                    Barchasi <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <RecentBookings
+                  bookings={bookings}
+                  onCheckIn={handleCheckIn}
+                  onCheckOut={handleCheckOut}
+                />
+              </CardContent>
+            </Card>
           </div>
-          <div className={isDark ? "bg-red-950/40 rounded-xl py-3 px-2 border border-red-800/40" : "bg-red-50 rounded-xl py-3 px-2 border border-red-100"}>
-            <p className="text-xl font-black text-red-600 dark:text-red-400">{occupiedRooms}</p>
-            <p className="text-xs font-semibold text-red-600 dark:text-red-300 mt-0.5">{t('status.occupied')}</p>
-          </div>
-          <div className={isDark ? "bg-amber-950/40 rounded-xl py-3 px-2 border border-amber-800/40" : "bg-amber-50 rounded-xl py-3 px-2 border border-amber-100"}>
-            <p className="text-xl font-black text-amber-600 dark:text-amber-400">{cleaningRooms}</p>
-            <p className="text-xs font-semibold text-amber-600 dark:text-amber-300 mt-0.5">{t('status.cleaning')}</p>
-          </div>
-          <div className={isDark ? "bg-purple-950/40 rounded-xl py-3 px-2 border border-purple-800/40" : "bg-purple-50 rounded-xl py-3 px-2 border border-purple-100"}>
-            <p className="text-xl font-black text-purple-600 dark:text-purple-400">{maintenanceRooms}</p>
-            <p className="text-xs font-semibold text-purple-600 dark:text-purple-300 mt-0.5">{t('status.maintenance')}</p>
-          </div>
-        </div>
-      </div>
+        </TabsContent>
 
-      {/* Recent Bookings Table */}
-      <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm overflow-hidden" : "bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"}>
-        <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-800" : "border-gray-100"}`}>
-          <div>
-            <h2 className={isDark ? "text-base font-bold text-white" : "text-base font-bold text-gray-900"}>{t('dashboard.recentBookings')}</h2>
-            <p className="text-xs text-gray-400 dark:text-slate-400">{t('dashboard.recentSub')}</p>
+        {/* Tab 2: Rooms Status */}
+        <TabsContent value="rooms" className="space-y-4">
+          <Card className="border-border">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Xonalar to‘liq monitoringi</CardTitle>
+                <CardDescription>Xonalarning real vaqtdagi holati va bandligi</CardDescription>
+              </div>
+              <Link to="/admin/xonalar">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  Xonalar boshqaruvi <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Status summary pills */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-emerald-900">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-emerald-700">Bo‘sh xonalar</span>
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  </div>
+                  <p className="text-2xl font-black text-emerald-800 mt-2">{vacantRooms} ta</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-red-50/70 border border-red-200 text-red-900">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-red-700">Band xonalar</span>
+                    <AlertCircle className="h-4 w-4 text-red-600" />
+                  </div>
+                  <p className="text-2xl font-black text-red-800 mt-2">{occupiedRooms} ta</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-amber-700">Tozalashda</span>
+                    <Sparkles className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <p className="text-2xl font-black text-amber-800 mt-2">{cleaningRooms} ta</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-200 text-purple-900">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-purple-700">Ta’mirda</span>
+                    <Wrench className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <p className="text-2xl font-black text-purple-800 mt-2">{maintenanceRooms} ta</p>
+                </div>
+              </div>
+
+              {/* Rooms grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {rooms.map((room) => {
+                  const getStatusColor = (s: string) => {
+                    switch (s) {
+                      case "Bo'sh":
+                        return "bg-emerald-50 border-emerald-200 text-emerald-800";
+                      case "Band":
+                        return "bg-red-50 border-red-200 text-red-800";
+                      case "Tozalashda":
+                        return "bg-amber-50 border-amber-200 text-amber-800";
+                      default:
+                        return "bg-purple-50 border-purple-200 text-purple-800";
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={room.id}
+                      className={`p-3 rounded-xl border flex flex-col justify-between ${getStatusColor(room.status)}`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <span className="font-black text-base">#{room.number}</span>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/80">
+                          {room.floor}-q
+                        </span>
+                      </div>
+                      <div className="mt-2 space-y-0.5 text-xs">
+                        <p className="font-semibold truncate">{room.type}</p>
+                        <p className="font-bold opacity-90">{room.status}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 3: Finance Analytics */}
+        <TabsContent value="finance" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Income 5 Categories */}
+            <Card className="border-border">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Kirimlar taqsimoti (5 ta kategoriya)</CardTitle>
+                  <Badge variant="outline" className="text-emerald-600 border-emerald-200">
+                    Jami: {formatCurrency(totalIncome)}
+                  </Badge>
+                </div>
+                <CardDescription>TZ bo‘yicha belgilangan daromad manbalari</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  "Xona haqi",
+                  "Ovqatlanish",
+                  "Qo‘shimcha xizmatlar",
+                  "Ijara",
+                  "Boshqa kirim",
+                ].map((cat) => {
+                  const catSum = transactions
+                    .filter((t) => t.type === "income" && t.category === cat)
+                    .reduce((s, t) => s + t.amount, 0);
+                  const pct = totalIncome > 0 ? Math.round((catSum / totalIncome) * 100) : 0;
+
+                  return (
+                    <div key={cat} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span>{cat}</span>
+                        <span>{formatCurrency(catSum)} ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div
+                          className="bg-emerald-500 h-2 rounded-full transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* Expense 5 Categories */}
+            <Card className="border-border">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Chiqimlar taqsimoti (5 ta kategoriya)</CardTitle>
+                  <Badge variant="outline" className="text-red-600 border-red-200">
+                    Jami: {formatCurrency(totalExpense)}
+                  </Badge>
+                </div>
+                <CardDescription>TZ bo‘yicha belgilangan xarajat yo‘nalishlari</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  "Ish haqi",
+                  "Kommunal to‘lovlar",
+                  "Material/xaridlar",
+                  "Ta’mirlash",
+                  "Boshqa chiqim",
+                ].map((cat) => {
+                  const catSum = transactions
+                    .filter((t) => t.type === "expense" && t.category === cat)
+                    .reduce((s, t) => s + t.amount, 0);
+                  const pct = totalExpense > 0 ? Math.round((catSum / totalExpense) * 100) : 0;
+
+                  return (
+                    <div key={cat} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span>{cat}</span>
+                        <span>{formatCurrency(catSum)} ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div
+                          className="bg-rose-500 h-2 rounded-full transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
           </div>
-          <Link
-            to="/admin/bronlar"
-            className="text-xs text-blue-600 dark:text-sky-400 font-bold hover:underline"
-          >
-            {t('dashboard.viewAll')}
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className={isDark ? "bg-slate-800/80 text-slate-300 text-xs uppercase font-semibold" : "bg-gray-50/70 text-gray-500 text-xs uppercase font-semibold"}>
-                <th className="px-6 py-3.5 text-left">{t('dashboard.guest')}</th>
-                <th className="px-6 py-3.5 text-left">{t('dashboard.room')}</th>
-                <th className="px-6 py-3.5 text-left">{t('dashboard.checkIn')}</th>
-                <th className="px-6 py-3.5 text-left">{t('dashboard.checkOut')}</th>
-                <th className="px-6 py-3.5 text-left">{t('common.status')}</th>
-                <th className="px-6 py-3.5 text-right">{t('common.actions')}</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-100"}`}>
-              {bookings.slice(0, 6).map((b) => (
-                <tr key={b.id} className={isDark ? "hover:bg-slate-800/50 transition-colors" : "hover:bg-blue-50/30 transition-colors"}>
-                  <td className={isDark ? "px-6 py-4 font-semibold text-white" : "px-6 py-4 font-semibold text-gray-900"}>{b.guest}</td>
-                  <td className={isDark ? "px-6 py-4 text-slate-300 font-medium" : "px-6 py-4 text-gray-700 font-medium"}>{b.room}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-slate-400 text-xs font-mono">{b.checkIn}</td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-slate-400 text-xs font-mono">{b.checkOut}</td>
-                  <td className="px-6 py-4">
-                    {getStatusBadge(b.status)}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    {(b.status === "Tasdiqlangan" || b.status === "Kutilmoqda") && (
-                      <button
-                        onClick={() => handleCheckIn(b.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-xs transition cursor-pointer"
-                      >
-                        <LogIn size={13} />
-                        Check-in
-                      </button>
-                    )}
-                    {b.status === "Yashamoqda" && (
-                      <button
-                        onClick={() => handleCheckOut(b.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs transition cursor-pointer"
-                      >
-                        <LogOut size={13} />
-                        Check-out
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Modals */}
       <BookingModal

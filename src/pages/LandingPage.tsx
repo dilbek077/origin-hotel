@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MoonStar, SunMedium } from 'lucide-react';
-import { LANGUAGES, useTranslation, type LanguageCode } from '@/i18n';
+import { useTranslation } from '@/i18n';
 import { StorageService } from '@/services/storage';
 import { useTheme } from '@/theme';
 import {
@@ -29,8 +28,8 @@ import { ROOMS } from '@/data/roomsData';
 import type { Room } from '@/data/roomsData';
 
 export default function LandingPage() {
-  const { t, locale, setLocale, translateRoomType } = useTranslation();
-  const { isDark, toggleTheme } = useTheme();
+  const { t, locale, translateRoomType } = useTranslation();
+  const { isDark } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [bookingModalRoom, setBookingModalRoom] = useState<Room | null>(null);
@@ -254,34 +253,6 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className={
-                isDark
-                  ? 'p-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-100 hover:bg-slate-700 cursor-pointer transition'
-                  : 'p-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer transition'
-              }
-              aria-label={isDark ? t('common.lightMode') : t('common.darkMode')}
-              title={isDark ? t('common.lightMode') : t('common.darkMode')}
-            >
-              {isDark ? <SunMedium size={18} /> : <MoonStar size={18} />}
-            </button>
-            <select
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as LanguageCode)}
-              className={
-                isDark
-                  ? 'rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-2 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer'
-                  : 'rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer'
-              }
-            >
-              {LANGUAGES.map((language) => (
-                <option key={language.code} value={language.code} className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>
-                  {language.label}
-                </option>
-              ))}
-            </select>
             <Link
               to="/login"
               className={
@@ -351,34 +322,7 @@ export default function LandingPage() {
             >
               {t('nav.contact')}
             </a>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className={
-                isDark
-                  ? 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-slate-100 flex items-center justify-between'
-                  : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 flex items-center justify-between'
-              }
-            >
-              <span>{isDark ? t('common.lightMode') : t('common.darkMode')}</span>
-              {isDark ? <SunMedium size={18} /> : <MoonStar size={18} />}
-            </button>
-            <select
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as LanguageCode)}
-              className={
-                isDark
-                  ? 'w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-blue-500'
-                  : 'w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-500'
-              }
-            >
-              {LANGUAGES.map((language) => (
-                <option key={language.code} value={language.code} className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>
-                  {language.label}
-                </option>
-              ))}
-            </select>
-            <div className={`pt-4 border-t flex flex-col gap-2 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
+            <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
               <Link
                 to="/login"
                 className={
