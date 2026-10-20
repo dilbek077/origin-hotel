@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut } from "lucide-react";
 import type { Booking } from "@/types/booking";
@@ -15,16 +14,16 @@ export function RecentBookings({
   onCheckIn,
   onCheckOut,
 }: RecentBookingsProps) {
-  const getBadgeVariant = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "Yashamoqda":
-        return "default";
+        return "text-primary";
       case "Tasdiqlangan":
-        return "secondary";
+        return "text-emerald-600 dark:text-emerald-400";
       case "Bekor":
-        return "destructive";
+        return "text-destructive";
       default:
-        return "outline";
+        return "text-muted-foreground";
     }
   };
 
@@ -63,9 +62,9 @@ export function RecentBookings({
                   <p className="text-sm font-semibold leading-none text-foreground">
                     {booking.guest}
                   </p>
-                  <Badge variant={getBadgeVariant(booking.status)} className="text-[10px] py-0 px-2 h-5">
+                  <span className={`text-xs font-medium ${getStatusColor(booking.status)}`}>
                     {booking.status}
-                  </Badge>
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {booking.room} • {booking.checkIn} → {booking.checkOut} ({booking.nights} kecha)

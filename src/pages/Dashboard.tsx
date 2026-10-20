@@ -7,12 +7,11 @@ import {
   Clock,
   PlusCircle,
   UserPlus,
-  ArrowUpRight,
   ArrowRight,
   CheckCircle2,
   AlertCircle,
   Wrench,
-  Sparkles,
+  Brush,
 } from "lucide-react";
 
 // shadcn/ui components
@@ -25,7 +24,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 
 // Types & Services
 import type { Room } from "@/types/room";
@@ -129,10 +127,6 @@ export default function Dashboard() {
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
               Boshqaruv paneli
             </h1>
-            <Badge variant="outline" className="hidden sm:inline-flex items-center gap-1 border-primary/20 text-primary">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              Demo tizim
-            </Badge>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Bugun:{" "}
@@ -159,7 +153,7 @@ export default function Dashboard() {
             onClick={() => setGuestModalOpen(true)}
             className="gap-2 shadow-sm font-semibold cursor-pointer"
           >
-            <UserPlus className="h-4 w-4 text-purple-600" />
+            <UserPlus className="h-4 w-4 text-primary" />
             Yangi mehmon
           </Button>
         </div>
@@ -173,20 +167,15 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Jami Kirim (Daromad)
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
               <TrendingUp className="h-4 w-4" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-primary">
               {formatCurrency(totalIncome)}
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-              <span className="text-emerald-600 font-semibold flex items-center">
-                <ArrowUpRight className="h-3.5 w-3.5" /> +14.2%
-              </span>
-              <span>o‘tgan davrga nisbatan</span>
-            </div>
+            <p className="text-xs text-muted-foreground mt-1">Jami tushum</p>
           </CardContent>
         </Card>
 
@@ -196,7 +185,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Sof Natija / Chiqim
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
               <DollarSign className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -205,7 +194,7 @@ export default function Dashboard() {
               {formatCurrency(netProfit)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Chiqimlar: <span className="font-semibold text-rose-500">{formatCurrency(totalExpense)}</span>
+              Chiqimlar: <span className="font-semibold text-foreground">{formatCurrency(totalExpense)}</span>
             </p>
           </CardContent>
         </Card>
@@ -236,7 +225,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Bugungi Kirish/Chiqish
             </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
               <Clock className="h-4 w-4" />
             </div>
           </CardHeader>
@@ -274,15 +263,15 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Moliyaviy o‘sish grafigi</CardTitle>
-                    <CardDescription>Oylik kirim va chiqim ko‘rsatkichlari (ming so‘mda)</CardDescription>
+                    <CardDescription>Oylik ko‘rsatkichlar (ming so‘mda); tranzaksiya yo‘q oylar — namuna</CardDescription>
                   </div>
                   <div className="flex items-center gap-3 text-xs">
                     <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                      <span className="w-2 h-2 rounded-full bg-primary" />
                       Kirim
                     </span>
                     <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
                       Chiqim
                     </span>
                   </div>
@@ -336,36 +325,36 @@ export default function Dashboard() {
             <CardContent className="space-y-6">
               {/* Status summary pills */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-emerald-900">
+                <div className="p-4 rounded-xl border border-border bg-primary/5 text-foreground">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-emerald-700">Bo‘sh xonalar</span>
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    <span className="text-xs font-semibold text-muted-foreground">Bo‘sh xonalar</span>
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-2xl font-black text-emerald-800 mt-2">{vacantRooms} ta</p>
+                  <p className="text-2xl font-bold mt-2">{vacantRooms} ta</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-red-50/70 border border-red-200 text-red-900">
+                <div className="p-4 rounded-xl border border-border bg-muted/40 text-foreground">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-red-700">Band xonalar</span>
-                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    <span className="text-xs font-semibold text-muted-foreground">Band xonalar</span>
+                    <AlertCircle className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-2xl font-black text-red-800 mt-2">{occupiedRooms} ta</p>
+                  <p className="text-2xl font-bold mt-2">{occupiedRooms} ta</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900">
+                <div className="p-4 rounded-xl border border-border bg-muted/40 text-foreground">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-amber-700">Tozalashda</span>
-                    <Sparkles className="h-4 w-4 text-amber-600" />
+                    <span className="text-xs font-semibold text-muted-foreground">Tozalashda</span>
+                    <Brush className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-2xl font-black text-amber-800 mt-2">{cleaningRooms} ta</p>
+                  <p className="text-2xl font-bold mt-2">{cleaningRooms} ta</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-200 text-purple-900">
+                <div className="p-4 rounded-xl border border-border bg-muted/40 text-foreground">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-purple-700">Ta’mirda</span>
-                    <Wrench className="h-4 w-4 text-purple-600" />
+                    <span className="text-xs font-semibold text-muted-foreground">Ta’mirda</span>
+                    <Wrench className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-2xl font-black text-purple-800 mt-2">{maintenanceRooms} ta</p>
+                  <p className="text-2xl font-bold mt-2">{maintenanceRooms} ta</p>
                 </div>
               </div>
 
@@ -375,13 +364,13 @@ export default function Dashboard() {
                   const getStatusColor = (s: string) => {
                     switch (s) {
                       case "Bo'sh":
-                        return "bg-emerald-50 border-emerald-200 text-emerald-800";
+                        return "border-primary/20 bg-primary/5 text-foreground";
                       case "Band":
-                        return "bg-red-50 border-red-200 text-red-800";
+                        return "border-border bg-muted/40 text-foreground";
                       case "Tozalashda":
-                        return "bg-amber-50 border-amber-200 text-amber-800";
+                        return "border-border bg-muted/40 text-foreground";
                       default:
-                        return "bg-purple-50 border-purple-200 text-purple-800";
+                        return "border-border bg-muted/40 text-foreground";
                     }
                   };
 
@@ -392,9 +381,7 @@ export default function Dashboard() {
                     >
                       <div className="flex justify-between items-start">
                         <span className="font-black text-base">#{room.number}</span>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/80">
-                          {room.floor}-q
-                        </span>
+                        <span className="text-xs text-muted-foreground">{room.floor}-qavat</span>
                       </div>
                       <div className="mt-2 space-y-0.5 text-xs">
                         <p className="font-semibold truncate">{room.type}</p>
@@ -416,9 +403,7 @@ export default function Dashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">Kirimlar taqsimoti (5 ta kategoriya)</CardTitle>
-                  <Badge variant="outline" className="text-emerald-600 border-emerald-200">
-                    Jami: {formatCurrency(totalIncome)}
-                  </Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Jami: {formatCurrency(totalIncome)}</span>
                 </div>
                 <CardDescription>TZ bo‘yicha belgilangan daromad manbalari</CardDescription>
               </CardHeader>
@@ -443,7 +428,7 @@ export default function Dashboard() {
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
                         <div
-                          className="bg-emerald-500 h-2 rounded-full transition-all"
+                          className="bg-primary h-2 rounded-full transition-all"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -458,9 +443,7 @@ export default function Dashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">Chiqimlar taqsimoti (5 ta kategoriya)</CardTitle>
-                  <Badge variant="outline" className="text-red-600 border-red-200">
-                    Jami: {formatCurrency(totalExpense)}
-                  </Badge>
+                  <span className="text-sm font-medium text-muted-foreground">Jami: {formatCurrency(totalExpense)}</span>
                 </div>
                 <CardDescription>TZ bo‘yicha belgilangan xarajat yo‘nalishlari</CardDescription>
               </CardHeader>
@@ -485,7 +468,7 @@ export default function Dashboard() {
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
                         <div
-                          className="bg-rose-500 h-2 rounded-full transition-all"
+                          className="bg-muted-foreground/50 h-2 rounded-full transition-all"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
