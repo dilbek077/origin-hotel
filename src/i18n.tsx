@@ -31,6 +31,12 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'nav.finance': { uz: 'Moliya', ru: 'Финансы', en: 'Finance', fr: 'Finance', de: 'Finanzen' },
   'nav.reports': { uz: 'Hisobotlar', ru: 'Отчеты', en: 'Reports', fr: 'Rapports', de: 'Berichte' },
   'nav.settings': { uz: 'Sozlamalar', ru: 'Настройки', en: 'Settings', fr: 'Paramètres', de: 'Einstellungen' },
+  'nav.system': { uz: 'Tizim', ru: 'Система', en: 'System', fr: 'Système', de: 'System' },
+  'nav.profile': { uz: 'Profil', ru: 'Профиль', en: 'Profile', fr: 'Profil', de: 'Profil' },
+  'nav.account': { uz: 'Hisob', ru: 'Аккаунт', en: 'Account', fr: 'Compte', de: 'Konto' },
+  'nav.appearance': { uz: 'Ko‘rinish', ru: 'Внешний вид', en: 'Appearance', fr: 'Apparence', de: 'Erscheinungsbild' },
+  'nav.notifications': { uz: 'Bildirishnomalar', ru: 'Уведомления', en: 'Notifications', fr: 'Notifications', de: 'Benachrichtigungen' },
+  'nav.display': { uz: 'Ekran', ru: 'Экран', en: 'Display', fr: 'Écran', de: 'Bildschirm' },
   'nav.logout': { uz: 'Chiqish', ru: 'Выйти', en: 'Logout', fr: 'Déconnexion', de: 'Abmelden' },
 
   // Common

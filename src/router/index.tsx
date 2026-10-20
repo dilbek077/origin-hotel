@@ -92,6 +92,10 @@ const router = createBrowserRouter([
                 path: "/admin/sozlamalar",
                 element: withSuspense(AdminSettingsPage, "Sozlamalar yuklanmoqda..."),
               },
+              {
+                path: "/admin/sozlamalar/:tab",
+                element: withSuspense(AdminSettingsPage, "Sozlamalar yuklanmoqda..."),
+              },
             ],
           },
         ],

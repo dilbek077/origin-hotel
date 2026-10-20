@@ -1,105 +1,202 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  BedDouble,
+  ArrowRight,
+  CalendarDays,
+  CalendarPlus,
   DollarSign,
-  TrendingUp,
-  Clock,
+  LogIn,
+  LogOut,
   PlusCircle,
   UserPlus,
-  ArrowRight,
-  CheckCircle2,
-  AlertCircle,
-  Wrench,
-  Brush,
 } from "lucide-react";
-
-// shadcn/ui components
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
-// Types & Services
 import type { Room } from "@/types/room";
 import type { Booking } from "@/types/booking";
 import type { Guest } from "@/types/guest";
 import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
-
-// Dashboard subcomponents
 import { OverviewChart } from "@/components/dashboard/OverviewChart";
 import { RecentBookings } from "@/components/dashboard/RecentBookings";
 import BookingModal from "@/components/bookings/BookingModal";
 import GuestModal from "@/components/guests/GuestModal";
 
-const formatCurrency = (n: number) => n.toLocaleString("uz-UZ") + " so‘m";
+const formatCurrency = (amount: number) => `${amount.toLocaleString("uz-UZ")} so‘m`;
+const weekdayLabels = ["Yak", "Dush", "Sesh", "Chor", "Pay", "Jum", "Shan"];
+
+const dateKey = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+function WeeklyBookingsChart({ bookings }: { bookings: Booking[] }) {
+  const weeklyData = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - index));
+    const key = dateKey(date);
+
+    const count = bookings.filter((booking) => booking.checkIn === key).length;
+
+    return {
+      day: weekdayLabels[date.getDay()],
+      count: count || (date.getDay() % 3) + 1,
+      isSample: count === 0,
+    };
+  });
+
+  return (
+    <ResponsiveContainer width="100%" height={220}>
+      <BarChart data={weeklyData} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
+        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
+        <XAxis
+          dataKey="day"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+        />
+        <YAxis
+          allowDecimals={false}
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+        />
+        <Tooltip
+          content={({ active, payload, label }) => {
+            if (!active || !payload?.length) return null;
+
+            const { value, isSample } = payload[0].payload;
+
+            return (
+              <div
+                className="rounded-xl border border-border bg-card px-3 py-2 shadow-lg"
+                style={{ color: "var(--card-foreground)", fontSize: 12 }}
+              >
+                <p className="font-medium">{label}</p>
+                <p>{value} ta {isSample ? "namuna bron" : "bron"}</p>
+              </div>
+            );
+          }}
+          contentStyle={{
+            backgroundColor: "var(--card)",
+            border: "1px solid var(--border)",
+            borderRadius: "0.75rem",
+            color: "var(--card-foreground)",
+            fontSize: 12,
+          }}
+        />
+        <Bar dataKey="count" fill="var(--primary)" radius={[5, 5, 0, 0]} maxBarSize={30}>
+          {weeklyData.map((entry) => (
+            <Cell key={entry.day} fill="var(--primary)" fillOpacity={entry.isSample ? 0.4 : 1} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
 
 export default function Dashboard() {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [guests, setGuests] = useState<Guest[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
+  const [rooms, setRooms] = useState<Room[]>(() => StorageService.getRooms());
+  const [bookings, setBookings] = useState<Booking[]>(() => StorageService.getBookings());
+  const [guests, setGuests] = useState<Guest[]>(() => StorageService.getGuests());
+  const [transactions, setTransactions] = useState<Transaction[]>(() => StorageService.getTransactions());
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
 
-  const loadData = () => {
-    setRooms(StorageService.getRooms());
-    setBookings(StorageService.getBookings());
-    setGuests(StorageService.getGuests());
-    setTransactions(StorageService.getTransactions());
-  };
-
   useEffect(() => {
-    loadData();
-    const handleStorageChange = () => loadData();
+    const handleStorageChange = () => {
+      setRooms(StorageService.getRooms());
+      setBookings(StorageService.getBookings());
+      setGuests(StorageService.getGuests());
+      setTransactions(StorageService.getTransactions());
+    };
     window.addEventListener("origin-hotel-storage-change", handleStorageChange);
     return () => window.removeEventListener("origin-hotel-storage-change", handleStorageChange);
   }, []);
 
-  const todayStr = new Date().toISOString().split("T")[0];
-
-  // Room metrics
+  const todayStr = dateKey(new Date());
+  const thisMonthPrefix = todayStr.slice(0, 7);
   const totalRooms = rooms.length;
-  const occupiedRooms = rooms.filter((r) => r.status === "Band").length;
-  const vacantRooms = rooms.filter((r) => r.status === "Bo'sh").length;
-  const cleaningRooms = rooms.filter((r) => r.status === "Tozalashda").length;
-  const maintenanceRooms = rooms.filter((r) => r.status === "Ta'mirda").length;
-
-  const occupancyPercent = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
-
-  // Today's check-ins and check-outs
-  const todayCheckIns = bookings.filter((b) => b.checkIn === todayStr).length;
-  const todayCheckOuts = bookings.filter((b) => b.checkOut === todayStr).length;
-
-  // Income & Expense totals
+  const occupiedRooms = rooms.filter((room) => room.status === "Band").length;
+  const vacantRooms = rooms.filter((room) => room.status === "Bo'sh").length;
+  const cleaningRooms = rooms.filter((room) => room.status === "Tozalashda").length;
+  const maintenanceRooms = rooms.filter((room) => room.status === "Ta'mirda").length;
+  const occupancyPercent = totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+  const todayCheckIns = bookings.filter((booking) => booking.checkIn === todayStr).length;
+  const todayCheckOuts = bookings.filter((booking) => booking.checkOut === todayStr).length;
+  const monthBookings = bookings.filter((booking) => booking.checkIn.startsWith(thisMonthPrefix)).length;
   const totalIncome = transactions
-    .filter((t) => t.type === "income")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((transaction) => transaction.type === "income")
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
+  const dashboardPath = localStorage.getItem("role") === "STAFF" ? "/staff" : "/admin";
+  const isAdmin = dashboardPath === "/admin";
 
-  const totalExpense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const metrics = [
+    {
+      label: "Yangi bronlar",
+      value: monthBookings,
+      note: "Joriy oyda",
+      icon: CalendarPlus,
+      iconClass: "bg-primary/10 text-primary",
+    },
+    {
+      label: "Bugungi kelish",
+      value: todayCheckIns,
+      note: "Check-in kutilmoqda",
+      icon: LogIn,
+      iconClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      label: "Bugungi ketish",
+      value: todayCheckOuts,
+      note: "Check-out kutilmoqda",
+      icon: LogOut,
+      iconClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
+    {
+      label: "Jami tushum",
+      value: formatCurrency(totalIncome),
+      note: "Barcha kirimlar",
+      icon: DollarSign,
+      iconClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+    },
+  ];
 
-  const netProfit = totalIncome - totalExpense;
+  const roomStatuses = [
+    { label: "Band", count: occupiedRooms, color: "var(--primary)", dot: "bg-primary" },
+    { label: "Bo‘sh", count: vacantRooms, color: "#34d399", dot: "bg-emerald-400" },
+    { label: "Tozalashda", count: cleaningRooms, color: "#fbbf24", dot: "bg-amber-400" },
+    { label: "Ta’mirda", count: maintenanceRooms, color: "#94a3b8", dot: "bg-slate-400" },
+  ];
 
   const handleSaveBooking = (data: Omit<Booking, "id"> | Booking) => {
-    if ("id" in data) {
-      return StorageService.updateBooking(data as Booking);
-    } else {
-      return StorageService.addBooking(data);
-    }
+    if ("id" in data) return StorageService.updateBooking(data);
+    return StorageService.addBooking(data);
   };
 
   const handleSaveGuest = (guestData: Omit<Guest, "id"> | Guest) => {
     if ("id" in guestData) {
-      StorageService.updateGuest(guestData as Guest);
+      StorageService.updateGuest(guestData);
     } else {
       StorageService.addGuest(guestData);
     }
@@ -119,17 +216,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8 min-h-screen bg-background text-foreground">
-      {/* Top Heading */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="min-h-screen space-y-5 bg-background p-4 text-foreground sm:p-6 lg:p-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Boshqaruv paneli
-            </h1>
-          </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Bugun:{" "}
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Boshqaruv paneli</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             {new Date().toLocaleDateString("uz-UZ", {
               weekday: "long",
               year: "numeric",
@@ -138,350 +229,206 @@ export default function Dashboard() {
             })}
           </p>
         </div>
-
-        {/* Action Buttons using shadcn Button */}
-        <div className="flex items-center gap-2.5">
-          <Button
-            onClick={() => setBookingModalOpen(true)}
-            className="gap-2 shadow-sm font-semibold cursor-pointer"
-          >
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={() => setBookingModalOpen(true)} className="gap-2">
             <PlusCircle className="h-4 w-4" />
             Yangi bron
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => setGuestModalOpen(true)}
-            className="gap-2 shadow-sm font-semibold cursor-pointer"
-          >
-            <UserPlus className="h-4 w-4 text-primary" />
+          <Button variant="outline" onClick={() => setGuestModalOpen(true)} className="gap-2">
+            <UserPlus className="h-4 w-4" />
             Yangi mehmon
           </Button>
         </div>
       </div>
 
-      {/* 4 Stat Cards using shadcn Card */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Card 1: Jami Kirim */}
-        <Card className="hover:shadow-md transition-shadow border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Jami Kirim (Daromad)
-            </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <TrendingUp className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">
-              {formatCurrency(totalIncome)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Jami tushum</p>
-          </CardContent>
-        </Card>
-
-        {/* Card 2: Chiqim & Sof Foyda */}
-        <Card className="hover:shadow-md transition-shadow border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Sof Natija / Chiqim
-            </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <DollarSign className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${netProfit >= 0 ? "text-blue-600" : "text-destructive"}`}>
-              {formatCurrency(netProfit)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Chiqimlar: <span className="font-semibold text-foreground">{formatCurrency(totalExpense)}</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 3: Xonalar bandligi */}
-        <Card className="hover:shadow-md transition-shadow border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Xonalar Bandligi
-            </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <BedDouble className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {occupancyPercent}%
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {occupiedRooms} band / {vacantRooms} bo‘sh ({totalRooms} jami)
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 4: Bugungi Kirish/Chiqish */}
-        <Card className="hover:shadow-md transition-shadow border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Bugungi Kirish/Chiqish
-            </CardTitle>
-            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <Clock className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {todayCheckIns} <span className="text-muted-foreground text-sm font-normal">kirish</span> / {todayCheckOuts} <span className="text-muted-foreground text-sm font-normal">chiqish</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Kutilayotgan umumiy amallar
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs navigation using shadcn Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="bg-muted p-1">
-          <TabsTrigger value="overview" className="cursor-pointer font-semibold">
-            Umumiy ko‘rinish
-          </TabsTrigger>
-          <TabsTrigger value="rooms" className="cursor-pointer font-semibold">
-            Xonalar holati
-          </TabsTrigger>
-          <TabsTrigger value="finance" className="cursor-pointer font-semibold">
-            Moliyaviy taqsimot
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Tab 1: Overview */}
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            {/* Overview Chart (4 cols) */}
-            <Card className="col-span-4 border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Moliyaviy o‘sish grafigi</CardTitle>
-                    <CardDescription>Oylik ko‘rsatkichlar (ming so‘mda); tranzaksiya yo‘q oylar — namuna</CardDescription>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs">
-                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                      <span className="w-2 h-2 rounded-full bg-primary" />
-                      Kirim
-                    </span>
-                    <span className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                      <span className="w-2 h-2 rounded-full bg-muted-foreground/50" />
-                      Chiqim
-                    </span>
-                  </div>
-                </div>
+      <section aria-label="Asosiy ko‘rsatkichlar" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        {metrics.map((metric) => {
+          const Icon = metric.icon;
+          return (
+            <Card key={metric.label} className="gap-4 border-border/70 py-5 shadow-sm transition-shadow hover:shadow-md">
+              <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-5 pb-0">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{metric.label}</CardTitle>
+                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${metric.iconClass}`}>
+                  <Icon className="h-4 w-4" />
+                </span>
               </CardHeader>
-              <CardContent className="pl-2">
-                <OverviewChart transactions={transactions} />
+              <CardContent className="px-5">
+                <p className="truncate text-2xl font-bold tracking-tight">{metric.value}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{metric.note}</p>
               </CardContent>
             </Card>
+          );
+        })}
+      </section>
 
-            {/* Recent Bookings (3 cols) */}
-            <Card className="col-span-3 border-border">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>So‘nggi bronlar</CardTitle>
-                  <CardDescription>
-                    Mehmonlar va xona holati
-                  </CardDescription>
+      <section className="grid gap-4 xl:grid-cols-12">
+        <Card className="min-h-[380px] gap-4 border-border/70 py-5 shadow-sm xl:col-span-4">
+          <CardHeader className="flex flex-row items-start justify-between px-5 pb-0">
+            <div className="space-y-1">
+              <CardTitle className="text-base">Xonalar mavjudligi</CardTitle>
+              <CardDescription>Jami {totalRooms} ta xona</CardDescription>
+            </div>
+            <Link to={`${dashboardPath}/xonalar`} aria-label="Xonalar sahifasiga o‘tish">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent className="flex flex-1 flex-col px-5">
+            <div className="flex min-h-[260px] flex-1 items-center gap-3 sm:gap-5">
+              <div className="relative h-[230px] w-[180px] shrink-0" role="img" aria-label={`Xonalar bandligi ${occupancyPercent}%`}>
+                <PieChart width={180} height={230}>
+                  <Pie
+                    data={roomStatuses}
+                    dataKey="count"
+                    nameKey="label"
+                    cx="50%"
+                    cy={140}
+                    innerRadius={57}
+                    outerRadius={84}
+                    paddingAngle={2}
+                    cornerRadius={5}
+                    stroke="var(--card)"
+                    strokeWidth={3}
+                    startAngle={90}
+                    endAngle={-270}
+                    animationDuration={2000}
+                    animationEasing="ease-out"
+                  >
+                    {roomStatuses.map((status) => (
+                      <Cell key={status.label} fill={status.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    allowEscapeViewBox={{ x: true, y: true }}
+                    wrapperStyle={{ zIndex: 20, pointerEvents: "none" }}
+                    content={({ active, payload, coordinate }) => {
+                      if (!active || !payload?.length || !coordinate) return null;
+
+                      const dx = coordinate.x - 90;
+                      const dy = coordinate.y - 140;
+                      const distance = Math.hypot(dx, dy) || 1;
+                      const clearance = Math.max(0, 96 - distance);
+                      const offsetX = Math.abs((dx / distance) * clearance);
+                      const offsetY = Math.abs((dy / distance) * clearance);
+                      const translateX = dx >= 0
+                        ? `${offsetX}px`
+                        : `calc(-100% - ${offsetX}px)`;
+                      const translateY = dy >= 0
+                        ? `${offsetY}px`
+                        : `calc(-100% - ${offsetY}px)`;
+                      const { value, name, color } = payload[0];
+                      const count = Number(value);
+                      const percentage = totalRooms
+                        ? Math.round((count / totalRooms) * 100)
+                        : 0;
+
+                      return (
+                        <div
+                          className="rounded-xl border border-border bg-card px-3 py-2 shadow-lg"
+                          style={{
+                            color: "var(--card-foreground)",
+                            fontSize: 12,
+                            transform: `translate(${translateX}, ${translateY})`,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          <p className="font-medium" style={{ color: String(color) }}>
+                            {String(name)}
+                          </p>
+                          <p>{count} ta xona · {percentage}%</p>
+                        </div>
+                      );
+                    }}
+                  />
+                </PieChart>
+                <div className="pointer-events-none absolute inset-x-0 top-[140px] flex -translate-y-1/2 flex-col items-center justify-center">
+                  <span className="text-2xl font-bold tracking-tight">{occupancyPercent}%</span>
+                  <span className="text-xs text-muted-foreground">band</span>
                 </div>
-                <Link to="/admin/bronlar">
-                  <Button variant="ghost" size="sm" className="gap-1 text-xs">
-                    Barchasi <ArrowRight className="h-3.5 w-3.5" />
-                  </Button>
-                </Link>
-              </CardHeader>
-              <CardContent>
-                <RecentBookings
-                  bookings={bookings}
-                  onCheckIn={handleCheckIn}
-                  onCheckOut={handleCheckOut}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Tab 2: Rooms Status */}
-        <TabsContent value="rooms" className="space-y-4">
-          <Card className="border-border">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Xonalar to‘liq monitoringi</CardTitle>
-                <CardDescription>Xonalarning real vaqtdagi holati va bandligi</CardDescription>
               </div>
-              <Link to="/admin/xonalar">
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  Xonalar boshqaruvi <ArrowRight className="h-4 w-4" />
+              <div className="grid min-w-0 flex-1 grid-cols-1 gap-3">
+                {roomStatuses.map((status) => (
+                  <div key={status.label} className="flex min-w-0 items-center justify-between gap-2">
+                    <p className="flex min-w-0 items-center gap-2 truncate text-xs text-muted-foreground">
+                      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${status.dot}`} />
+                      <span className="truncate">{status.label}</span>
+                    </p>
+                    <div className="shrink-0 text-right">
+                      <span className="text-sm font-semibold">
+                        {totalRooms ? Math.round((status.count / totalRooms) * 100) : 0}%
+                      </span>
+                      <span className="ml-1 text-[10px] text-muted-foreground">({status.count})</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+              <span className="text-sm text-muted-foreground">Bandlik darajasi</span>
+              <span className="text-lg font-bold text-primary">{occupancyPercent}%</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="gap-4 border-border/70 py-5 shadow-sm xl:col-span-8">
+          <CardHeader className="flex flex-row items-start justify-between gap-3 px-5 pb-0">
+            <div className="space-y-1">
+              <CardTitle className="text-base">Daromad dinamikasi</CardTitle>
+              <CardDescription>
+                Oylik kirim va chiqim, ming so‘mda
+              </CardDescription>
+            </div>
+            {isAdmin && (
+              <Link to="/admin/moliya" aria-label="Moliya sahifasiga o‘tish">
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Status summary pills */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl border border-border bg-primary/5 text-foreground">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-muted-foreground">Bo‘sh xonalar</span>
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-2xl font-bold mt-2">{vacantRooms} ta</p>
-                </div>
+            )}
+          </CardHeader>
+          <CardContent className="px-3 sm:px-5">
+            <OverviewChart transactions={transactions} />
+          </CardContent>
+        </Card>
+      </section>
 
-                <div className="p-4 rounded-xl border border-border bg-muted/40 text-foreground">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-muted-foreground">Band xonalar</span>
-                    <AlertCircle className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-2xl font-bold mt-2">{occupiedRooms} ta</p>
-                </div>
+      <section className="grid items-start gap-4 xl:grid-cols-12">
+        <Card className="gap-4 border-border/70 py-5 shadow-sm xl:col-span-5">
+          <CardHeader className="flex flex-row items-start justify-between px-5 pb-0">
+            <div className="space-y-1">
+              <CardTitle className="text-base">Bronlar</CardTitle>
+              <CardDescription>Oxirgi 7 kun · namuna kunlari xira rangda</CardDescription>
+            </div>
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="px-3 sm:px-5">
+            <WeeklyBookingsChart bookings={bookings} />
+          </CardContent>
+        </Card>
 
-                <div className="p-4 rounded-xl border border-border bg-muted/40 text-foreground">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-muted-foreground">Tozalashda</span>
-                    <Brush className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-2xl font-bold mt-2">{cleaningRooms} ta</p>
-                </div>
+        <Card className="gap-4 border-border/70 py-5 shadow-sm xl:col-span-7">
+          <CardHeader className="flex flex-row items-start justify-between gap-3 px-5 pb-0">
+            <div className="space-y-1">
+              <CardTitle className="text-base">So‘nggi bronlar</CardTitle>
+              <CardDescription>Mehmonlar va bron holati</CardDescription>
+            </div>
+            <Link to={`${dashboardPath}/bronlar`}>
+              <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                Barchasi <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent className="px-4 sm:px-5">
+            <RecentBookings
+              bookings={bookings}
+              onCheckIn={handleCheckIn}
+              onCheckOut={handleCheckOut}
+            />
+          </CardContent>
+        </Card>
+      </section>
 
-                <div className="p-4 rounded-xl border border-border bg-muted/40 text-foreground">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-muted-foreground">Ta’mirda</span>
-                    <Wrench className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-2xl font-bold mt-2">{maintenanceRooms} ta</p>
-                </div>
-              </div>
-
-              {/* Rooms grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                {rooms.map((room) => {
-                  const getStatusColor = (s: string) => {
-                    switch (s) {
-                      case "Bo'sh":
-                        return "border-primary/20 bg-primary/5 text-foreground";
-                      case "Band":
-                        return "border-border bg-muted/40 text-foreground";
-                      case "Tozalashda":
-                        return "border-border bg-muted/40 text-foreground";
-                      default:
-                        return "border-border bg-muted/40 text-foreground";
-                    }
-                  };
-
-                  return (
-                    <div
-                      key={room.id}
-                      className={`p-3 rounded-xl border flex flex-col justify-between ${getStatusColor(room.status)}`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="font-black text-base">#{room.number}</span>
-                        <span className="text-xs text-muted-foreground">{room.floor}-qavat</span>
-                      </div>
-                      <div className="mt-2 space-y-0.5 text-xs">
-                        <p className="font-semibold truncate">{room.type}</p>
-                        <p className="font-bold opacity-90">{room.status}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 3: Finance Analytics */}
-        <TabsContent value="finance" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Income 5 Categories */}
-            <Card className="border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Kirimlar taqsimoti (5 ta kategoriya)</CardTitle>
-                  <span className="text-sm font-medium text-muted-foreground">Jami: {formatCurrency(totalIncome)}</span>
-                </div>
-                <CardDescription>TZ bo‘yicha belgilangan daromad manbalari</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[
-                  "Xona haqi",
-                  "Ovqatlanish",
-                  "Qo‘shimcha xizmatlar",
-                  "Ijara",
-                  "Boshqa kirim",
-                ].map((cat) => {
-                  const catSum = transactions
-                    .filter((t) => t.type === "income" && t.category === cat)
-                    .reduce((s, t) => s + t.amount, 0);
-                  const pct = totalIncome > 0 ? Math.round((catSum / totalIncome) * 100) : 0;
-
-                  return (
-                    <div key={cat} className="space-y-1">
-                      <div className="flex justify-between text-xs font-semibold">
-                        <span>{cat}</span>
-                        <span>{formatCurrency(catSum)} ({pct}%)</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-
-            {/* Expense 5 Categories */}
-            <Card className="border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Chiqimlar taqsimoti (5 ta kategoriya)</CardTitle>
-                  <span className="text-sm font-medium text-muted-foreground">Jami: {formatCurrency(totalExpense)}</span>
-                </div>
-                <CardDescription>TZ bo‘yicha belgilangan xarajat yo‘nalishlari</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {[
-                  "Ish haqi",
-                  "Kommunal to‘lovlar",
-                  "Material/xaridlar",
-                  "Ta’mirlash",
-                  "Boshqa chiqim",
-                ].map((cat) => {
-                  const catSum = transactions
-                    .filter((t) => t.type === "expense" && t.category === cat)
-                    .reduce((s, t) => s + t.amount, 0);
-                  const pct = totalExpense > 0 ? Math.round((catSum / totalExpense) * 100) : 0;
-
-                  return (
-                    <div key={cat} className="space-y-1">
-                      <div className="flex justify-between text-xs font-semibold">
-                        <span>{cat}</span>
-                        <span>{formatCurrency(catSum)} ({pct}%)</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-muted-foreground/50 h-2 rounded-full transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Modals */}
       <BookingModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
@@ -489,7 +436,6 @@ export default function Dashboard() {
         rooms={rooms}
         guests={guests}
       />
-
       <GuestModal
         isOpen={guestModalOpen}
         onClose={() => setGuestModalOpen(false)}

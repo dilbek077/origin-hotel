@@ -26,6 +26,47 @@ import {
 
 import { ROOMS } from '@/data/roomsData';
 import type { Room } from '@/data/roomsData';
+import type { Room as StorageRoom } from '@/types/room';
+
+// Har bir xona turi uchun rasm va ma’lumotlar
+const ROOM_TYPE_META: Record<string, {
+  image: string;
+  features: string[];
+  description: string;
+  size: string;
+}> = {
+  Standart: {
+    image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
+    features: ['Tezkor Wi-Fi', 'Smart TV', 'Konditsioner', 'Bepul nonushta'],
+    description: "Sayohat va qisqa muddatli tashriflar uchun barcha qulayliklarga ega shinam xona.",
+    size: '28 m²',
+  },
+  Deluxe: {
+    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+    features: ['Panoramik oyna', 'Katta balkon', 'Mini-bar', 'Shved stoli nonushtasi'],
+    description: "Keng maydon, shahar panoramik manzarasi va mini-bar bilan jihozlangan lyuks xona.",
+    size: '42 m²',
+  },
+  Suite: {
+    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+    features: ['2 ta xona', 'Jakuzi vanna', 'Oshxona burchagi', 'VIP xizmat'],
+    description: "Oilaviy dam olish uchun alohida mehmonxona va yotoqxona qismlariga ega keng suit.",
+    size: '68 m²',
+  },
+  President: {
+    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
+    features: ['Shaxsiy terras', 'Shaxsiy batler', 'Premium spa zonasi', 'Transfer bepul'],
+    description: "Eksklyuziv dizayn, yuqori darajadagi xavfsizlik va shaxsiy xizmat ko'rsatuvchi xodim.",
+    size: '120 m²',
+  },
+};
+
+const STATUS_CONFIG: Record<string, { bg: string; label: string }> = {
+  "Bo'sh":      { bg: 'bg-green-500',  label: "Bo'sh" },
+  'Band':        { bg: 'bg-red-500',    label: 'Band' },
+  'Tozalashda':  { bg: 'bg-yellow-500', label: 'Tozalashda' },
+  "Ta'mirda":   { bg: 'bg-orange-500', label: "Ta'mirda" },
+};
 
 export default function LandingPage() {
   const { t, locale, translateRoomType } = useTranslation();
@@ -35,6 +76,11 @@ export default function LandingPage() {
   const [bookingModalRoom, setBookingModalRoom] = useState<Room | null>(null);
   const [viewModalRoom, setViewModalRoom] = useState<Room | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  // StorageService dan real xonalar
+  const [allStorageRooms, setAllStorageRooms] = useState<StorageRoom[]>(() =>
+    StorageService.getRooms()
+  );
+
   const [bookedRoomIds, setBookedRoomIds] = useState<number[]>(() => {
     if (typeof window === 'undefined') return [];
 
@@ -55,14 +101,36 @@ export default function LandingPage() {
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
 
+  // Storage o‘zgarishlarini kuzatish
+  useEffect(() => {
+    const handler = () => setAllStorageRooms(StorageService.getRooms());
+    window.addEventListener('origin-hotel-storage-change', handler);
+    return () => window.removeEventListener('origin-hotel-storage-change', handler);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('origin-hotel-booked-rooms', JSON.stringify(bookedRoomIds));
   }, [bookedRoomIds]);
 
+  // StorageRoom -> enriched (rasm va tavsif qo‘shish)
+  const enrichedRooms = allStorageRooms.map((sr) => ({
+    ...sr,
+    ...(ROOM_TYPE_META[sr.type] ?? ROOM_TYPE_META['Standart']),
+  }));
+
+  // Kategoriya filtri
   const filteredRooms =
     activeCategory === 'all'
-      ? ROOMS
-      : ROOMS.filter((room) => room.category === activeCategory);
+      ? enrichedRooms
+      : enrichedRooms.filter((r) => r.type.toLowerCase() === activeCategory.toLowerCase());
+
+  // Batafsil ko‘rish uchun roomsData dan Room topi
+  const getRoomDetail = (type: string): Room => {
+    const catMap: Record<string, Room['category']> = {
+      Standart: 'standart', Deluxe: 'deluxe', Suite: 'suite', President: 'president',
+    };
+    return ROOMS.find(r => r.category === catMap[type]) ?? ROOMS[0];
+  };
 
   const handleQuickBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -519,10 +587,10 @@ export default function LandingPage() {
             >
               {[
                 { id: 'all', label: t('common.all') },
-                { id: 'standart', label: t('roomType.standart') },
-                { id: 'deluxe', label: t('roomType.deluxe') },
-                { id: 'suite', label: t('roomType.suite') },
-                { id: 'president', label: t('roomType.president') },
+                { id: 'Standart', label: t('roomType.standart') },
+                { id: 'Deluxe', label: t('roomType.deluxe') },
+                { id: 'Suite', label: t('roomType.suite') },
+                { id: 'President', label: t('roomType.president') },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -545,6 +613,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredRooms.map((room) => {
               const isBooked = bookedRoomIds.includes(room.id);
+              const statusCfg = STATUS_CONFIG[room.status] ?? { bg: 'bg-gray-500', label: room.status };
+              const isAvailable = room.status === "Bo'sh";
 
               return (
                 <div
@@ -559,16 +629,19 @@ export default function LandingPage() {
                   <div className="relative h-56 overflow-hidden">
                     <img
                       src={room.image}
-                      alt={room.name}
+                      alt={room.type}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    {isBooked && (
-                      <div className="absolute top-3 left-3 flex gap-2">
-                        <span className="px-2.5 py-1 bg-red-600 text-white rounded-lg text-xs font-bold shadow-xs">
-                          {t('landing.rooms.booked')}
-                        </span>
-                      </div>
-                    )}
+                    {/* Xona raqami badge */}
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span className="px-2.5 py-1 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-bold">
+                        #{room.number}
+                      </span>
+                      {/* Holat badge */}
+                      <span className={`px-2.5 py-1 ${statusCfg.bg} text-white rounded-lg text-xs font-bold`}>
+                        {statusCfg.label}
+                      </span>
+                    </div>
                     <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-medium">
                       {room.size} • {room.capacity}
                     </div>
@@ -578,7 +651,7 @@ export default function LandingPage() {
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
                       <h3 className={isDark ? 'font-bold text-lg text-white group-hover:text-sky-400 transition-colors' : 'font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors'}>
-                        {room.name}
+                        {room.type} Xona #{room.number}
                       </h3>
                       <p className={isDark ? 'text-slate-400 text-xs mt-1.5 line-clamp-2 leading-relaxed' : 'text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed'}>
                         {room.description}
@@ -607,18 +680,18 @@ export default function LandingPage() {
                         <div>
                           <p className="text-[11px] text-gray-400 dark:text-slate-500 font-medium">{t('common.perNight')}</p>
                           <p className={isDark ? 'text-base font-black text-white' : 'text-base font-black text-gray-900'}>
-                            {room.price.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'en-US')} <span className="text-xs font-normal text-gray-400">{t('common.currency')}</span>
+                            {room.pricePerNight.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'en-US')} <span className="text-xs font-normal text-gray-400">{t('common.currency')}</span>
                           </p>
                         </div>
                         <span className={isDark ? 'text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-sky-300 border border-slate-700' : 'text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-600 border border-gray-200/60'}>
-                          {translateRoomType(room.categoryLabel)}
+                          {translateRoomType(room.type)}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
-                          onClick={() => setViewModalRoom(room)}
+                          onClick={() => setViewModalRoom(getRoomDetail(room.type))}
                           className={
                             isDark
                               ? 'w-full py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-sky-300 border border-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center'
@@ -629,17 +702,20 @@ export default function LandingPage() {
                           <span className="truncate">{t('landing.rooms.view')}</span>
                         </button>
 
-                        {isBooked ? (
+                        {isBooked || !isAvailable ? (
                           <button
                             disabled
                             className="w-full py-2.5 px-2 bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 rounded-xl text-xs font-bold transition shadow-xs cursor-not-allowed flex items-center justify-center text-center"
                           >
-                            {t('landing.rooms.booked')}
+                            {isBooked ? t('landing.rooms.booked') : room.status}
                           </button>
                         ) : (
                           <button
                             type="button"
-                            onClick={() => setBookingModalRoom(room)}
+                            onClick={() => {
+                              const detail = getRoomDetail(room.type);
+                              setBookingModalRoom({ ...detail, id: room.id, price: room.pricePerNight });
+                            }}
                             className="w-full py-2.5 px-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 hover:shadow flex items-center justify-center text-center cursor-pointer"
                           >
                             {t('landing.rooms.book')}

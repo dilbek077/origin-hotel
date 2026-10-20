@@ -1,5 +1,5 @@
-import { useLocation } from 'react-router-dom';
-import { Bell, Sun, Moon, Globe } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Bell, ChevronRight, Home, Sun, Moon, Globe } from 'lucide-react';
 import { useTranslation, LANGUAGES, type LanguageCode } from '@/i18n';
 import { useTheme } from '@/theme';
 
@@ -11,6 +11,11 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/moliya': 'nav.finance',
   '/admin/hisobotlar': 'nav.reports',
   '/admin/sozlamalar': 'nav.settings',
+  '/admin/sozlamalar/profil': 'nav.profile',
+  '/admin/sozlamalar/hisob': 'nav.account',
+  '/admin/sozlamalar/korinish': 'nav.appearance',
+  '/admin/sozlamalar/bildirishnomalar': 'nav.notifications',
+  '/admin/sozlamalar/ekran': 'nav.display',
   '/staff': 'nav.dashboard',
   '/staff/xonalar': 'nav.rooms',
   '/staff/mehmonlar': 'nav.guests',
@@ -26,8 +31,18 @@ export default function Header() {
 
   const pageTitleKey =
     PAGE_TITLES[pathname] ??
-    PAGE_TITLES[Object.keys(PAGE_TITLES).find((key) => pathname.startsWith(key)) ?? ''] ??
+    PAGE_TITLES[
+      Object.keys(PAGE_TITLES)
+        .filter((key) => pathname.startsWith(`${key}/`))
+        .sort((a, b) => b.length - a.length)[0] ?? ''
+    ] ??
     'nav.home';
+  const dashboardPath = pathname.startsWith('/staff') ? '/staff' : '/admin';
+  const isDashboard = pathname === dashboardPath;
+  const breadcrumbLabels =
+    dashboardPath === '/admin' && pathname.startsWith('/admin/sozlamalar/')
+      ? ['nav.settings', pageTitleKey]
+      : [pageTitleKey];
 
   return (
     <header
@@ -37,9 +52,60 @@ export default function Header() {
           : 'flex items-center justify-between px-6 py-3.5 bg-white/80 backdrop-blur-sm border-b border-sky-100 shadow-[0_6px_20px_rgba(16,42,77,0.06)] transition-colors'
       }
     >
-      <h1 className={isDark ? 'text-xl font-semibold text-slate-100' : 'text-xl font-semibold text-slate-800'}>
-        {t(pageTitleKey)}
-      </h1>
+      <nav aria-label="Breadcrumb">
+        <ol className="flex min-w-0 items-center gap-2 text-sm">
+          {isDashboard ? (
+            <li
+              aria-current="page"
+              className={isDark ? 'flex items-center gap-2 font-semibold text-slate-100' : 'flex items-center gap-2 font-semibold text-slate-800'}
+            >
+              <Home size={16} className="text-primary" />
+              <span>{t(pageTitleKey)}</span>
+            </li>
+          ) : (
+            <>
+              <li>
+                <Link
+                  to={dashboardPath}
+                  aria-label={t('nav.dashboard')}
+                  className={isDark ? 'flex items-center gap-1.5 text-slate-400 transition-colors hover:text-slate-100' : 'flex items-center gap-1.5 text-slate-500 transition-colors hover:text-slate-900'}
+                >
+                  <Home size={15} />
+                  <span>{t('nav.dashboard')}</span>
+                </Link>
+              </li>
+              {breadcrumbLabels.map((labelKey, index) => {
+                const isLast = index === breadcrumbLabels.length - 1;
+                const href =
+                  labelKey === 'nav.settings'
+                    ? '/admin/sozlamalar'
+                    : pathname;
+
+                return (
+                  <li key={`${labelKey}-${index}`} className="flex min-w-0 items-center gap-2">
+                    <ChevronRight size={15} className="shrink-0 text-muted-foreground/60" />
+                    {isLast ? (
+                      <span
+                        aria-current="page"
+                        className={isDark ? 'truncate font-semibold text-slate-100' : 'truncate font-semibold text-slate-800'}
+                      >
+                        {t(labelKey)}
+                      </span>
+                    ) : (
+                      <Link
+                        to={href}
+                        className={isDark ? 'truncate text-slate-400 transition-colors hover:text-slate-100' : 'truncate text-slate-500 transition-colors hover:text-slate-900'}
+                      >
+                        {t(labelKey)}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+            </>
+          )}
+        </ol>
+      </nav>
 
       <div className="flex items-center gap-3">
         {/* Quick Theme Toggle */}
@@ -48,13 +114,27 @@ export default function Header() {
           onClick={toggleTheme}
           className={
             isDark
-              ? 'p-2 rounded-xl text-amber-400 bg-slate-800 hover:bg-slate-700 hover:text-amber-300 border border-slate-700 transition cursor-pointer'
-              : 'p-2 rounded-xl text-slate-600 bg-sky-50 hover:bg-sky-100 hover:text-slate-800 border border-sky-100 transition cursor-pointer'
+              ? 'p-2 rounded-xl text-white bg-black hover:bg-slate-900 border border-slate-700 transition-all duration-300 active:scale-90 cursor-pointer'
+              : 'p-2 rounded-xl text-slate-600 bg-sky-50 hover:bg-sky-100 hover:text-slate-800 border border-sky-100 transition-all duration-300 active:scale-90 cursor-pointer'
           }
           title={isDark ? t('common.lightMode') : t('common.darkMode')}
           aria-label={isDark ? t('common.lightMode') : t('common.darkMode')}
+          aria-pressed={isDark}
         >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          <span className="relative block h-[18px] w-[18px]">
+            <Moon
+              size={18}
+              className={`absolute inset-0 transition-all duration-500 motion-reduce:transition-none ${
+                isDark ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+              }`}
+            />
+            <Sun
+              size={18}
+              className={`absolute inset-0 transition-all duration-500 motion-reduce:transition-none ${
+                isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+              }`}
+            />
+          </span>
         </button>
 
         {/* Quick Language Selector */}

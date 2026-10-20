@@ -83,7 +83,7 @@ export function RecentBookings({
               {(booking.status === "Tasdiqlangan" || booking.status === "Kutilmoqda") && (
                 <Button
                   size="sm"
-                  className="h-8 gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
+                  className="h-8 shrink-0 whitespace-nowrap gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
                   onClick={() => onCheckIn(booking.id)}
                 >
                   <LogIn className="h-3.5 w-3.5" />
@@ -94,7 +94,7 @@ export function RecentBookings({
               {booking.status === "Yashamoqda" && (
                 <Button
                   size="sm"
-                  className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                  className="h-8 shrink-0 whitespace-nowrap gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
                   onClick={() => onCheckOut(booking.id)}
                 >
                   <LogOut className="h-3.5 w-3.5" />

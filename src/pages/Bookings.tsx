@@ -259,7 +259,7 @@ export default function Bookings() {
                         {(booking.status === "Tasdiqlangan" || booking.status === "Kutilmoqda") && (
                           <button
                             onClick={() => handleCheckIn(booking.id)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition cursor-pointer"
+                            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition cursor-pointer"
                           >
                             <LogIn size={13} />
                             Check-in
@@ -270,7 +270,7 @@ export default function Bookings() {
                         {booking.status === "Yashamoqda" && (
                           <button
                             onClick={() => handleCheckOut(booking.id)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition cursor-pointer"
+                            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition cursor-pointer"
                           >
                             <LogOut size={13} />
                             Check-out

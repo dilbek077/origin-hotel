@@ -1,6 +1,7 @@
 import {
-  Bar,
-  BarChart,
+  Area,
+  AreaChart,
+  CartesianGrid,
   ResponsiveContainer,
   XAxis,
   YAxis,
@@ -46,14 +47,26 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
   });
 
   return (
-    <ResponsiveContainer width="100%" height={320}>
-      <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+    <ResponsiveContainer width="100%" height={260}>
+      <AreaChart data={monthlyData} margin={{ top: 12, right: 12, left: -20, bottom: 0 }}>
+        <defs>
+          <linearGradient id="incomeFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.28} />
+            <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.02} />
+          </linearGradient>
+          <linearGradient id="expenseFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--muted-foreground)" stopOpacity={0.16} />
+            <stop offset="95%" stopColor="var(--muted-foreground)" stopOpacity={0.01} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis
           dataKey="name"
           stroke="var(--muted-foreground)"
           fontSize={12}
           tickLine={false}
           axisLine={false}
+          tickMargin={10}
         />
         <YAxis
           stroke="var(--muted-foreground)"
@@ -76,9 +89,25 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
             color: "var(--card-foreground)",
           }}
         />
-        <Bar dataKey="kirim" fill="var(--primary)" radius={[6, 6, 0, 0]} name="kirim" />
-        <Bar dataKey="chiqim" fill="var(--muted-foreground)" radius={[6, 6, 0, 0]} name="chiqim" />
-      </BarChart>
+        <Area
+          type="monotone"
+          dataKey="kirim"
+          stroke="var(--primary)"
+          strokeWidth={2.5}
+          fill="url(#incomeFill)"
+          activeDot={{ r: 5, strokeWidth: 0 }}
+          name="kirim"
+        />
+        <Area
+          type="monotone"
+          dataKey="chiqim"
+          stroke="var(--muted-foreground)"
+          strokeWidth={2}
+          fill="url(#expenseFill)"
+          activeDot={{ r: 4, strokeWidth: 0 }}
+          name="chiqim"
+        />
+      </AreaChart>
     </ResponsiveContainer>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Hotel, KeyRound, MoonStar, Quote, Sparkles, SunMedium } from 'lucide-react';
 import { LANGUAGES, useTranslation, type LanguageCode } from '@/i18n';
 import { MOCK_USERS, authenticateMockUser, type MockUser } from '@/services/mockAuth';
@@ -107,6 +108,7 @@ function BuildingIllustration() {
 }
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -134,12 +136,10 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-
-    setTimeout(() => {
+    try {
       const user = authenticateMockUser(username, password);
 
       if (!user) {
-        setLoading(false);
         setError(t('login.invalid'));
         return;
       }
@@ -148,12 +148,13 @@ export default function LoginPage() {
       localStorage.setItem('role', user.role);
       localStorage.setItem('username', user.name);
 
-      if (user.role === 'ADMIN') {
-        window.location.href = '/admin';
-      } else {
-        window.location.href = '/staff';
-      }
-    }, 600);
+      setLoading(false);
+      navigate(user.role === 'ADMIN' ? '/admin' : '/staff', { replace: true });
+    } catch {
+      setError('Tizimga kirishda xatolik yuz berdi. Qayta urinib ko‘ring.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const cardBg = isDark
@@ -270,14 +271,28 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className={`p-2 rounded-lg border transition-colors ${
+                  className={`p-2 rounded-lg border ${
                     isDark
-                      ? 'border-[#1e3a5f] bg-[#1a2d45] text-slate-300 hover:bg-[#1e3a5f]'
+                      ? 'border-slate-700 bg-black text-white hover:bg-slate-900'
                       : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100'
-                  }`}
+                  } transition-all duration-300 active:scale-90`}
                   aria-label="Toggle theme"
+                  aria-pressed={isDark}
                 >
-                  {isDark ? <SunMedium size={15} /> : <MoonStar size={15} />}
+                  <span className="relative block h-[15px] w-[15px]">
+                    <MoonStar
+                      size={15}
+                      className={`absolute inset-0 transition-all duration-500 motion-reduce:transition-none ${
+                        isDark ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+                      }`}
+                    />
+                    <SunMedium
+                      size={15}
+                      className={`absolute inset-0 transition-all duration-500 motion-reduce:transition-none ${
+                        isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+                      }`}
+                    />
+                  </span>
                 </button>
                 <select
                   value={locale}
