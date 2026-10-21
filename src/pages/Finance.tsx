@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  TrendingUp,
   TrendingDown,
   DollarSign,
-  Plus,
-  Trash2,
-  Calendar,
+  CirclePlus,
+  CircleMinus,
+  Trash,
+  CalendarDays,
+  TrendingUp,
 } from "lucide-react";
 import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
@@ -79,16 +80,16 @@ export default function Finance() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => handleOpenAdd("income")}
-            className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
           >
-            <Plus size={16} />
+            <CirclePlus size={16} />
             {t('finance.addIncome')}
           </button>
           <button
             onClick={() => handleOpenAdd("expense")}
             className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
           >
-            <Plus size={16} />
+            <CircleMinus size={16} />
             {t('finance.addExpense')}
           </button>
         </div>
@@ -98,12 +99,12 @@ export default function Finance() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Jami daromad */}
         <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center gap-4 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 shadow-sm"}>
-          <div className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-950/40 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0">
             <TrendingUp className="w-6 h-6" />
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('finance.incomeTotal')}</p>
-            <p className="text-2xl font-black text-green-600 dark:text-green-400 mt-0.5">{formatCurrency(totalIncome)}</p>
+            <p className="text-2xl font-black text-blue-600 dark:text-sky-400 mt-0.5">{formatCurrency(totalIncome)}</p>
             <span className="text-xs text-gray-400 dark:text-slate-500">
               {transactions.filter((tItem) => tItem.type === "income").length}
             </span>
@@ -163,7 +164,7 @@ export default function Finance() {
             onClick={() => setActiveTab("income")}
             className={`pb-3 px-4 text-xs font-bold transition-all relative cursor-pointer ${
               activeTab === "income"
-                ? "text-green-600 border-b-2 border-green-600"
+                ? "text-blue-600 dark:text-sky-400 border-b-2 border-blue-600 dark:border-sky-400"
                 : "text-gray-400 hover:text-gray-700 dark:hover:text-slate-200"
             }`}
           >
@@ -207,14 +208,14 @@ export default function Finance() {
                   <tr key={row.id} className={isDark ? "hover:bg-slate-800/50 transition-colors" : "hover:bg-blue-50/30 transition-colors"}>
                     <td className="px-6 py-4 text-gray-400 dark:text-slate-500 font-medium">{idx + 1}</td>
                     <td className="px-6 py-4 text-gray-500 dark:text-slate-400 font-mono text-xs flex items-center gap-1.5">
-                      <Calendar size={13} className="text-gray-400" />
+                      <CalendarDays size={13} className="text-gray-400" />
                       {row.date}
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                           row.type === "income"
-                            ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800/40"
+                            ? "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300 border-blue-200 dark:border-blue-800/40"
                             : "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800/40"
                         }`}
                       >
@@ -226,7 +227,7 @@ export default function Finance() {
                     </td>
                     <td className="px-6 py-4 text-gray-500 dark:text-slate-400 max-w-xs truncate">{row.description}</td>
                     <td className="px-6 py-4 text-right font-black whitespace-nowrap">
-                      <span className={row.type === "income" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                      <span className={row.type === "income" ? "text-blue-600 dark:text-sky-400" : "text-red-600 dark:text-red-400"}>
                         {row.type === "income" ? "+" : "-"} {formatCurrency(row.amount)}
                       </span>
                     </td>
@@ -236,7 +237,7 @@ export default function Finance() {
                         title={t('common.delete')}
                         className="w-7 h-7 inline-flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-gray-400 hover:text-red-600 transition cursor-pointer"
                       >
-                        <Trash2 size={15} />
+                        <Trash size={15} />
                       </button>
                     </td>
                   </tr>
