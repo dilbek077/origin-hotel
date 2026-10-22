@@ -122,9 +122,187 @@ html.dark {
   }
 }
 
+@keyframes date-picker-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes date-picker-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.35rem) scale(0.98);
+  }
+}
+
+@keyframes language-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes app-modal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes app-modal-backdrop-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes app-modal-content-in {
+  from { opacity: 0; transform: translateY(0.5rem) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes app-modal-content-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(0.35rem) scale(0.97); }
+}
+
+@keyframes app-sheet-in-left {
+  from { opacity: 0; transform: translateX(-1rem); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes app-sheet-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-1rem); }
+}
+
+@keyframes app-sheet-in-right {
+  from { opacity: 0; transform: translateX(1rem); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes app-sheet-out-right {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(1rem); }
+}
+
+@keyframes app-sheet-in-top {
+  from { opacity: 0; transform: translateY(-1rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes app-sheet-out-top {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-1rem); }
+}
+
+@keyframes app-sheet-in-bottom {
+  from { opacity: 0; transform: translateY(1rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes app-sheet-out-bottom {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(1rem); }
+}
+
+.app-modal-overlay[data-state="open"],
+[data-slot="dialog-overlay"][data-state="open"],
+[data-slot="sheet-overlay"][data-state="open"],
+.landing-modal-overlay[data-state="open"] {
+  animation: app-modal-backdrop-in 180ms ease-out both;
+}
+
+.app-modal-overlay[data-state="closed"],
+[data-slot="dialog-overlay"][data-state="closed"],
+[data-slot="sheet-overlay"][data-state="closed"],
+.landing-modal-overlay[data-state="closed"] {
+  animation: app-modal-backdrop-out 180ms ease-in both;
+}
+
+.app-modal-content[data-state="open"],
+[data-slot="dialog-content"][data-state="open"],
+.landing-modal-content[data-state="open"] {
+  animation: app-modal-content-in 180ms ease-out both;
+}
+
+.app-modal-content[data-state="closed"],
+[data-slot="dialog-content"][data-state="closed"],
+.landing-modal-content[data-state="closed"] {
+  animation: app-modal-content-out 180ms ease-in both;
+}
+
+.app-modal-overlay[data-state="closed"],
+.landing-modal-overlay[data-state="closed"] {
+  pointer-events: none;
+}
+
+[data-slot="sheet-content"][data-state="open"][data-side="left"] {
+  animation: app-sheet-in-left 180ms ease-out both;
+}
+
+[data-slot="sheet-content"][data-state="closed"][data-side="left"] {
+  animation: app-sheet-out-left 180ms ease-in both;
+}
+
+[data-slot="sheet-content"][data-state="open"][data-side="right"] {
+  animation: app-sheet-in-right 180ms ease-out both;
+}
+
+[data-slot="sheet-content"][data-state="closed"][data-side="right"] {
+  animation: app-sheet-out-right 180ms ease-in both;
+}
+
+[data-slot="sheet-content"][data-state="open"][data-side="top"] {
+  animation: app-sheet-in-top 180ms ease-out both;
+}
+
+[data-slot="sheet-content"][data-state="closed"][data-side="top"] {
+  animation: app-sheet-out-top 180ms ease-in both;
+}
+
+[data-slot="sheet-content"][data-state="open"][data-side="bottom"] {
+  animation: app-sheet-in-bottom 180ms ease-out both;
+}
+
+[data-slot="sheet-content"][data-state="closed"][data-side="bottom"] {
+  animation: app-sheet-out-bottom 180ms ease-in both;
+}
+
+.language-menu {
+  transform-origin: top right;
+  animation: language-menu-in 160ms ease-out both;
+}
+
+.language-menu[data-state="closing"] {
+  animation: date-picker-out 140ms ease-in both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-new(root) {
     animation: none;
+  }
+
+  .date-picker-popover,
+  .language-menu,
+  .app-modal-overlay,
+  .app-modal-content,
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="sheet-content"],
+  .landing-modal-overlay,
+  .landing-modal-content {
+    animation: none !important;
   }
 }
 

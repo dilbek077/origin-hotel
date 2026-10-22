@@ -1,6 +1,7 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, ChevronRight, Home, Sun, Moon, Globe } from 'lucide-react';
-import { useTranslation, LANGUAGES, type LanguageCode } from '@/i18n';
+import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe } from 'lucide-react';
+import { useTranslation, LANGUAGES } from '@/i18n';
 import { useTheme } from '@/theme';
 
 const PAGE_TITLES: Record<string, string> = {
@@ -28,6 +29,40 @@ export default function Header() {
   const { isDark, toggleTheme } = useTheme();
   const username = localStorage.getItem('username') ?? t('common.user');
   const firstLetter = username.charAt(0).toUpperCase();
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [languageMenuClosing, setLanguageMenuClosing] = useState(false);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
+  const languageMenuTimer = useRef<number | null>(null);
+
+  const closeLanguageMenu = useCallback(() => {
+    if (languageMenuTimer.current !== null) return;
+    setLanguageMenuClosing(true);
+    languageMenuTimer.current = window.setTimeout(() => {
+      setLanguageMenuOpen(false);
+      setLanguageMenuClosing(false);
+      languageMenuTimer.current = null;
+    }, 160);
+  }, []);
+
+  useEffect(() => {
+    if (!languageMenuOpen) return;
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!languageMenuRef.current?.contains(event.target as Node)) closeLanguageMenu();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeLanguageMenu();
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [languageMenuOpen, closeLanguageMenu]);
+
+  useEffect(() => () => {
+    if (languageMenuTimer.current !== null) window.clearTimeout(languageMenuTimer.current);
+  }, []);
 
   const pageTitleKey =
     PAGE_TITLES[pathname] ??
@@ -138,23 +173,72 @@ export default function Header() {
         </button>
 
         {/* Quick Language Selector */}
-        <div className="relative flex items-center">
-          <Globe size={14} className={isDark ? 'absolute left-2.5 text-slate-400 pointer-events-none' : 'absolute left-2.5 text-slate-500 pointer-events-none'} />
-          <select
-            value={locale}
-            onChange={(e) => setLocale(e.target.value as LanguageCode)}
+        <div ref={languageMenuRef} className="relative flex items-center">
+          <button
+            type="button"
+            onClick={() => {
+              if (languageMenuOpen && !languageMenuClosing) {
+                closeLanguageMenu();
+                return;
+              }
+              if (languageMenuTimer.current !== null) {
+                window.clearTimeout(languageMenuTimer.current);
+                languageMenuTimer.current = null;
+              }
+              setLanguageMenuClosing(false);
+              setLanguageMenuOpen(true);
+            }}
+            aria-label={t('nav.language')}
+            aria-haspopup="listbox"
+            aria-expanded={languageMenuOpen && !languageMenuClosing}
             className={
               isDark
-                ? 'pl-7 pr-2.5 py-1.5 text-xs font-semibold rounded-xl border border-slate-700 bg-slate-800 text-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer'
-                : 'pl-7 pr-2.5 py-1.5 text-xs font-semibold rounded-xl border border-sky-100 bg-sky-50/70 text-slate-700 outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer'
+                ? 'flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-white outline-none transition hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500'
+                : 'flex items-center gap-2 rounded-xl border border-sky-100 bg-sky-50/70 px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none transition hover:bg-sky-100 focus-visible:ring-2 focus-visible:ring-blue-500'
             }
           >
-            {LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code} className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>
-                {lang.code.toUpperCase()}
-              </option>
-            ))}
-          </select>
+            <Globe size={14} className={isDark ? 'text-sky-400' : 'text-blue-600'} />
+            <span>{locale.toUpperCase()}</span>
+            <ChevronDown size={13} className={`transition-transform duration-200 ${languageMenuOpen && !languageMenuClosing ? 'rotate-180' : ''}`} />
+          </button>
+          {languageMenuOpen && (
+            <div
+              role="listbox"
+              aria-label={t('nav.language')}
+              data-state={languageMenuClosing ? 'closing' : 'open'}
+              className={`language-menu absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-2xl border p-1.5 shadow-xl ${
+                isDark ? 'border-slate-700 bg-slate-900 text-slate-100' : 'border-sky-100 bg-white text-slate-800'
+              }`}
+            >
+              {LANGUAGES.map((lang) => {
+                const isSelected = lang.code === locale;
+                return (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => {
+                      setLocale(lang.code);
+                      closeLanguageMenu();
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                      isSelected
+                        ? isDark
+                          ? 'bg-blue-500/15 font-semibold text-sky-300'
+                          : 'bg-blue-50 font-semibold text-blue-700'
+                        : isDark
+                          ? 'text-slate-300 hover:bg-slate-800'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <span>{lang.label}</span>
+                    {isSelected && <Check size={16} />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Notifications */}

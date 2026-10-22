@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/i18n';
 import { StorageService } from '@/services/storage';
@@ -75,7 +75,50 @@ export default function LandingPage() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [bookingModalRoom, setBookingModalRoom] = useState<Room | null>(null);
   const [viewModalRoom, setViewModalRoom] = useState<Room | null>(null);
+  const [isBookingModalClosing, setIsBookingModalClosing] = useState(false);
+  const [isViewModalClosing, setIsViewModalClosing] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const bookingModalCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const viewModalCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openBookingModal = (room: Room) => {
+    if (bookingModalCloseTimer.current) clearTimeout(bookingModalCloseTimer.current);
+    bookingModalCloseTimer.current = null;
+    setIsBookingModalClosing(false);
+    setBookingModalRoom(room);
+  };
+
+  const closeBookingModal = () => {
+    if (!bookingModalRoom || bookingModalCloseTimer.current) return;
+    setIsBookingModalClosing(true);
+    bookingModalCloseTimer.current = setTimeout(() => {
+      setBookingModalRoom(null);
+      setIsBookingModalClosing(false);
+      bookingModalCloseTimer.current = null;
+    }, 180);
+  };
+
+  const openViewModal = (room: Room) => {
+    if (viewModalCloseTimer.current) clearTimeout(viewModalCloseTimer.current);
+    viewModalCloseTimer.current = null;
+    setIsViewModalClosing(false);
+    setViewModalRoom(room);
+  };
+
+  const closeViewModal = () => {
+    if (!viewModalRoom || viewModalCloseTimer.current) return;
+    setIsViewModalClosing(true);
+    viewModalCloseTimer.current = setTimeout(() => {
+      setViewModalRoom(null);
+      setIsViewModalClosing(false);
+      viewModalCloseTimer.current = null;
+    }, 180);
+  };
+
+  useEffect(() => () => {
+    if (bookingModalCloseTimer.current) clearTimeout(bookingModalCloseTimer.current);
+    if (viewModalCloseTimer.current) clearTimeout(viewModalCloseTimer.current);
+  }, []);
   // StorageService dan real xonalar
   const [allStorageRooms, setAllStorageRooms] = useState<StorageRoom[]>(() =>
     StorageService.getRooms()
@@ -190,7 +233,7 @@ export default function LandingPage() {
 
     setTimeout(() => {
       setBookingSuccess(false);
-      setBookingModalRoom(null);
+      closeBookingModal();
       setGuestName('');
       setGuestPhone('');
     }, 2500);
@@ -691,7 +734,7 @@ export default function LandingPage() {
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
-                          onClick={() => setViewModalRoom(getRoomDetail(room.type))}
+                          onClick={() => openViewModal(getRoomDetail(room.type))}
                           className={
                             isDark
                               ? 'w-full py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-sky-300 border border-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center'
@@ -714,7 +757,7 @@ export default function LandingPage() {
                             type="button"
                             onClick={() => {
                               const detail = getRoomDetail(room.type);
-                              setBookingModalRoom({ ...detail, id: room.id, price: room.pricePerNight });
+                              openBookingModal({ ...detail, id: room.id, price: room.pricePerNight });
                             }}
                             className="w-full py-2.5 px-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 hover:shadow flex items-center justify-center text-center cursor-pointer"
                           >
@@ -923,10 +966,10 @@ export default function LandingPage() {
 
       {/* ─── Room Details Modal ────────────────────────────────────────────────── */}
       {viewModalRoom && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className={isDark ? 'bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative' : 'bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative'}>
+        <div data-state={isViewModalClosing ? 'closed' : 'open'} className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div data-state={isViewModalClosing ? 'closed' : 'open'} className={isDark ? 'landing-modal-content bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative' : 'landing-modal-content bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative'}>
             <button
-              onClick={() => setViewModalRoom(null)}
+              onClick={closeViewModal}
               className={isDark ? 'absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer' : 'absolute top-5 right-5 text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer'}
             >
               <X size={20} />
@@ -951,8 +994,8 @@ export default function LandingPage() {
             <button
               onClick={() => {
                 const target = viewModalRoom;
-                setViewModalRoom(null);
-                setBookingModalRoom(target);
+                closeViewModal();
+                openBookingModal(target);
               }}
               className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition cursor-pointer"
             >
@@ -964,16 +1007,17 @@ export default function LandingPage() {
 
       {/* ─── Room Booking Modal ─────────────────────────────────────────────────── */}
       {bookingModalRoom && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div data-state={isBookingModalClosing ? 'closed' : 'open'} className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div
+            data-state={isBookingModalClosing ? 'closed' : 'open'}
             className={
               isDark
-                ? 'bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-800 animate-in fade-in zoom-in-95 duration-200'
-                : 'bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200'
+                ? 'landing-modal-content bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-800'
+                : 'landing-modal-content bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative'
             }
           >
             <button
-              onClick={() => setBookingModalRoom(null)}
+              onClick={closeBookingModal}
               className={
                 isDark
                   ? 'absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer'

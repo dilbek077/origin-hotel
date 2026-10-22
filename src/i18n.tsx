@@ -30,6 +30,7 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'nav.bookings': { uz: 'Bronlar', ru: 'Бронирования', en: 'Bookings', fr: 'Réservations', de: 'Buchungen' },
   'nav.finance': { uz: 'Moliya', ru: 'Финансы', en: 'Finance', fr: 'Finance', de: 'Finanzen' },
   'nav.reports': { uz: 'Hisobotlar', ru: 'Отчеты', en: 'Reports', fr: 'Rapports', de: 'Berichte' },
+  'nav.language': { uz: 'Tilni tanlang', ru: 'Выберите язык', en: 'Choose language', fr: 'Choisir la langue', de: 'Sprache wählen' },
   'nav.settings': { uz: 'Sozlamalar', ru: 'Настройки', en: 'Settings', fr: 'Paramètres', de: 'Einstellungen' },
   'nav.system': { uz: 'Tizim', ru: 'Система', en: 'System', fr: 'Système', de: 'System' },
   'nav.profile': { uz: 'Profil', ru: 'Профиль', en: 'Profile', fr: 'Profil', de: 'Profil' },

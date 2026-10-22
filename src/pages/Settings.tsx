@@ -38,7 +38,6 @@ export default function Settings() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const { t, locale, setLocale } = useTranslation();
-
   // Active tab determination
   const validTabs: SettingsTab[] = ['profil', 'hisob', 'korinish', 'bildirishnomalar', 'ekran'];
   const currentTab: SettingsTab = validTabs.includes(tab as SettingsTab)
@@ -232,7 +231,6 @@ export default function Settings() {
     { id: 'bildirishnomalar' as const, label: t('nav.notifications'), icon: Bell, desc: 'Ogohlantirishlar va kanallar' },
     { id: 'ekran' as const, label: t('nav.display'), icon: Monitor, desc: 'Displey, to‘liq ekran va kiosk rejimi' },
   ];
-
   return (
     <div className={isDark ? 'p-6 space-y-6 bg-slate-950 text-slate-100 min-h-screen' : 'p-6 space-y-6 bg-gray-50 text-gray-900 min-h-screen'}>
       {/* Sahifa sarlavhasi va bildirishnoma tosti */}

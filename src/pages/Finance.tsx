@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  TrendingDown,
-  DollarSign,
-  CirclePlus,
-  CircleMinus,
-  Trash,
+  ArrowDownLeft,
+  ArrowUpRight,
+  WalletCards,
+  Plus,
+  Minus,
+  Trash2,
   CalendarDays,
-  TrendingUp,
 } from "lucide-react";
 import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
@@ -82,14 +82,14 @@ export default function Finance() {
             onClick={() => handleOpenAdd("income")}
             className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
           >
-            <CirclePlus size={16} />
+            <Plus size={16} />
             {t('finance.addIncome')}
           </button>
           <button
             onClick={() => handleOpenAdd("expense")}
             className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
           >
-            <CircleMinus size={16} />
+            <Minus size={16} />
             {t('finance.addExpense')}
           </button>
         </div>
@@ -100,7 +100,7 @@ export default function Finance() {
         {/* Jami daromad */}
         <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center gap-4 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 shadow-sm"}>
           <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-6 h-6" />
+            <ArrowDownLeft className="w-6 h-6" />
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('finance.incomeTotal')}</p>
@@ -114,7 +114,7 @@ export default function Finance() {
         {/* Jami xarajat */}
         <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center gap-4 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 shadow-sm"}>
           <div className="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center flex-shrink-0">
-            <TrendingDown className="w-6 h-6" />
+            <ArrowUpRight className="w-6 h-6" />
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('finance.expenseTotal')}</p>
@@ -130,9 +130,9 @@ export default function Finance() {
           <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
             netProfit >= 0
               ? "bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400"
-              : "bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"
+              : "bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400"
           }`}>
-            <DollarSign className="w-6 h-6" />
+            <WalletCards className="w-6 h-6" />
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-400 dark:text-slate-400 uppercase tracking-wider">{t('finance.netProfit')}</p>
@@ -237,7 +237,7 @@ export default function Finance() {
                         title={t('common.delete')}
                         className="w-7 h-7 inline-flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-gray-400 hover:text-red-600 transition cursor-pointer"
                       >
-                        <Trash size={15} />
+                        <Trash2 size={15} />
                       </button>
                     </td>
                   </tr>
