@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Building2,
-  MapPin,
-  Phone,
-  Mail,
   User,
   Lock,
   KeyRound,
@@ -29,9 +26,18 @@ import {
   Check,
 } from 'lucide-react';
 import { useTheme } from '@/theme';
-import { LANGUAGES, useTranslation, type LanguageCode } from '@/i18n';
+import { LANGUAGES, useTranslation } from '@/i18n';
 
 type SettingsTab = 'profil' | 'hisob' | 'korinish' | 'bildirishnomalar' | 'ekran';
+type FontSize = 'sm' | 'base' | 'lg';
+
+const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
+  sky: { primary: '#0ea5e9', foreground: '#ffffff' },
+  blue: { primary: '#2563eb', foreground: '#ffffff' },
+  emerald: { primary: '#10b981', foreground: '#ffffff' },
+  purple: { primary: '#a855f7', foreground: '#ffffff' },
+  amber: { primary: '#f59e0b', foreground: '#111827' },
+};
 
 export default function Settings() {
   const { tab } = useParams<{ tab?: string }>();
@@ -101,8 +107,10 @@ export default function Settings() {
     return localStorage.getItem('origin_accent_color') || 'sky';
   });
 
-  const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg'>('base');
-  const [sidebarCompact, setSidebarCompact] = useState(false);
+  const [fontSize, setFontSize] = useState<FontSize>(() => {
+    const saved = localStorage.getItem('origin_font_size');
+    return saved === 'sm' || saved === 'lg' ? saved : 'base';
+  });
 
   // ─── 4. Bildirishnomalar sozlamalari ─────────────────────────────────────────
   const [notifications, setNotifications] = useState(() => {
@@ -155,6 +163,17 @@ export default function Settings() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const accent = ACCENT_COLORS[accentColor] ?? ACCENT_COLORS.sky;
+    const fontSizes: Record<FontSize, string> = { sm: '13px', base: '14px', lg: '16px' };
+    root.style.setProperty('--primary', accent.primary);
+    root.style.setProperty('--ring', accent.primary);
+    root.style.setProperty('--primary-foreground', accent.foreground);
+    root.style.fontSize = fontSizes[fontSize];
+    root.style.zoom = `${screenSettings.zoomLevel}%`;
+  }, [accentColor, fontSize, screenSettings.zoomLevel]);
+
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {
@@ -199,6 +218,7 @@ export default function Settings() {
 
   const handleScreenSave = () => {
     localStorage.setItem('origin_screen_settings', JSON.stringify(screenSettings));
+    document.documentElement.style.zoom = `${screenSettings.zoomLevel}%`;
     showSaveSuccess('Ekran sozlamalari saqlandi!');
   };
 
@@ -206,6 +226,12 @@ export default function Settings() {
     setAccentColor(color);
     localStorage.setItem('origin_accent_color', color);
     showSaveSuccess('Mavzu rangi tanlandi!');
+  };
+
+  const handleFontSizeChange = (size: FontSize) => {
+    setFontSize(size);
+    localStorage.setItem('origin_font_size', size);
+    showSaveSuccess('Shrift o‘lchami yangilandi!');
   };
 
   // Styling helper classes
@@ -267,7 +293,9 @@ export default function Settings() {
           return (
             <button
               key={tabItem.id}
+              type="button"
               onClick={() => handleTabChange(tabItem.id)}
+              aria-current={isActive ? 'page' : undefined}
               className={[
                 'flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer flex-1 min-w-[130px] justify-center',
                 isActive
@@ -646,9 +674,11 @@ export default function Settings() {
             <div className="p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Light mode card */}
-                <div
+                <button
+                  type="button"
                   onClick={() => isDark && toggleTheme()}
-                  className={`p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+                  aria-pressed={!isDark}
+                  className={`w-full p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
                     !isDark
                       ? 'border-sky-500 bg-sky-50/50 shadow-sm'
                       : 'border-slate-800 bg-slate-800/40 hover:border-slate-700'
@@ -664,12 +694,14 @@ export default function Settings() {
                   <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                     Yorug‘ muhitda ishlash uchun toza oq va havorang dizayn
                   </p>
-                </div>
+                </button>
 
                 {/* Dark mode card */}
-                <div
+                <button
+                  type="button"
                   onClick={() => !isDark && toggleTheme()}
-                  className={`p-5 rounded-2xl border-2 transition-all cursor-pointer ${
+                  aria-pressed={isDark}
+                  className={`w-full p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
                     isDark
                       ? 'border-sky-500 bg-slate-800/90 shadow-sm'
                       : 'border-gray-200 bg-white hover:border-gray-300'
@@ -685,7 +717,7 @@ export default function Settings() {
                   <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                     Ko‘zga qulay, kam energiya sarflaydigan qorong‘u fon
                   </p>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -710,10 +742,12 @@ export default function Settings() {
                 {LANGUAGES.map((lang) => {
                   const isSelected = locale === lang.code;
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={lang.code}
                       onClick={() => setLocale(lang.code)}
-                      className={`flex items-center justify-between p-3.5 rounded-xl border transition-all cursor-pointer ${
+                      aria-pressed={isSelected}
+                      className={`flex w-full items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                         isSelected
                           ? isDark
                             ? 'border-sky-500 bg-sky-500/10 text-white font-semibold'
@@ -725,7 +759,7 @@ export default function Settings() {
                     >
                       <span className="text-sm">{lang.label}</span>
                       {isSelected && <Check size={18} className="text-sky-400" />}
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -762,9 +796,13 @@ export default function Settings() {
                         type="button"
                         onClick={() => handleAccentChange(col.id)}
                         className={`w-9 h-9 rounded-xl ${col.bg} flex items-center justify-center transition-all cursor-pointer shadow-sm ${
-                          accentColor === col.id ? 'ring-3 ring-white ring-offset-2 ring-offset-slate-900 scale-110' : 'opacity-80 hover:opacity-100'
+                          accentColor === col.id
+                            ? `ring-3 ring-white ring-offset-2 ${isDark ? 'ring-offset-slate-900' : 'ring-offset-white'} scale-110`
+                            : 'opacity-80 hover:opacity-100'
                         }`}
                         title={col.name}
+                        aria-label={`${col.name} aksent rangini tanlash`}
+                        aria-pressed={accentColor === col.id}
                       >
                         {accentColor === col.id && <Check size={16} className="text-white" />}
                       </button>
@@ -776,18 +814,16 @@ export default function Settings() {
                 <div>
                   <label className={labelClass}>Shrift o‘lchami</label>
                   <div className="grid grid-cols-3 gap-3">
-                    {[
+                    {([
                       { id: 'sm', label: 'Ixcham (13px)' },
                       { id: 'base', label: 'Standart (14px)' },
                       { id: 'lg', label: 'Katta (16px)' },
-                    ].map((f) => (
+                    ] as const).map((f) => (
                       <button
                         key={f.id}
                         type="button"
-                        onClick={() => {
-                          setFontSize(f.id as any);
-                          showSaveSuccess("Shrift o'lchami yangilandi!");
-                        }}
+                        onClick={() => handleFontSizeChange(f.id)}
+                        aria-pressed={fontSize === f.id}
                         className={`py-2 px-3 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                           fontSize === f.id
                             ? 'border-sky-500 bg-sky-500/15 text-sky-400'

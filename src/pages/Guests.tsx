@@ -1,32 +1,88 @@
-import { useState, useEffect } from "react";
-import { Eye, Pencil, Trash2, Search, UserPlus, Users, FileText } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Download,
+  Eye,
+  Pencil,
+  Phone,
+  Search,
+  ShieldCheck,
+  Trash2,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import type { Guest } from "@/types/guest";
 import { StorageService } from "@/services/storage";
 import GuestModal from "@/components/guests/GuestModal";
 import Modal from "@/components/common/Modal";
-import { useTheme } from '@/theme';
-import { useTranslation } from '@/i18n';
+import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/i18n";
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function downloadGuestsCsv(guests: Guest[]) {
+  const quote = (value: string | undefined) => `"${(value ?? "").replaceAll('"', '""')}"`;
+  const rows = [
+    ["Ism-familiya", "Telefon", "Pasport", "Manzil", "Oxirgi tashrif", "Izoh"],
+    ...guests.map((guest) => [
+      guest.fullName,
+      guest.phone,
+      guest.passport,
+      guest.address ?? "",
+      guest.lastVisit ?? "",
+      guest.notes,
+    ]),
+  ];
+  const csv = `\uFEFF${rows.map((row) => row.map(quote).join(",")).join("\r\n")}`;
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "origin-hotel-mehmonlar.csv";
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
 
 export default function Guests() {
-  const { isDark } = useTheme();
   const { t } = useTranslation();
-  const [guests, setGuests] = useState<Guest[]>([]);
+  const [guests, setGuests] = useState<Guest[]>(() => StorageService.getGuests());
   const [search, setSearch] = useState("");
-
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const [viewGuest, setViewGuest] = useState<Guest | null>(null);
-
-  const loadGuests = () => {
-    setGuests(StorageService.getGuests());
-  };
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    ids: number[];
+    description: string;
+  } | null>(null);
+  const [today] = useState(() => new Date());
 
   useEffect(() => {
-    loadGuests();
-    const handleStorageChange = () => loadGuests();
+    const handleStorageChange = () => setGuests(StorageService.getGuests());
     window.addEventListener("origin-hotel-storage-change", handleStorageChange);
     return () => window.removeEventListener("origin-hotel-storage-change", handleStorageChange);
   }, []);
+
+  const filtered = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase();
+    if (!query) return guests;
+    return guests.filter((guest) =>
+      [guest.fullName, guest.phone, guest.passport, guest.address, guest.notes]
+        .some((value) => value?.toLocaleLowerCase().includes(query)),
+    );
+  }, [guests, search]);
+  const selectedGuests = guests.filter((guest) => selectedIds.includes(guest.id));
+  const allVisibleSelected = filtered.length > 0 && filtered.every((guest) => selectedIds.includes(guest.id));
+  const passportCount = guests.filter((guest) => guest.passport.trim()).length;
+  const phoneCount = guests.filter((guest) => guest.phone.trim()).length;
+  const recentCount = guests.filter((guest) => {
+    if (!guest.lastVisit) return false;
+    const visit = new Date(`${guest.lastVisit}T00:00:00`);
+    const age = today.getTime() - visit.getTime();
+    return Number.isFinite(age) && age >= 0 && age <= 30 * DAY_IN_MS;
+  }).length;
 
   const handleOpenAdd = () => {
     setEditingGuest(null);
@@ -40,218 +96,368 @@ export default function Guests() {
 
   const handleSave = (guestData: Omit<Guest, "id"> | Guest) => {
     if ("id" in guestData) {
-      StorageService.updateGuest(guestData as Guest);
-    } else {
-      StorageService.addGuest(guestData);
+      return StorageService.updateGuest(guestData);
     }
+    StorageService.addGuest(guestData);
     return true;
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm(t('guests.deleteConfirm'))) {
-      StorageService.deleteGuest(id);
-    }
+  const toggleGuest = (id: number) => {
+    setSelectedIds((current) =>
+      current.includes(id) ? current.filter((selectedId) => selectedId !== id) : [...current, id],
+    );
   };
 
-  const filtered = guests.filter(
-    (g) =>
-      g.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      g.phone.includes(search) ||
-      g.passport.toLowerCase().includes(search.toLowerCase()) ||
-      (g.notes && g.notes.toLowerCase().includes(search.toLowerCase()))
-  );
+  const toggleAllVisible = () => {
+    setSelectedIds((current) => {
+      if (allVisibleSelected) {
+        const visibleIds = new Set(filtered.map((guest) => guest.id));
+        return current.filter((id) => !visibleIds.has(id));
+      }
+      return [...new Set([...current, ...filtered.map((guest) => guest.id)])];
+    });
+  };
+
+  const handleDelete = (guest: Guest) => {
+    setDeleteConfirmation({
+      ids: [guest.id],
+      description: `${guest.fullName} — ${t("guests.deleteConfirm")}`,
+    });
+  };
+
+  const handleDeleteSelected = () => {
+    if (!selectedGuests.length) return;
+    setDeleteConfirmation({
+      ids: selectedGuests.map((guest) => guest.id),
+      description: `${selectedGuests.length} ta mehmonni o‘chirishni tasdiqlaysizmi?`,
+    });
+  };
+
+  const confirmDeleteGuests = () => {
+    if (!deleteConfirmation) return;
+    deleteConfirmation.ids.forEach((id) => StorageService.deleteGuest(id));
+    setSelectedIds((current) =>
+      current.filter((id) => !deleteConfirmation.ids.includes(id)),
+    );
+    setDeleteConfirmation(null);
+  };
+
+  const stats = [
+    { label: "Jami mehmonlar", value: guests.length, detail: "Ro‘yxatdagi barcha mehmonlar", icon: Users, tone: "text-primary bg-primary/10" },
+    { label: "So‘nggi tashriflar", value: recentCount, detail: "Oxirgi 30 kun ichida", icon: UserPlus, tone: "text-sky-600 bg-sky-500/10 dark:text-sky-400" },
+    { label: "Aloqa ma’lumoti", value: phoneCount, detail: `${guests.length - phoneCount} ta telefon raqami kiritilmagan`, icon: Phone, tone: "text-blue-600 bg-blue-500/10 dark:text-blue-400" },
+    { label: "Pasport ma’lumoti", value: passportCount, detail: `${guests.length - passportCount} ta ma’lumot kiritilmagan`, icon: ShieldCheck, tone: "text-indigo-600 bg-indigo-500/10 dark:text-indigo-400" },
+  ];
 
   return (
-    <div className={isDark ? "min-h-screen bg-slate-950 p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-            <Users className="w-6 h-6" />
+    <main className="min-h-screen space-y-6 bg-background p-4 text-foreground sm:p-6 lg:p-8">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+              Origin Hotel
+            </span>
+            <span className="text-xs text-muted-foreground">/ {t("nav.guests")}</span>
           </div>
+          <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{t("nav.guests")}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Mehmonlar ro‘yxati va aloqa ma’lumotlarini boshqaring</p>
+        </div>
+        <Button onClick={handleOpenAdd} className="gap-2 self-start sm:self-auto">
+          <UserPlus className="h-4 w-4" />
+          {t("guests.new")}
+        </Button>
+      </header>
+
+      <section aria-label="Mehmonlar statistikasi" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map(({ label, value, detail, icon: Icon, tone }) => (
+          <Card key={label} className="gap-4 border-border/70 py-5 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-5 pb-0">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+              <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}>
+                <Icon className="h-5 w-5" />
+              </span>
+            </CardHeader>
+            <CardContent className="px-5">
+              <p className="text-2xl font-bold tracking-tight">{value}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      <Card className="gap-0 overflow-hidden border-border/70 py-0 shadow-sm">
+        <CardHeader className="flex flex-col gap-4 border-b border-border/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div>
-            <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.guests')}</h1>
-            <p className="text-sm text-gray-500 dark:text-slate-400">
-              {t('guests.total').replace('{n}', String(guests.length))}
+            <CardTitle className="text-base">Barcha mehmonlar</CardTitle>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {search ? `${filtered.length} ta natija` : `${guests.length} ta mehmon`}
             </p>
           </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="relative min-w-0 sm:w-72">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t("guests.searchPlaceholder")}
+                className="pl-9"
+                aria-label={t("guests.searchPlaceholder")}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2 border-primary/25 text-primary hover:bg-primary/5 hover:text-primary"
+              onClick={() => downloadGuestsCsv(selectedGuests.length ? selectedGuests : filtered)}
+              disabled={!filtered.length}
+            >
+              <Download className="h-4 w-4" />
+              {selectedGuests.length ? "Tanlanganlarni eksport" : "CSV eksport"}
+            </Button>
+          </div>
+        </CardHeader>
+
+        <div className="divide-y divide-border/50 md:hidden">
+          {filtered.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 px-4 py-12 text-center text-muted-foreground">
+              <Users className="h-8 w-8 opacity-50" />
+              <p className="font-medium">{search ? t("rooms.notFound") : "Hozircha mehmonlar yo‘q"}</p>
+              {!search && <p className="text-xs">Yangi mehmon qo‘shib ro‘yxatni boshlang.</p>}
+            </div>
+          ) : (
+            filtered.map((guest) => {
+              const selected = selectedIds.includes(guest.id);
+              const initials = guest.fullName
+                .split(/\s+/)
+                .slice(0, 2)
+                .map((part) => part[0])
+                .join("")
+                .toUpperCase();
+
+              return (
+                <article
+                  key={guest.id}
+                  className={`space-y-3 p-4 transition-colors ${selected ? "bg-primary/5" : "hover:bg-muted/30"}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => toggleGuest(guest.id)}
+                      aria-label={`${guest.fullName}ni tanlash`}
+                      className="mt-3 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+                    />
+                    <Avatar className="h-10 w-10 shrink-0 border border-primary/10">
+                      <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{guest.fullName}</p>
+                      <p className="mt-0.5 truncate text-xs text-muted-foreground">{guest.address || "Manzil kiritilmagan"}</p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-0.5">
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10 hover:text-primary" onClick={() => setViewGuest(guest)} aria-label={`${guest.fullName} — ko‘rish`}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-900 hover:bg-slate-900/5 hover:text-slate-900 dark:text-white dark:hover:bg-white/10 dark:hover:text-white" onClick={() => handleOpenEdit(guest)} aria-label={`${guest.fullName} — tahrirlash`}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(guest)} aria-label={`${guest.fullName} — o‘chirish`}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 pl-7 text-xs">
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground">{t("common.phone")}</p>
+                      <p className="mt-1 truncate font-medium">{guest.phone || "—"}</p>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-muted-foreground">{t("guests.passport")}</p>
+                      <p className="mt-1 truncate font-mono font-medium">{guest.passport || "—"}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground">Oxirgi tashrif</p>
+                      <p className="mt-1 font-medium">{guest.lastVisit || "—"}</p>
+                    </div>
+                  </div>
+                </article>
+              );
+            })
+          )}
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-sm self-start sm:self-auto cursor-pointer"
-        >
-          <UserPlus className="w-4 h-4" />
-          {t('guests.new')}
-        </button>
-      </div>
 
-      {/* Search */}
-      <div className="relative mb-6 max-w-md">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
-        <input
-          type="text"
-          placeholder={t('guests.searchPlaceholder')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={
-            isDark
-              ? "w-full pl-10 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-500 shadow-xs"
-              : "w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-400 shadow-xs"
-          }
-        />
-      </div>
-
-      {/* Table */}
-      <div className={isDark ? "bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden" : "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[820px] text-sm">
             <thead>
-              <tr className={isDark ? "bg-slate-800/80 border-b border-slate-800 text-slate-300 text-xs font-semibold uppercase tracking-wider" : "bg-gray-50/80 border-b border-gray-100 text-gray-500 text-xs font-semibold uppercase tracking-wider"}>
-                <th className="text-left px-6 py-4">#</th>
-                <th className="text-left px-6 py-4">{t('guests.name')}</th>
-                <th className="text-left px-6 py-4">{t('common.phone')}</th>
-                <th className="text-left px-6 py-4">{t('guests.passport')}</th>
-                <th className="text-left px-6 py-4">{t('common.notes')}</th>
-                <th className="text-left px-6 py-4">{t('common.actions')}</th>
+              <tr className="border-b border-border/60 bg-muted/40 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <th className="w-12 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleAllVisible}
+                    aria-label="Ko‘rinib turgan barcha mehmonlarni tanlash"
+                    className="h-4 w-4 cursor-pointer accent-primary"
+                  />
+                </th>
+                <th className="px-4 py-3">{t("guests.name")}</th>
+                <th className="px-4 py-3">{t("common.phone")}</th>
+                <th className="px-4 py-3">{t("guests.passport")}</th>
+                <th className="px-4 py-3">Oxirgi tashrif</th>
+                <th className="px-4 py-3">{t("common.actions")}</th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-50"}`}>
+            <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-400 dark:text-slate-500">
-                    {t('rooms.notFound')}
+                  <td colSpan={6} className="px-4 py-14 text-center">
+                    <div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-muted-foreground">
+                      <Users className="h-8 w-8 opacity-50" />
+                      <p className="font-medium">{search ? t("rooms.notFound") : "Hozircha mehmonlar yo‘q"}</p>
+                      {!search && <p className="text-xs">Yangi mehmon qo‘shib ro‘yxatni boshlang.</p>}
+                    </div>
                   </td>
                 </tr>
               ) : (
-                filtered.map((guest, index) => (
-                  <tr
-                    key={guest.id}
-                    className={isDark ? "hover:bg-slate-800/50 transition-colors group" : "hover:bg-blue-50/30 transition-colors group"}
-                  >
-                    <td className="px-6 py-4 text-gray-400 dark:text-slate-500 font-medium">{index + 1}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
-                          <span className="text-blue-600 dark:text-sky-300 font-bold text-sm">
-                            {guest.fullName.charAt(0)}
-                          </span>
+                filtered.map((guest) => {
+                  const selected = selectedIds.includes(guest.id);
+                  return (
+                    <tr
+                      key={guest.id}
+                      className={`border-b border-border/50 transition-colors last:border-0 hover:bg-muted/40 ${selected ? "bg-primary/5" : ""}`}
+                    >
+                      <td className="px-4 py-3.5">
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          onChange={() => toggleGuest(guest.id)}
+                          aria-label={`${guest.fullName}ni tanlash`}
+                          className="h-4 w-4 cursor-pointer accent-primary"
+                        />
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex min-w-56 items-center gap-3">
+                          <Avatar className="h-10 w-10 border border-primary/10">
+                            <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
+                              {guest.fullName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold">{guest.fullName}</p>
+                            {guest.address && <p className="mt-0.5 max-w-52 truncate text-xs text-muted-foreground">{guest.address}</p>}
+                          </div>
                         </div>
-                        <span className={isDark ? "font-semibold text-white" : "font-semibold text-gray-900"}>{guest.fullName}</span>
-                      </div>
-                    </td>
-                    <td className={isDark ? "px-6 py-4 text-slate-300 font-medium" : "px-6 py-4 text-gray-600 font-medium"}>
-                      {guest.phone || <span className="text-gray-400 dark:text-slate-500 italic">—</span>}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={isDark ? "font-mono text-sky-300 bg-slate-800 px-2.5 py-1 rounded-lg text-xs font-semibold" : "font-mono text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg text-xs font-semibold"}>
-                        {guest.passport || "—"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-500 dark:text-slate-400 max-w-[240px] truncate">
-                      {guest.notes ? (
-                        <span className={isDark ? "inline-flex items-center gap-1.5 text-xs text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-800/50" : "inline-flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100"}>
-                          <FileText size={12} />
-                          {guest.notes}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 dark:text-slate-500 text-xs">—</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => setViewGuest(guest)}
-                          title={t('common.view')}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-100 dark:hover:bg-blue-950/40 text-gray-400 hover:text-blue-600 transition cursor-pointer"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleOpenEdit(guest)}
-                          title={t('common.edit')}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 text-gray-400 hover:text-amber-600 transition cursor-pointer"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(guest.id)}
-                          title={t('common.delete')}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 text-gray-400 hover:text-red-600 transition cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3.5 text-muted-foreground">
+                        {guest.phone || "—"}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        {guest.passport ? (
+                          <span className="rounded-md bg-muted px-2 py-1 font-mono text-xs">{guest.passport}</span>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3.5 text-muted-foreground">
+                        {guest.lastVisit || "—"}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10 hover:text-primary" onClick={() => setViewGuest(guest)} aria-label={`${guest.fullName} — ko‘rish`}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-900 hover:bg-slate-900/5 hover:text-slate-900 dark:text-white dark:hover:bg-white/10 dark:hover:text-white" onClick={() => handleOpenEdit(guest)} aria-label={`${guest.fullName} — tahrirlash`}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(guest)} aria-label={`${guest.fullName} — o‘chirish`}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
 
-        {/* Footer */}
-        <div className={`px-6 py-3 border-t flex items-center justify-between ${isDark ? "border-slate-800 bg-slate-900/60" : "border-gray-100 bg-gray-50/50"}`}>
-          <span className="text-xs text-gray-400 dark:text-slate-400 font-medium">
-            {t('guests.total').replace('{n}', String(filtered.length))}
+        <footer className="flex flex-col gap-3 border-t border-border/70 bg-muted/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <span className="text-xs text-muted-foreground">
+            {filtered.length} / {guests.length} mehmon ko‘rsatilmoqda
           </span>
-        </div>
-      </div>
+          {selectedGuests.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="mr-1 text-xs font-medium">{selectedGuests.length} ta tanlandi</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                onClick={() => downloadGuestsCsv(selectedGuests)}
+              >
+                <Download className="h-3.5 w-3.5" />
+                Eksport
+              </Button>
+              <Button type="button" size="sm" variant="destructive" className="gap-1.5" onClick={handleDeleteSelected}>
+                <Trash2 className="h-3.5 w-3.5" />
+                O‘chirish
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setSelectedIds([])}>
+                Bekor qilish
+              </Button>
+            </div>
+          )}
+        </footer>
+      </Card>
 
-      {/* Add / Edit Modal */}
       <GuestModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         initialData={editingGuest}
       />
+      <ConfirmActionModal
+        isOpen={deleteConfirmation !== null}
+        title={t("common.delete")}
+        description={deleteConfirmation?.description ?? ""}
+        cancelLabel={t("common.cancel")}
+        confirmLabel={t("common.delete")}
+        onClose={() => setDeleteConfirmation(null)}
+        onConfirm={confirmDeleteGuests}
+      />
 
-      {/* View Guest Modal */}
       {viewGuest && (
-        <Modal
-          isOpen={!!viewGuest}
-          onClose={() => setViewGuest(null)}
-          title={t('guests.detailsTitle')}
-        >
+        <Modal isOpen onClose={() => setViewGuest(null)} title={t("guests.detailsTitle")}>
           <div className="space-y-4">
-            <div className={isDark ? "p-4 bg-slate-800/80 rounded-xl space-y-3 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-3 text-sm"}>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('guests.name')}:</span>
-                <span className="font-bold text-gray-900 dark:text-white">{viewGuest.fullName}</span>
+            <div className="space-y-3 rounded-xl bg-muted/40 p-4 text-sm">
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">{t("guests.name")}</span>
+                <span className="text-right font-semibold">{viewGuest.fullName}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('common.phone')}:</span>
-                <span className="font-semibold text-gray-800 dark:text-slate-200">{viewGuest.phone || "—"}</span>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">{t("common.phone")}</span>
+                <span className="text-right">{viewGuest.phone || "—"}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('guests.passport')}:</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-sky-400">{viewGuest.passport || "—"}</span>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">{t("guests.passport")}</span>
+                <span className="font-mono">{viewGuest.passport || "—"}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('common.address')}:</span>
-                <span className="font-medium text-gray-800 dark:text-slate-200">{viewGuest.address || "—"}</span>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">{t("common.address")}</span>
+                <span className="text-right">{viewGuest.address || "—"}</span>
               </div>
-              <div className={`pt-2 border-t ${isDark ? "border-slate-700" : "border-gray-200"}`}>
-                <span className="block text-gray-400 dark:text-slate-400 mb-1">{t('common.notes')}:</span>
-                <p className={isDark ? "text-slate-200 bg-slate-900 p-3 rounded-lg border border-slate-700 text-xs leading-relaxed" : "text-gray-800 bg-white p-3 rounded-lg border border-gray-200 text-xs leading-relaxed"}>
-                  {viewGuest.notes || "—"}
-                </p>
+              <div className="border-t border-border pt-3">
+                <span className="text-muted-foreground">{t("common.notes")}</span>
+                <p className="mt-1 leading-relaxed">{viewGuest.notes || "—"}</p>
               </div>
             </div>
-            <div className="flex justify-end pt-2">
-              <button
-                onClick={() => setViewGuest(null)}
-                className={
-                  isDark
-                    ? "px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl transition cursor-pointer"
-                    : "px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition cursor-pointer"
-                }
-              >
-                {t('common.close')}
-              </button>
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={() => setViewGuest(null)}>{t("common.close")}</Button>
             </div>
           </div>
         </Modal>
       )}
-    </div>
+    </main>
   );
 }

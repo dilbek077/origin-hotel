@@ -14,6 +14,9 @@ import type { Room } from "@/types/room";
 import type { Guest } from "@/types/guest";
 import { StorageService } from "@/services/storage";
 import BookingModal from "@/components/bookings/BookingModal";
+import { CheckInConfirmDialog } from "@/components/bookings/CheckInConfirmDialog";
+import { CheckOutConfirmModal } from "@/components/bookings/CheckOutConfirmModal";
+import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import Modal from "@/components/common/Modal";
 import { useTheme } from '@/theme';
 import { useTranslation } from '@/i18n';
@@ -40,6 +43,9 @@ export default function Bookings() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [viewBooking, setViewBooking] = useState<Booking | null>(null);
+  const [checkInBooking, setCheckInBooking] = useState<Booking | null>(null);
+  const [checkOutBooking, setCheckOutBooking] = useState<Booking | null>(null);
+  const [deleteBookingId, setDeleteBookingId] = useState<number | null>(null);
 
   const loadAll = () => {
     setBookings(StorageService.getBookings());
@@ -73,9 +79,13 @@ export default function Bookings() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm(t('bookings.deleteConfirm'))) {
-      StorageService.deleteBooking(id);
-    }
+    setDeleteBookingId(id);
+  };
+
+  const confirmDeleteBooking = () => {
+    if (deleteBookingId === null) return;
+    StorageService.deleteBooking(deleteBookingId);
+    setDeleteBookingId(null);
   };
 
   const formatPrice = (price: number): string => {
@@ -83,15 +93,19 @@ export default function Bookings() {
   };
 
   const handleCheckIn = (id: number) => {
-    if (window.confirm(t('dashboard.confirmCheckIn'))) {
-      StorageService.checkInBooking(id);
-    }
+    setCheckInBooking(bookings.find((booking) => booking.id === id) ?? null);
+  };
+
+  const confirmCheckIn = (id: number) => {
+    return StorageService.checkInBooking(id);
   };
 
   const handleCheckOut = (id: number) => {
-    if (window.confirm(t('dashboard.confirmCheckOut'))) {
-      StorageService.checkOutBooking(id);
-    }
+    setCheckOutBooking(bookings.find((booking) => booking.id === id) ?? null);
+  };
+
+  const confirmCheckOut = (id: number) => {
+    return StorageService.checkOutBooking(id);
   };
 
   const filtered =
@@ -338,6 +352,29 @@ export default function Bookings() {
         initialData={editingBooking}
         rooms={rooms}
         guests={guests}
+      />
+      <CheckInConfirmDialog
+        booking={checkInBooking}
+        onOpenChange={(open) => {
+          if (!open) setCheckInBooking(null);
+        }}
+        onConfirm={confirmCheckIn}
+      />
+      <CheckOutConfirmModal
+        booking={checkOutBooking}
+        onOpenChange={(open) => {
+          if (!open) setCheckOutBooking(null);
+        }}
+        onConfirm={confirmCheckOut}
+      />
+      <ConfirmActionModal
+        isOpen={deleteBookingId !== null}
+        title={t('common.delete')}
+        description={t('bookings.deleteConfirm')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('common.delete')}
+        onClose={() => setDeleteBookingId(null)}
+        onConfirm={confirmDeleteBooking}
       />
 
       {/* View Booking Details Modal */}

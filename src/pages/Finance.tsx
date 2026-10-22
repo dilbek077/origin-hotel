@@ -10,6 +10,7 @@ import {
 import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
 import TransactionModal from "@/components/finance/TransactionModal";
+import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import { useTheme } from '@/theme';
 import { useTranslation } from '@/i18n';
 
@@ -20,6 +21,7 @@ export default function Finance() {
   const [activeTab, setActiveTab] = useState<"all" | "income" | "expense">("all");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"income" | "expense">("income");
+  const [deleteTransactionId, setDeleteTransactionId] = useState<number | null>(null);
 
   const loadTransactions = () => {
     setTransactions(StorageService.getTransactions());
@@ -55,9 +57,13 @@ export default function Finance() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm(t('finance.deleteConfirm'))) {
-      StorageService.deleteTransaction(id);
-    }
+    setDeleteTransactionId(id);
+  };
+
+  const confirmDeleteTransaction = () => {
+    if (deleteTransactionId === null) return;
+    StorageService.deleteTransaction(deleteTransactionId);
+    setDeleteTransactionId(null);
   };
 
   const filtered = transactions.filter((tItem) => {
@@ -253,6 +259,15 @@ export default function Finance() {
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         defaultType={modalType}
+      />
+      <ConfirmActionModal
+        isOpen={deleteTransactionId !== null}
+        title={t('common.delete')}
+        description={t('finance.deleteConfirm')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('common.delete')}
+        onClose={() => setDeleteTransactionId(null)}
+        onConfirm={confirmDeleteTransaction}
       />
     </div>
   );

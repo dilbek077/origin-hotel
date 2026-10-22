@@ -4,6 +4,7 @@ import type { Room, RoomStatus } from "@/types/room";
 import { StorageService } from "@/services/storage";
 import RoomModal from "@/components/rooms/RoomModal";
 import Modal from "@/components/common/Modal";
+import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import { useTheme } from '@/theme';
 import { useTranslation } from '@/i18n';
 
@@ -19,6 +20,7 @@ export default function Rooms() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [viewRoom, setViewRoom] = useState<Room | null>(null);
+  const [deleteRoomId, setDeleteRoomId] = useState<number | null>(null);
 
   const loadRooms = () => {
     setRooms(StorageService.getRooms());
@@ -50,9 +52,13 @@ export default function Rooms() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm(t('rooms.deleteConfirm'))) {
-      StorageService.deleteRoom(id);
-    }
+    setDeleteRoomId(id);
+  };
+
+  const confirmDeleteRoom = () => {
+    if (deleteRoomId === null) return;
+    StorageService.deleteRoom(deleteRoomId);
+    setDeleteRoomId(null);
   };
 
   const formatPrice = (amount: number): string => {
@@ -267,6 +273,15 @@ export default function Rooms() {
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         initialData={editingRoom}
+      />
+      <ConfirmActionModal
+        isOpen={deleteRoomId !== null}
+        title={t('common.delete')}
+        description={t('rooms.deleteConfirm')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('common.delete')}
+        onClose={() => setDeleteRoomId(null)}
+        onConfirm={confirmDeleteRoom}
       />
 
       {/* View Details Modal */}

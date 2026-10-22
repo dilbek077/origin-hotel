@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut } from "lucide-react";
+import { CalendarDays, LogIn, LogOut } from "lucide-react";
 import type { Booking } from "@/types/booking";
 
 interface RecentBookingsProps {
@@ -8,6 +8,13 @@ interface RecentBookingsProps {
   onCheckIn: (id: number) => void;
   onCheckOut: (id: number) => void;
 }
+
+const formatBookingDate = (date: string) => {
+  const parsedDate = new Date(`${date}T00:00:00`);
+  return Number.isNaN(parsedDate.getTime())
+    ? date
+    : parsedDate.toLocaleDateString("uz-UZ", { day: "numeric", month: "short" });
+};
 
 export function RecentBookings({
   bookings,
@@ -31,7 +38,8 @@ export function RecentBookings({
 
   if (recent.length === 0) {
     return (
-      <div className="py-8 text-center text-sm text-muted-foreground">
+      <div className="flex flex-col items-center gap-2 py-10 text-center text-sm text-muted-foreground">
+        <CalendarDays className="h-5 w-5" />
         Hozircha hech qanday bron mavjud emas.
       </div>
     );
@@ -49,41 +57,40 @@ export function RecentBookings({
         return (
           <div
             key={booking.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors border border-border/40"
+            className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2 rounded-xl border border-border/60 p-3 transition-colors hover:bg-muted/40 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] sm:items-center sm:gap-4 sm:p-3.5"
           >
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border border-primary/10">
-                <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold leading-none text-foreground">
-                    {booking.guest}
-                  </p>
-                  <span className={`text-xs font-medium ${getStatusColor(booking.status)}`}>
-                    {booking.status}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {booking.room} • {booking.checkIn} → {booking.checkOut} ({booking.nights} kecha)
+            <Avatar className="row-span-2 h-10 w-10 self-center border border-primary/10 sm:row-span-1">
+              <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="min-w-0 self-center">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                <p className="min-w-0 truncate text-sm font-semibold text-foreground">
+                  {booking.guest}
                 </p>
+                <span className={`shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium ${getStatusColor(booking.status)}`}>
+                  {booking.status}
+                </span>
               </div>
+              <p className="mt-1 truncate text-xs text-muted-foreground">
+                {booking.room}
+                <span className="mx-1.5 text-border">·</span>
+                {formatBookingDate(booking.checkIn)} – {formatBookingDate(booking.checkOut)}
+                <span className="mx-1.5 text-border">·</span>
+                {booking.nights} kecha
+              </p>
             </div>
 
-            <div className="flex items-center justify-between sm:justify-end gap-3 self-end sm:self-center w-full sm:w-auto">
-              <div className="text-right">
-                <p className="text-sm font-bold text-foreground">
-                  {booking.price.toLocaleString("uz-UZ")} so‘m
-                </p>
-              </div>
-
-              {/* Quick check-in / check-out */}
+            <div className="col-start-2 row-start-2 flex items-center justify-between gap-2 sm:contents">
+              <p className="self-center whitespace-nowrap text-sm font-bold text-foreground sm:text-right">
+                {booking.price.toLocaleString("uz-UZ")} <span className="text-xs font-medium text-muted-foreground">so‘m</span>
+              </p>
               {(booking.status === "Tasdiqlangan" || booking.status === "Kutilmoqda") && (
                 <Button
                   size="sm"
-                  className="h-8 shrink-0 whitespace-nowrap gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
+                  className="h-8 shrink-0 gap-1.5 whitespace-nowrap bg-emerald-600 text-xs font-semibold text-white hover:bg-emerald-700"
                   onClick={() => onCheckIn(booking.id)}
                 >
                   <LogIn className="h-3.5 w-3.5" />
@@ -94,7 +101,7 @@ export function RecentBookings({
               {booking.status === "Yashamoqda" && (
                 <Button
                   size="sm"
-                  className="h-8 shrink-0 whitespace-nowrap gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                  className="h-8 shrink-0 gap-1.5 whitespace-nowrap bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700"
                   onClick={() => onCheckOut(booking.id)}
                 >
                   <LogOut className="h-3.5 w-3.5" />

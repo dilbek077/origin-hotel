@@ -38,6 +38,8 @@ import { StorageService } from "@/services/storage";
 import { OverviewChart } from "@/components/dashboard/OverviewChart";
 import { RecentBookings } from "@/components/dashboard/RecentBookings";
 import BookingModal from "@/components/bookings/BookingModal";
+import { CheckInConfirmDialog } from "@/components/bookings/CheckInConfirmDialog";
+import { CheckOutConfirmModal } from "@/components/bookings/CheckOutConfirmModal";
 import GuestModal from "@/components/guests/GuestModal";
 
 const formatCurrency = (amount: number) => `${amount.toLocaleString("uz-UZ")} so‘m`;
@@ -122,6 +124,8 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>(() => StorageService.getTransactions());
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
+  const [checkInBooking, setCheckInBooking] = useState<Booking | null>(null);
+  const [checkOutBooking, setCheckOutBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -204,15 +208,19 @@ export default function Dashboard() {
   };
 
   const handleCheckIn = (id: number) => {
-    if (window.confirm("Mehmonni ro‘yxatga olish (Check-in) va xonani Band qilishni tasdiqlaysizmi?")) {
-      StorageService.checkInBooking(id);
-    }
+    setCheckInBooking(bookings.find((booking) => booking.id === id) ?? null);
+  };
+
+  const confirmCheckIn = (id: number) => {
+    return StorageService.checkInBooking(id);
   };
 
   const handleCheckOut = (id: number) => {
-    if (window.confirm("Mehmonni chiqarish (Check-out) va xonani tozalashga o‘tkazishni tasdiqlaysizmi?")) {
-      StorageService.checkOutBooking(id);
-    }
+    setCheckOutBooking(bookings.find((booking) => booking.id === id) ?? null);
+  };
+
+  const confirmCheckOut = (id: number) => {
+    return StorageService.checkOutBooking(id);
   };
 
   return (
@@ -440,6 +448,20 @@ export default function Dashboard() {
         isOpen={guestModalOpen}
         onClose={() => setGuestModalOpen(false)}
         onSave={handleSaveGuest}
+      />
+      <CheckInConfirmDialog
+        booking={checkInBooking}
+        onOpenChange={(open) => {
+          if (!open) setCheckInBooking(null);
+        }}
+        onConfirm={confirmCheckIn}
+      />
+      <CheckOutConfirmModal
+        booking={checkOutBooking}
+        onOpenChange={(open) => {
+          if (!open) setCheckOutBooking(null);
+        }}
+        onConfirm={confirmCheckOut}
       />
     </div>
   );
