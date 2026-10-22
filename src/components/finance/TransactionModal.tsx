@@ -111,8 +111,8 @@ export default function TransactionModal({
             className={`flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer ${
               type === "income"
                 ? isDark
-                  ? "bg-slate-900 text-green-400 shadow-xs"
-                  : "bg-white text-green-700 shadow-xs"
+                  ? "bg-slate-900 text-sky-400 shadow-xs"
+                  : "bg-white text-blue-700 shadow-xs"
                 : "text-gray-400 hover:text-white"
             }`}
           >

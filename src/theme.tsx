@@ -1,9 +1,10 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 
 const ThemeContext = createContext<{
   isDark: boolean;
-  toggleTheme: () => void;
-  setTheme: (dark: boolean) => void;
+  toggleTheme: (origin?: { x: number; y: number }) => void;
+  setTheme: (dark: boolean, origin?: { x: number; y: number }) => void;
 } | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -28,13 +29,34 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('storage', handleStorage);
   }, [isDark]);
 
+  const changeTheme = useCallback((dark: boolean, origin?: { x: number; y: number }) => {
+    const root = document.documentElement;
+    const applyTheme = () => {
+      root.classList.toggle('dark', dark);
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      root.style.colorScheme = dark ? 'dark' : 'light';
+      setIsDark(dark);
+    };
+
+    if (origin) {
+      root.style.setProperty('--theme-origin-x', `${origin.x}px`);
+      root.style.setProperty('--theme-origin-y', `${origin.y}px`);
+    }
+
+    if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.startViewTransition(() => flushSync(applyTheme));
+    } else {
+      flushSync(applyTheme);
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       isDark,
-      toggleTheme: () => setIsDark((prev) => !prev),
-      setTheme: (dark: boolean) => setIsDark(dark),
+      toggleTheme: (origin?: { x: number; y: number }) => changeTheme(!isDark, origin),
+      setTheme: (dark: boolean, origin?: { x: number; y: number }) => changeTheme(dark, origin),
     }),
-    [isDark],
+    [changeTheme, isDark],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

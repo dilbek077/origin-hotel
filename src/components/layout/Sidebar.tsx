@@ -61,6 +61,7 @@ export default function Sidebar() {
   const location = useLocation();
   const role = localStorage.getItem('role') ?? 'STAFF';
   const { t } = useTranslation();
+  const navItems = role === 'ADMIN' ? adminNavItems : staffNavItems;
 
   const isSettingsActive = location.pathname.startsWith('/admin/sozlamalar');
   const [isSettingsOpen, setIsSettingsOpen] = useState(true);
@@ -78,7 +79,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex flex-col w-64 min-h-screen bg-[linear-gradient(180deg,#0a192f_0%,#0f2b48_50%,#0c2138_100%)] border-r border-sky-400/10 shadow-[0_12px_30px_rgba(15,35,64,0.25)] select-none">
+    <aside className="flex h-full min-h-0 w-64 shrink-0 flex-col bg-[linear-gradient(180deg,#0a192f_0%,#0f2b48_50%,#0c2138_100%)] border-r border-sky-400/10 shadow-[0_12px_30px_rgba(15,35,64,0.25)] select-none">
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
         <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-sky-400/20 text-sky-200 ring-1 ring-white/20">
           <Hotel size={20} />
@@ -86,9 +87,29 @@ export default function Sidebar() {
         <span className="text-lg font-bold text-white tracking-tight">Origin Hotel</span>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {/* Asosiy navigatsiya elementlari */}
-        {(role === 'ADMIN' ? adminNavItems : staffNavItems).map((item) => (
+      <div className="px-3 pt-4">
+        {navItems.slice(0, 1).map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.path === '/admin' || item.path === '/staff'}
+            className={({ isActive }) =>
+              [
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150',
+                isActive
+                  ? 'bg-sky-400 text-slate-950 font-semibold shadow-sm'
+                  : 'text-sky-100/80 hover:bg-white/10 hover:text-white',
+              ].join(' ')
+            }
+          >
+            {item.icon}
+            {t(item.labelKey)}
+          </NavLink>
+        ))}
+      </div>
+
+      <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-3 pb-4 pt-1 overscroll-contain">
+        {navItems.slice(1).map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
