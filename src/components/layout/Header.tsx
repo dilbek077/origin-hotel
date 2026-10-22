@@ -111,7 +111,7 @@ export default function Header() {
         {/* Quick Theme Toggle */}
         <button
           type="button"
-          onClick={toggleTheme}
+          onClick={(event) => toggleTheme({ x: event.clientX, y: event.clientY })}
           className={
             isDark
               ? 'p-2 rounded-xl text-white bg-black hover:bg-slate-900 border border-slate-700 transition-all duration-300 active:scale-90 cursor-pointer'
@@ -124,14 +124,14 @@ export default function Header() {
           <span className="relative block h-[18px] w-[18px]">
             <Moon
               size={18}
-              className={`absolute inset-0 transition-all duration-500 motion-reduce:transition-none ${
-                isDark ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+              className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                isDark ? 'rotate-180 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
               }`}
             />
             <Sun
               size={18}
-              className={`absolute inset-0 transition-all duration-500 motion-reduce:transition-none ${
-                isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+              className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+                isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-180 scale-0 opacity-0'
               }`}
             />
           </span>

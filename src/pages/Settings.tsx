@@ -647,7 +647,7 @@ export default function Settings() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Light mode card */}
                 <div
-                  onClick={() => isDark && toggleTheme()}
+                  onClick={(event) => isDark && toggleTheme({ x: event.clientX, y: event.clientY })}
                   className={`p-5 rounded-2xl border-2 transition-all cursor-pointer ${
                     !isDark
                       ? 'border-sky-500 bg-sky-50/50 shadow-sm'
@@ -668,7 +668,7 @@ export default function Settings() {
 
                 {/* Dark mode card */}
                 <div
-                  onClick={() => !isDark && toggleTheme()}
+                  onClick={(event) => !isDark && toggleTheme({ x: event.clientX, y: event.clientY })}
                   className={`p-5 rounded-2xl border-2 transition-all cursor-pointer ${
                     isDark
                       ? 'border-sky-500 bg-slate-800/90 shadow-sm'

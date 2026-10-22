@@ -270,7 +270,7 @@ export default function LoginPage() {
               <div className="flex items-center gap-2 mt-1">
                 <button
                   type="button"
-                  onClick={toggleTheme}
+                  onClick={(event) => toggleTheme({ x: event.clientX, y: event.clientY })}
                   className={`p-2 rounded-lg border ${
                     isDark
                       ? 'border-slate-700 bg-black text-white hover:bg-slate-900'
