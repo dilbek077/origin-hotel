@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Building2,
-  User,
   Lock,
   KeyRound,
   Save,
@@ -30,6 +29,7 @@ import { LANGUAGES, useTranslation } from '@/i18n';
 
 type SettingsTab = 'profil' | 'hisob' | 'korinish' | 'bildirishnomalar' | 'ekran';
 type FontSize = 'sm' | 'base' | 'lg';
+const SETTINGS_TABS: SettingsTab[] = ['profil', 'bildirishnomalar'];
 
 const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
   sky: { primary: '#0ea5e9', foreground: '#ffffff' },
@@ -45,10 +45,15 @@ export default function Settings() {
   const { isDark, toggleTheme } = useTheme();
   const { t, locale, setLocale } = useTranslation();
   // Active tab determination
-  const validTabs: SettingsTab[] = ['profil', 'hisob', 'korinish', 'bildirishnomalar', 'ekran'];
-  const currentTab: SettingsTab = validTabs.includes(tab as SettingsTab)
+  const currentTab: SettingsTab = SETTINGS_TABS.includes(tab as SettingsTab)
     ? (tab as SettingsTab)
     : 'profil';
+
+  useEffect(() => {
+    if (tab && !SETTINGS_TABS.includes(tab as SettingsTab)) {
+      navigate('/admin/sozlamalar/profil', { replace: true });
+    }
+  }, [navigate, tab]);
 
   const handleTabChange = (newTab: SettingsTab) => {
     navigate(`/admin/sozlamalar/${newTab}`);
@@ -252,10 +257,7 @@ export default function Settings() {
 
   const tabsConfig = [
     { id: 'profil' as const, label: t('nav.profile'), icon: UserCog, desc: "Shaxsiy profil va mehmonxona ma'lumotlari" },
-    { id: 'hisob' as const, label: t('nav.account'), icon: User, desc: 'Kirish, parol va hisob xavfsizligi' },
-    { id: 'korinish' as const, label: t('nav.appearance'), icon: Palette, desc: 'Mavzular, ranglar va til tanlash' },
     { id: 'bildirishnomalar' as const, label: t('nav.notifications'), icon: Bell, desc: 'Ogohlantirishlar va kanallar' },
-    { id: 'ekran' as const, label: t('nav.display'), icon: Monitor, desc: 'Displey, to‘liq ekran va kiosk rejimi' },
   ];
   return (
     <div className={isDark ? 'p-6 space-y-6 bg-slate-950 text-slate-100 min-h-screen' : 'p-6 space-y-6 bg-gray-50 text-gray-900 min-h-screen'}>

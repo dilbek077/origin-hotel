@@ -7,10 +7,7 @@ import {
   BarChart3,
   Settings,
   UserCog,
-  User,
-  Palette,
   Bell,
-  Monitor,
   // Staff uchun ham shu iconlar ishlatiladi
 } from "lucide-react"
 
@@ -54,10 +51,7 @@ export const SIDEBAR_MENU: SidebarMenu = {
       section: "Tizim",
       children: [
         { title: "Profil",            path: "/admin/sozlamalar/profil",            icon: UserCog },
-        { title: "Hisob",             path: "/admin/sozlamalar/hisob",             icon: User    },
-        { title: "Ko'rinish",         path: "/admin/sozlamalar/korinish",          icon: Palette },
         { title: "Bildirishnomalar",  path: "/admin/sozlamalar/bildirishnomalar",  icon: Bell    },
-        { title: "Ekran",             path: "/admin/sozlamalar/ekran",             icon: Monitor },
       ],
     },
   ],

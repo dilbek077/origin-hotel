@@ -9,18 +9,17 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/xonalar': 'nav.rooms',
   '/admin/mehmonlar': 'nav.guests',
   '/admin/bronlar': 'nav.bookings',
+  '/admin/bronlar/kelish-ketish': 'nav.checkInOut',
   '/admin/moliya': 'nav.finance',
   '/admin/hisobotlar': 'nav.reports',
   '/admin/sozlamalar': 'nav.settings',
   '/admin/sozlamalar/profil': 'nav.profile',
-  '/admin/sozlamalar/hisob': 'nav.account',
-  '/admin/sozlamalar/korinish': 'nav.appearance',
   '/admin/sozlamalar/bildirishnomalar': 'nav.notifications',
-  '/admin/sozlamalar/ekran': 'nav.display',
   '/staff': 'nav.dashboard',
   '/staff/xonalar': 'nav.rooms',
   '/staff/mehmonlar': 'nav.guests',
   '/staff/bronlar': 'nav.bookings',
+  '/staff/bronlar/kelish-ketish': 'nav.checkInOut',
 };
 
 export default function Header() {

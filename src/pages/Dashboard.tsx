@@ -38,8 +38,6 @@ import { StorageService } from "@/services/storage";
 import { OverviewChart } from "@/components/dashboard/OverviewChart";
 import { RecentBookings } from "@/components/dashboard/RecentBookings";
 import BookingModal from "@/components/bookings/BookingModal";
-import { CheckInConfirmDialog } from "@/components/bookings/CheckInConfirmDialog";
-import { CheckOutConfirmModal } from "@/components/bookings/CheckOutConfirmModal";
 import GuestModal from "@/components/guests/GuestModal";
 
 const formatCurrency = (amount: number) => `${amount.toLocaleString("uz-UZ")} so‘m`;
@@ -57,63 +55,95 @@ function WeeklyBookingsChart({ bookings }: { bookings: Booking[] }) {
     const date = new Date();
     date.setDate(date.getDate() - (6 - index));
     const key = dateKey(date);
+    const previousWeekDate = new Date(date);
+    previousWeekDate.setDate(previousWeekDate.getDate() - 7);
+    const previousWeekKey = dateKey(previousWeekDate);
 
     const count = bookings.filter((booking) => booking.checkIn === key).length;
+    const previousWeekCount = bookings.filter(
+      (booking) => booking.checkIn === previousWeekKey,
+    ).length;
 
     return {
       day: weekdayLabels[date.getDay()],
       count: count || (date.getDay() % 3) + 1,
+      previousWeekCount,
       isSample: count === 0,
     };
   });
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={weeklyData} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
-        <XAxis
-          dataKey="day"
-          axisLine={false}
-          tickLine={false}
-          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
-        />
-        <YAxis
-          allowDecimals={false}
-          axisLine={false}
-          tickLine={false}
-          tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
-        />
-        <Tooltip
-          content={({ active, payload, label }) => {
-            if (!active || !payload?.length) return null;
+    <div>
+      <ResponsiveContainer width="100%" height={220}>
+        <BarChart
+          data={weeklyData}
+          margin={{ top: 8, right: 8, left: -24, bottom: 0 }}
+          barGap={4}
+          barCategoryGap="22%"
+        >
+          <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
+          <XAxis
+            dataKey="day"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <YAxis
+            allowDecimals={false}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <Tooltip
+            cursor={{ fill: "var(--muted)", fillOpacity: 0.45 }}
+            content={({ active, payload, label }) => {
+              if (!active || !payload?.length) return null;
 
-            const { value, isSample } = payload[0].payload;
+              const dayData = payload[0].payload;
 
-            return (
-              <div
-                className="rounded-xl border border-border bg-card px-3 py-2 shadow-lg"
-                style={{ color: "var(--card-foreground)", fontSize: 12 }}
-              >
-                <p className="font-medium">{label}</p>
-                <p>{value} ta {isSample ? "namuna bron" : "bron"}</p>
-              </div>
-            );
-          }}
-          contentStyle={{
-            backgroundColor: "var(--card)",
-            border: "1px solid var(--border)",
-            borderRadius: "0.75rem",
-            color: "var(--card-foreground)",
-            fontSize: 12,
-          }}
-        />
-        <Bar dataKey="count" fill="var(--primary)" radius={[5, 5, 0, 0]} maxBarSize={30}>
-          {weeklyData.map((entry) => (
-            <Cell key={entry.day} fill="var(--primary)" fillOpacity={entry.isSample ? 0.4 : 1} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+              return (
+                <div
+                  className="rounded-md border border-border bg-card px-3 py-2 shadow-md"
+                  style={{ color: "var(--card-foreground)", fontSize: 12 }}
+                >
+                  <p className="mb-1 font-medium">{label}</p>
+                  <p>
+                    Shu hafta: {dayData.count} ta
+                    {dayData.isSample ? " (namuna)" : ""}
+                  </p>
+                  <p>Oldingi hafta: {dayData.previousWeekCount} ta</p>
+                </div>
+              );
+            }}
+          />
+          <Bar dataKey="count" fill="var(--primary)" radius={[2, 2, 0, 0]} maxBarSize={22}>
+            {weeklyData.map((entry) => (
+              <Cell
+                key={entry.day}
+                fill="var(--primary)"
+                fillOpacity={entry.isSample ? 0.4 : 1}
+              />
+            ))}
+          </Bar>
+          <Bar
+            dataKey="previousWeekCount"
+            fill="#cbdaf4"
+            radius={[2, 2, 0, 0]}
+            maxBarSize={22}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-3 pt-1 text-[11px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-sm bg-primary" />
+          Shu hafta
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-sm bg-[#cbdaf4]" />
+          Oldingi hafta
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -124,8 +154,6 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>(() => StorageService.getTransactions());
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
-  const [checkInBooking, setCheckInBooking] = useState<Booking | null>(null);
-  const [checkOutBooking, setCheckOutBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -207,22 +235,6 @@ export default function Dashboard() {
     return true;
   };
 
-  const handleCheckIn = (id: number) => {
-    setCheckInBooking(bookings.find((booking) => booking.id === id) ?? null);
-  };
-
-  const confirmCheckIn = (id: number) => {
-    return StorageService.checkInBooking(id);
-  };
-
-  const handleCheckOut = (id: number) => {
-    setCheckOutBooking(bookings.find((booking) => booking.id === id) ?? null);
-  };
-
-  const confirmCheckOut = (id: number) => {
-    return StorageService.checkOutBooking(id);
-  };
-
   return (
     <div className="min-h-screen space-y-5 bg-background p-4 text-foreground sm:p-6 lg:p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -249,7 +261,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <section aria-label="Asosiy ko‘rsatkichlar" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+      <section aria-label="Asosiy ko‘rsatkichlar" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           return (
@@ -406,7 +418,7 @@ export default function Dashboard() {
           <CardHeader className="flex flex-row items-start justify-between px-5 pb-0">
             <div className="space-y-1">
               <CardTitle className="text-base">Bronlar</CardTitle>
-              <CardDescription>Oxirgi 7 kun · namuna kunlari xira rangda</CardDescription>
+              <CardDescription>Oxirgi 7 kun · oldingi hafta bilan taqqoslash</CardDescription>
             </div>
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -428,11 +440,7 @@ export default function Dashboard() {
             </Link>
           </CardHeader>
           <CardContent className="px-4 sm:px-5">
-            <RecentBookings
-              bookings={bookings}
-              onCheckIn={handleCheckIn}
-              onCheckOut={handleCheckOut}
-            />
+            <RecentBookings bookings={bookings} />
           </CardContent>
         </Card>
       </section>
@@ -448,20 +456,6 @@ export default function Dashboard() {
         isOpen={guestModalOpen}
         onClose={() => setGuestModalOpen(false)}
         onSave={handleSaveGuest}
-      />
-      <CheckInConfirmDialog
-        booking={checkInBooking}
-        onOpenChange={(open) => {
-          if (!open) setCheckInBooking(null);
-        }}
-        onConfirm={confirmCheckIn}
-      />
-      <CheckOutConfirmModal
-        booking={checkOutBooking}
-        onOpenChange={(open) => {
-          if (!open) setCheckOutBooking(null);
-        }}
-        onConfirm={confirmCheckOut}
       />
     </div>
   );

@@ -67,7 +67,23 @@ const initialGuests: Guest[] = [
   },
 ];
 
-const todayStr = new Date().toISOString().split("T")[0];
+const formatDate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const addDays = (date: Date | string, days: number) => {
+  const [year, month, day] = typeof date === "string"
+    ? date.split("-").map(Number)
+    : [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+  const result = new Date(year, month - 1, day);
+  result.setDate(result.getDate() + days);
+  return formatDate(result);
+};
+
+const todayStr = formatDate(new Date());
 
 const initialBookings: Booking[] = [
   {
@@ -77,7 +93,7 @@ const initialBookings: Booking[] = [
     roomId: 2,
     room: "102 — Deluxe",
     checkIn: todayStr,
-    checkOut: "2026-10-20",
+    checkOut: addDays(todayStr, 4),
     nights: 4,
     price: 2200000,
     status: "Yashamoqda",
@@ -90,7 +106,7 @@ const initialBookings: Booking[] = [
     roomId: 5,
     room: "305 — Deluxe",
     checkIn: todayStr,
-    checkOut: "2026-10-19",
+    checkOut: addDays(todayStr, 3),
     nights: 3,
     price: 1650000,
     status: "Yashamoqda",
@@ -102,8 +118,8 @@ const initialBookings: Booking[] = [
     guest: "Toshmatov Sardor Ulug‘bekovich",
     roomId: 3,
     room: "203 — Suite",
-    checkIn: "2026-10-22",
-    checkOut: "2026-10-25",
+    checkIn: addDays(todayStr, 1),
+    checkOut: addDays(todayStr, 4),
     nights: 3,
     price: 2700000,
     status: "Tasdiqlangan",
@@ -115,8 +131,8 @@ const initialBookings: Booking[] = [
     guest: "Rahimova Dilnoza Hamidovna",
     roomId: 1,
     room: "101 — Standart",
-    checkIn: "2026-10-24",
-    checkOut: "2026-10-26",
+    checkIn: addDays(todayStr, 2),
+    checkOut: addDays(todayStr, 4),
     nights: 2,
     price: 700000,
     status: "Kutilmoqda",
@@ -128,7 +144,7 @@ const initialBookings: Booking[] = [
     guest: "Yusupov Bobur Erkinovich",
     roomId: 4,
     room: "204 — Standart",
-    checkIn: "2026-10-12",
+    checkIn: addDays(todayStr, -4),
     checkOut: todayStr,
     nights: 4,
     price: 1400000,
@@ -255,7 +271,35 @@ export const StorageService = {
       localStorage.setItem(BOOKINGS_KEY, JSON.stringify(initialBookings));
       return initialBookings;
     }
-    return JSON.parse(raw);
+    const bookings: Booking[] = JSON.parse(raw);
+    const demoBookings = [
+      { id: 1, guestId: 1, roomId: 2, guest: "Aliyev Jasur Baxtiyorovich" },
+      { id: 2, guestId: 2, roomId: 5, guest: "Karimova Malika Saidovna" },
+    ];
+    let repaired = false;
+
+    for (const booking of bookings) {
+      const isBrokenDemoBooking = demoBookings.some(
+        (demo) =>
+          booking.id === demo.id &&
+          booking.guestId === demo.guestId &&
+          booking.roomId === demo.roomId &&
+          booking.guest === demo.guest &&
+          booking.status === "Yashamoqda" &&
+          booking.checkOut <= booking.checkIn,
+      );
+
+      if (isBrokenDemoBooking) {
+        booking.checkOut = addDays(booking.checkIn, booking.nights);
+        repaired = true;
+      }
+    }
+
+    if (repaired) {
+      localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
+    }
+
+    return bookings;
   },
 
   saveBookings(bookings: Booking[]) {

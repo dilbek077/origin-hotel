@@ -11,11 +11,9 @@ import {
   Settings,
   ChevronDown,
   UserCog,
-  User,
-  Palette,
   Bell,
-  Monitor,
   LogOut,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 
@@ -37,16 +35,14 @@ const adminNavItems: NavItem[] = [
   { labelKey: 'nav.rooms', path: '/admin/xonalar', icon: <BedDouble size={18} /> },
   { labelKey: 'nav.guests', path: '/admin/mehmonlar', icon: <Users size={18} /> },
   { labelKey: 'nav.bookings', path: '/admin/bronlar', icon: <CalendarCheck size={18} /> },
+  { labelKey: 'nav.checkInOut', path: '/admin/bronlar/kelish-ketish', icon: <ArrowLeftRight size={18} /> },
   { labelKey: 'nav.finance', path: '/admin/moliya', icon: <Wallet size={18} /> },
   { labelKey: 'nav.reports', path: '/admin/hisobotlar', icon: <BarChart3 size={18} /> },
 ];
 
 const settingsSubItems: SettingsSubItem[] = [
   { id: 'profil', labelKey: 'nav.profile', path: '/admin/sozlamalar/profil', icon: UserCog },
-  { id: 'hisob', labelKey: 'nav.account', path: '/admin/sozlamalar/hisob', icon: User },
-  { id: 'korinish', labelKey: 'nav.appearance', path: '/admin/sozlamalar/korinish', icon: Palette },
   { id: 'bildirishnomalar', labelKey: 'nav.notifications', path: '/admin/sozlamalar/bildirishnomalar', icon: Bell },
-  { id: 'ekran', labelKey: 'nav.display', path: '/admin/sozlamalar/ekran', icon: Monitor },
 ];
 
 const staffNavItems: NavItem[] = [
@@ -54,6 +50,7 @@ const staffNavItems: NavItem[] = [
   { labelKey: 'nav.rooms', path: '/staff/xonalar', icon: <BedDouble size={18} /> },
   { labelKey: 'nav.guests', path: '/staff/mehmonlar', icon: <Users size={18} /> },
   { labelKey: 'nav.bookings', path: '/staff/bronlar', icon: <CalendarCheck size={18} /> },
+  { labelKey: 'nav.checkInOut', path: '/staff/bronlar/kelish-ketish', icon: <ArrowLeftRight size={18} /> },
 ];
 
 export default function Sidebar() {
@@ -68,7 +65,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate('/');
   };
 
   const handleSettingsToggle = () => {
@@ -92,7 +89,11 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            end={item.path === '/admin' || item.path === '/staff'}
+            end={
+              item.path === '/admin' ||
+              item.path === '/staff' ||
+              item.labelKey === 'nav.bookings'
+            }
             className={({ isActive }) =>
               [
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150',
@@ -113,7 +114,11 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            end={item.path === '/admin' || item.path === '/staff'}
+            end={
+              item.path === '/admin' ||
+              item.path === '/staff' ||
+              item.labelKey === 'nav.bookings'
+            }
             className={({ isActive }) =>
               [
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150',
@@ -160,7 +165,7 @@ export default function Sidebar() {
               />
             </button>
 
-            {/* Sub-items (Profil, Hisob, Ko'rinish, Bildirishnomalar, Ekran) */}
+            {/* Settings sub-items */}
             {isSettingsOpen && (
               <div className="relative pl-3.5 ml-4.5 my-1 space-y-1 border-l border-white/15">
                 {settingsSubItems.map((sub) => {

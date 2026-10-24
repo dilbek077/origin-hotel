@@ -177,7 +177,7 @@ export default function RoomModal({
             <input
               type="number"
               min={1000}
-              step={10000}
+              step={1}
               value={pricePerNight}
               onChange={(e) => setPricePerNight(Number(e.target.value))}
               className={inputClass}

@@ -81,6 +81,10 @@ const router = createBrowserRouter([
                 element: withSuspense(AdminBookingsPage, "Bronlar yuklanmoqda..."),
               },
               {
+                path: "/admin/bronlar/kelish-ketish",
+                element: withSuspense(AdminBookingsPage, "Kelish-ketish ro‘yxati yuklanmoqda..."),
+              },
+              {
                 path: "/admin/moliya",
                 element: withSuspense(AdminFinancePage, "Moliya yuklanmoqda..."),
               },
@@ -123,6 +127,10 @@ const router = createBrowserRouter([
               {
                 path: "/staff/bronlar",
                 element: withSuspense(StaffBookingsPage, "Bronlar yuklanmoqda..."),
+              },
+              {
+                path: "/staff/bronlar/kelish-ketish",
+                element: withSuspense(StaffBookingsPage, "Kelish-ketish ro‘yxati yuklanmoqda..."),
               },
             ],
           },

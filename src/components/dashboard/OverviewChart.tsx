@@ -51,12 +51,12 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
       <AreaChart data={monthlyData} margin={{ top: 12, right: 12, left: -20, bottom: 0 }}>
         <defs>
           <linearGradient id="incomeFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.28} />
-            <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.02} />
+            <stop offset="0%" stopColor="#e58a43" stopOpacity={0.22} />
+            <stop offset="95%" stopColor="#e58a43" stopOpacity={0.01} />
           </linearGradient>
           <linearGradient id="expenseFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--muted-foreground)" stopOpacity={0.16} />
-            <stop offset="95%" stopColor="var(--muted-foreground)" stopOpacity={0.01} />
+            <stop offset="0%" stopColor="#80604e" stopOpacity={0.14} />
+            <stop offset="95%" stopColor="#80604e" stopOpacity={0.01} />
           </linearGradient>
         </defs>
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
@@ -92,7 +92,7 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
         <Area
           type="monotone"
           dataKey="kirim"
-          stroke="var(--primary)"
+          stroke="#e58a43"
           strokeWidth={2.5}
           fill="url(#incomeFill)"
           activeDot={{ r: 5, strokeWidth: 0 }}
@@ -101,7 +101,7 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
         <Area
           type="monotone"
           dataKey="chiqim"
-          stroke="var(--muted-foreground)"
+          stroke="#80604e"
           strokeWidth={2}
           fill="url(#expenseFill)"
           activeDot={{ r: 4, strokeWidth: 0 }}

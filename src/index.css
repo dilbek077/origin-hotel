@@ -156,7 +156,7 @@ html.dark {
 }
 
 @keyframes app-modal-backdrop-in {
-  from { opacity: 0; }
+  from { opacity: 0; backdrop-filter: blur(0); }
   to { opacity: 1; }
 }
 
@@ -166,7 +166,7 @@ html.dark {
 }
 
 @keyframes app-modal-content-in {
-  from { opacity: 0; transform: translateY(0.5rem) scale(0.97); }
+  from { opacity: 0; transform: translateY(0.75rem) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -219,7 +219,7 @@ html.dark {
 [data-slot="dialog-overlay"][data-state="open"],
 [data-slot="sheet-overlay"][data-state="open"],
 .landing-modal-overlay[data-state="open"] {
-  animation: app-modal-backdrop-in 180ms ease-out both;
+  animation: app-modal-backdrop-in 220ms ease-out both;
 }
 
 .app-modal-overlay[data-state="closed"],
@@ -232,7 +232,7 @@ html.dark {
 .app-modal-content[data-state="open"],
 [data-slot="dialog-content"][data-state="open"],
 .landing-modal-content[data-state="open"] {
-  animation: app-modal-content-in 180ms ease-out both;
+  animation: app-modal-content-in 240ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
 .app-modal-content[data-state="closed"],
