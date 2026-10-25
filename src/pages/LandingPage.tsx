@@ -966,7 +966,13 @@ export default function LandingPage() {
 
       {/* ─── Room Details Modal ────────────────────────────────────────────────── */}
       {viewModalRoom && (
-        <div data-state={isViewModalClosing ? 'closed' : 'open'} className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div
+          data-state={isViewModalClosing ? 'closed' : 'open'}
+          className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeViewModal();
+          }}
+        >
           <div data-state={isViewModalClosing ? 'closed' : 'open'} className={isDark ? 'landing-modal-content bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative' : 'landing-modal-content bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative'}>
             <button
               onClick={closeViewModal}
@@ -1007,7 +1013,13 @@ export default function LandingPage() {
 
       {/* ─── Room Booking Modal ─────────────────────────────────────────────────── */}
       {bookingModalRoom && (
-        <div data-state={isBookingModalClosing ? 'closed' : 'open'} className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div
+          data-state={isBookingModalClosing ? 'closed' : 'open'}
+          className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeBookingModal();
+          }}
+        >
           <div
             data-state={isBookingModalClosing ? 'closed' : 'open'}
             className={

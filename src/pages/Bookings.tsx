@@ -138,21 +138,12 @@ export default function Bookings() {
 
   const getStatusBadge = (status: BookingStatus) => {
     const text = translateStatus(status);
-    let colorClass = "bg-gray-100 text-gray-700 border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
-    let dotClass = "bg-gray-500";
+    let colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30";
+    let dotClass = "bg-blue-500";
 
-    if (status === "Yashamoqda") {
-      colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30";
-      dotClass = "bg-blue-500";
-    } else if (status === "Tasdiqlangan") {
-      colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30";
-      dotClass = "bg-emerald-500";
-    } else if (status === "Kutilmoqda") {
+    if (status === "Kutilmoqda") {
       colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30";
       dotClass = "bg-amber-500";
-    } else if (status === "Bekor") {
-      colorClass = "bg-red-100 text-red-600 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30";
-      dotClass = "bg-red-500";
     }
 
     return (
@@ -450,7 +441,7 @@ export default function Bookings() {
                         {(booking.status === "Tasdiqlangan" || booking.status === "Kutilmoqda") && (
                           <button
                             onClick={() => handleCheckIn(booking.id)}
-                            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition cursor-pointer"
+                            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition cursor-pointer"
                           >
                             <LogIn size={13} />
                             Check-in
@@ -510,7 +501,7 @@ export default function Bookings() {
               {t('status.living')}: {countByStatus("Yashamoqda")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
               {t('status.confirmed')}: {countByStatus("Tasdiqlangan")}
             </span>
             <span className="flex items-center gap-1.5">

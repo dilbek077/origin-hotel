@@ -26,14 +26,15 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/theme';
 import { LANGUAGES, useTranslation } from '@/i18n';
+import { NOTIFICATION_SETTINGS_CHANGED, readNotificationSettings } from '@/services/notificationSettings';
 
 type SettingsTab = 'profil' | 'hisob' | 'korinish' | 'bildirishnomalar' | 'ekran';
 type FontSize = 'sm' | 'base' | 'lg';
 const SETTINGS_TABS: SettingsTab[] = ['profil', 'bildirishnomalar'];
 
 const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
-  sky: { primary: '#0ea5e9', foreground: '#ffffff' },
-  blue: { primary: '#2563eb', foreground: '#ffffff' },
+  sky: { primary: '#0284c7', foreground: '#ffffff' },
+  blue: { primary: '#0284c7', foreground: '#ffffff' },
   emerald: { primary: '#10b981', foreground: '#ffffff' },
   purple: { primary: '#a855f7', foreground: '#ffffff' },
   amber: { primary: '#f59e0b', foreground: '#111827' },
@@ -117,27 +118,7 @@ export default function Settings() {
   });
 
   // ─── 4. Bildirishnomalar sozlamalari ─────────────────────────────────────────
-  const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('origin_notifications');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return {
-      newBooking: true,
-      bookingCancel: true,
-      checkInOut: true,
-      roomStatus: true,
-      financeAlert: true,
-      soundAlert: true,
-      emailDigest: false,
-      telegramAlert: true,
-      telegramChatId: '@originhotel_alerts',
-    };
-  });
+  const [notifications, setNotifications] = useState(readNotificationSettings);
 
   // ─── 5. Ekran sozlamalari ────────────────────────────────────────────────────
   const [screenSettings, setScreenSettings] = useState(() => {
@@ -217,6 +198,7 @@ export default function Settings() {
 
   const handleNotificationsSave = () => {
     localStorage.setItem('origin_notifications', JSON.stringify(notifications));
+    window.dispatchEvent(new Event(NOTIFICATION_SETTINGS_CHANGED));
     showSaveSuccess('Bildirishnoma sozlamalari saqlandi!');
   };
 
@@ -335,7 +317,7 @@ export default function Settings() {
               <div className="p-6 space-y-5">
                 {/* Avatar blok */}
                 <div className={isDark ? 'flex items-center gap-4 p-4 bg-slate-800/60 rounded-xl border border-slate-700/60' : 'flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100'}>
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-md">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-sky-700 flex items-center justify-center text-white text-2xl font-bold shadow-md">
                     {profileForm.fullName.charAt(0)}
                   </div>
                   <div className="flex-1">
@@ -878,6 +860,26 @@ export default function Settings() {
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.newBooking ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Bron bekor qilinishi */}
+              <div className="py-4 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">Bron bekor qilinganda ogohlantirish</p>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
+                    Bron bekor qilinganda tizim bildirishnomasini ko‘rsatish
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setNotifications({ ...notifications, bookingCancel: !notifications.bookingCancel })}
+                  aria-pressed={notifications.bookingCancel}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                    notifications.bookingCancel ? 'bg-sky-500' : 'bg-slate-700'
+                  }`}
+                >
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.bookingCancel ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
               </div>
 

@@ -87,6 +87,9 @@ export default function Modal({
     <div
       data-state={isOpen ? "open" : "closed"}
       className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
       <div
         data-state={isOpen ? "open" : "closed"}

@@ -108,14 +108,21 @@ export default function LoginPage() {
   }`;
 
   return (
-    <main className={`min-h-screen md:grid md:grid-cols-2 ${isDark ? 'bg-slate-950' : 'bg-white'}`}>
-      <section className="relative flex min-h-[340px] flex-col justify-between overflow-hidden px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-20">
+    <main className={`login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0a1628]' : 'bg-[#f4f7f0]'}`}>
+      <section className={`relative flex min-h-[340px] flex-col justify-between overflow-hidden px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-16 ${
+        isDark
+          ? 'bg-gradient-to-br from-[#082f49] via-[#075985] to-[#0369a1]'
+          : 'bg-gradient-to-br from-[#075985] via-[#0369a1] to-[#0284c7]'
+      }`}>
         <img
           src={HERO_IMAGE}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-luminosity"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2342] via-slate-900/40 to-slate-950/75" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2342]/70 via-sky-900/40 to-slate-950/70" />
+        <div className="absolute -top-28 -right-20 h-96 w-96 rounded-full bg-sky-300/15 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-20 -left-28 h-80 w-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:44px_44px] pointer-events-none" />
 
         <a href="/" className="relative z-10 inline-flex w-fit items-center gap-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#11263d]">

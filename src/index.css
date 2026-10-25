@@ -10,7 +10,7 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: #2563eb;
+  --primary: #0284c7;
   --primary-foreground: #ffffff;
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
@@ -22,13 +22,13 @@
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.929 0.013 255.508);
-  --ring: #2563eb;
-  --brand-900: #0a2342;
-  --brand-800: #123d68;
-  --brand-700: #1d5da8;
-  --brand-600: #2d7fe8;
-  --brand-500: #5bb6ff;
-  --brand-100: #eaf6ff;
+  --ring: #0284c7;
+  --brand-900: #082f49;
+  --brand-800: #075985;
+  --brand-700: #0369a1;
+  --brand-600: #0284c7;
+  --brand-500: #0ea5e9;
+  --brand-100: #e0f2fe;
   --bg-soft: #f4f9ff;
   --bg-panel: rgba(255, 255, 255, 0.72);
   --text-strong: #11263d;
@@ -52,7 +52,7 @@
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: #3b82f6;
+  --primary: #0284c7;
   --primary-foreground: #ffffff;
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
@@ -64,7 +64,7 @@
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #3b82f6;
+  --ring: #0284c7;
 }
 
 @theme inline {
@@ -80,6 +80,17 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-blue-50: var(--color-sky-50);
+  --color-blue-100: var(--color-sky-100);
+  --color-blue-200: var(--color-sky-200);
+  --color-blue-300: var(--color-sky-300);
+  --color-blue-400: var(--color-sky-400);
+  --color-blue-500: var(--color-sky-500);
+  --color-blue-600: var(--color-sky-600);
+  --color-blue-700: var(--color-sky-700);
+  --color-blue-800: var(--color-sky-800);
+  --color-blue-900: var(--color-sky-900);
+  --color-blue-950: var(--color-sky-950);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -129,7 +140,7 @@ html.dark {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -152,6 +163,17 @@ html.dark {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes login-page-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -287,6 +309,28 @@ html.dark {
   animation: date-picker-out 140ms ease-in both;
 }
 
+.notification-menu {
+  transform-origin: top center;
+  animation: language-menu-in 160ms ease-out both;
+}
+
+.notification-menu[data-state="closing"] {
+  animation: date-picker-out 140ms ease-in both;
+}
+
+.room-status-menu {
+  transform-origin: top left;
+  animation: language-menu-in 160ms ease-out both;
+}
+
+.room-status-menu[data-state="closing"] {
+  animation: date-picker-out 140ms ease-in both;
+}
+
+.login-page-enter {
+  animation: login-page-enter 600ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-new(root) {
     animation: none;
@@ -294,6 +338,9 @@ html.dark {
 
   .date-picker-popover,
   .language-menu,
+  .notification-menu,
+  .room-status-menu,
+  .login-page-enter,
   .app-modal-overlay,
   .app-modal-content,
   [data-slot="dialog-overlay"],

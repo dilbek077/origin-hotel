@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Plus, Search, BedDouble, Eye, Edit, Trash2, Users } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Plus, Search, BedDouble, Eye, Edit, Trash2, Users, ChevronDown, Check } from "lucide-react";
 import type { Room, RoomStatus } from "@/types/room";
 import { StorageService } from "@/services/storage";
 import RoomModal from "@/components/rooms/RoomModal";
@@ -16,6 +16,10 @@ export default function Rooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("Barchasi");
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [statusMenuClosing, setStatusMenuClosing] = useState(false);
+  const statusMenuRef = useRef<HTMLDivElement>(null);
+  const statusMenuTimer = useRef<number | null>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
@@ -32,6 +36,45 @@ export default function Rooms() {
     window.addEventListener("origin-hotel-storage-change", handleStorageChange);
     return () => window.removeEventListener("origin-hotel-storage-change", handleStorageChange);
   }, []);
+
+  const closeStatusMenu = useCallback(() => {
+    if (statusMenuTimer.current !== null || !statusMenuOpen) return;
+    setStatusMenuClosing(true);
+    statusMenuTimer.current = window.setTimeout(() => {
+      setStatusMenuOpen(false);
+      setStatusMenuClosing(false);
+      statusMenuTimer.current = null;
+    }, 140);
+  }, [statusMenuOpen]);
+
+  const openStatusMenu = () => {
+    if (statusMenuTimer.current !== null) {
+      window.clearTimeout(statusMenuTimer.current);
+      statusMenuTimer.current = null;
+    }
+    setStatusMenuClosing(false);
+    setStatusMenuOpen(true);
+  };
+
+  useEffect(() => () => {
+    if (statusMenuTimer.current !== null) window.clearTimeout(statusMenuTimer.current);
+  }, []);
+
+  useEffect(() => {
+    if (!statusMenuOpen) return;
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!statusMenuRef.current?.contains(event.target as Node)) closeStatusMenu();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeStatusMenu();
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [statusMenuOpen, closeStatusMenu]);
 
   const handleOpenAdd = () => {
     setEditingRoom(null);
@@ -148,21 +191,61 @@ export default function Rooms() {
         </div>
 
         {/* Status Filter */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className={
-            isDark
-              ? "px-3 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white cursor-pointer shadow-xs"
-              : "px-3 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 cursor-pointer shadow-xs"
-          }
-        >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt} value={opt} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
-              {opt === "Barchasi" ? t('common.all') : translateStatus(opt)}
-            </option>
-          ))}
-        </select>
+        <div ref={statusMenuRef} className="relative self-start">
+          <button
+            type="button"
+            onClick={() => statusMenuOpen && !statusMenuClosing ? closeStatusMenu() : openStatusMenu()}
+            aria-label={t('rooms.filterStatus')}
+            aria-haspopup="listbox"
+            aria-expanded={statusMenuOpen && !statusMenuClosing}
+            className={
+              isDark
+                ? "flex min-w-40 items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900 px-3 py-2.5 text-sm text-white shadow-xs outline-none transition hover:border-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500"
+                : "flex min-w-40 items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 shadow-xs outline-none transition hover:border-blue-200 focus-visible:ring-2 focus-visible:ring-blue-500"
+            }
+          >
+            <span>{statusFilter === "Barchasi" ? t('common.all') : translateStatus(statusFilter)}</span>
+            <ChevronDown size={16} className={`shrink-0 transition-transform duration-200 ${statusMenuOpen && !statusMenuClosing ? "rotate-180" : ""}`} />
+          </button>
+          {statusMenuOpen && (
+            <div
+              role="listbox"
+              aria-label={t('rooms.filterStatus')}
+              data-state={statusMenuClosing ? "closing" : "open"}
+              className={`room-status-menu absolute left-0 top-full z-40 mt-2 w-full min-w-44 overflow-hidden rounded-2xl border p-1.5 shadow-xl ${
+                isDark ? "border-slate-700 bg-slate-900 text-slate-100" : "border-sky-100 bg-white text-slate-800"
+              }`}
+            >
+              {STATUS_OPTIONS.map((option) => {
+                const selected = option === statusFilter;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    onClick={() => {
+                      setStatusFilter(option);
+                      closeStatusMenu();
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                      selected
+                        ? isDark
+                          ? "bg-blue-500/15 font-semibold text-sky-300"
+                          : "bg-blue-50 font-semibold text-blue-700"
+                        : isDark
+                          ? "text-slate-300 hover:bg-slate-800"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    <span>{option === "Barchasi" ? t('common.all') : translateStatus(option)}</span>
+                    {selected && <Check size={16} />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Room Cards Grid */}

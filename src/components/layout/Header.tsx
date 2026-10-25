@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe } from 'lucide-react';
 import { useTranslation, LANGUAGES } from '@/i18n';
 import { useTheme } from '@/theme';
+import { NOTIFICATION_SETTINGS_CHANGED, readNotificationSettings } from '@/services/notificationSettings';
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin': 'nav.dashboard',
@@ -32,6 +33,11 @@ export default function Header() {
   const [languageMenuClosing, setLanguageMenuClosing] = useState(false);
   const languageMenuRef = useRef<HTMLDivElement>(null);
   const languageMenuTimer = useRef<number | null>(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsClosing, setNotificationsClosing] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const notificationsTimer = useRef<number | null>(null);
+  const [notificationSettings, setNotificationSettings] = useState(readNotificationSettings);
 
   const closeLanguageMenu = useCallback(() => {
     if (languageMenuTimer.current !== null) return;
@@ -61,6 +67,55 @@ export default function Header() {
 
   useEffect(() => () => {
     if (languageMenuTimer.current !== null) window.clearTimeout(languageMenuTimer.current);
+    if (notificationsTimer.current !== null) window.clearTimeout(notificationsTimer.current);
+  }, []);
+
+  const closeNotifications = useCallback(() => {
+    if (notificationsTimer.current !== null || !notificationsOpen) return;
+    setNotificationsClosing(true);
+    notificationsTimer.current = window.setTimeout(() => {
+      setNotificationsOpen(false);
+      setNotificationsClosing(false);
+      notificationsTimer.current = null;
+    }, 140);
+  }, [notificationsOpen]);
+
+  const openNotifications = () => {
+    if (notificationsTimer.current !== null) {
+      window.clearTimeout(notificationsTimer.current);
+      notificationsTimer.current = null;
+    }
+    setNotificationsClosing(false);
+    setNotificationsOpen(true);
+  };
+
+  useEffect(() => {
+    if (!notificationsOpen) return;
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!notificationsRef.current?.contains(event.target as Node)) closeNotifications();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeNotifications();
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [notificationsOpen, closeNotifications]);
+
+  useEffect(() => {
+    const refreshNotificationSettings = () => setNotificationSettings(readNotificationSettings());
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'origin_notifications') refreshNotificationSettings();
+    };
+    window.addEventListener(NOTIFICATION_SETTINGS_CHANGED, refreshNotificationSettings);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener(NOTIFICATION_SETTINGS_CHANGED, refreshNotificationSettings);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const pageTitleKey =
@@ -77,6 +132,13 @@ export default function Header() {
     dashboardPath === '/admin' && pathname.startsWith('/admin/sozlamalar/')
       ? ['nav.settings', pageTitleKey]
       : [pageTitleKey];
+  const enabledNotifications = [
+    notificationSettings.newBooking && 'notifications.newBooking',
+    notificationSettings.bookingCancel && 'notifications.bookingCancel',
+    notificationSettings.checkInOut && 'notifications.checkInOut',
+    notificationSettings.roomStatus && 'notifications.roomStatus',
+    notificationSettings.financeAlert && 'notifications.financeAlert',
+  ].filter((key): key is string => Boolean(key));
 
   return (
     <header
@@ -141,7 +203,7 @@ export default function Header() {
         </ol>
       </nav>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {/* Quick Theme Toggle */}
         <button
           type="button"
@@ -241,21 +303,71 @@ export default function Header() {
         </div>
 
         {/* Notifications */}
-        <button
-          className={
-            isDark
-              ? 'relative p-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-sky-300 transition-colors cursor-pointer border border-transparent hover:border-slate-700'
-              : 'relative p-2 rounded-xl text-slate-500 hover:bg-sky-50 hover:text-sky-700 transition-colors cursor-pointer border border-transparent hover:border-sky-100'
-          }
-          aria-label="Notifications"
+        <div
+          ref={notificationsRef}
+          className="relative"
+          onMouseEnter={openNotifications}
+          onMouseLeave={closeNotifications}
         >
-          <Bell size={18} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
+          <button
+            type="button"
+            onClick={() => notificationsOpen && !notificationsClosing ? closeNotifications() : openNotifications()}
+            onFocus={openNotifications}
+            className={
+              isDark
+                ? 'relative p-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-sky-300 transition-colors cursor-pointer border border-transparent hover:border-slate-700'
+                : 'relative p-2 rounded-xl text-slate-500 hover:bg-sky-50 hover:text-sky-700 transition-colors cursor-pointer border border-transparent hover:border-sky-100'
+            }
+            aria-label={t('nav.notifications')}
+            aria-haspopup="dialog"
+            aria-expanded={notificationsOpen && !notificationsClosing}
+            aria-controls="header-notifications"
+          >
+            <Bell size={18} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+          </button>
+          {notificationsOpen && (
+            <div
+              className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-2"
+            >
+              <div
+                id="header-notifications"
+                role="dialog"
+                aria-label={t('nav.notifications')}
+                data-state={notificationsClosing ? 'closing' : 'open'}
+                className={`notification-menu rounded-2xl border p-4 shadow-xl ${
+                  isDark ? 'border-slate-700 bg-slate-900 text-slate-100' : 'border-sky-100 bg-white text-slate-800'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Bell size={16} className={isDark ? 'text-sky-400' : 'text-blue-600'} />
+                  <h2 className="text-sm font-semibold">{t('nav.notifications')}</h2>
+                </div>
+                <p className={isDark ? 'mt-2 text-xs leading-relaxed text-slate-400' : 'mt-2 text-xs leading-relaxed text-slate-500'}>
+                  {enabledNotifications.length > 0
+                    ? t('notifications.enabledDescription')
+                    : t('notifications.noneEnabled')}
+                </p>
+                {enabledNotifications.length > 0 && (
+                  <ul className="mt-3 space-y-2">
+                    {enabledNotifications.map((key) => (
+                      <li key={key} className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs ${
+                        isDark ? 'bg-slate-800/70 text-slate-300' : 'bg-sky-50 text-slate-700'
+                      }`}>
+                        <Check size={14} className="shrink-0 text-emerald-500" />
+                        <span>{t(key)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* User profile */}
         <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[linear-gradient(135deg,#2d7fe8,#5bb6ff)] text-white text-sm font-semibold select-none shadow-sm">
+          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[linear-gradient(135deg,#0284c7,#38bdf8)] text-white text-sm font-semibold select-none shadow-sm">
             {firstLetter}
           </div>
           <div className="hidden sm:flex flex-col leading-tight">
