@@ -8,6 +8,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   maxWidth?: string;
+  variant?: "auto" | "dark";
 }
 
 export default function Modal({
@@ -16,8 +17,10 @@ export default function Modal({
   title,
   children,
   maxWidth = "max-w-lg",
+  variant = "auto",
 }: ModalProps) {
   const { isDark } = useTheme();
+  const isDarkMode = variant === "dark" || (variant === "auto" && isDark);
   const [isRendered, setIsRendered] = useState(isOpen);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -93,24 +96,24 @@ export default function Modal({
     >
       <div
         data-state={isOpen ? "open" : "closed"}
-        className={`rounded-2xl shadow-2xl w-full ${maxWidth} overflow-hidden flex flex-col max-h-[90vh] ${
-          isDark
-            ? "bg-slate-900 border border-slate-700 text-slate-100"
+        className={`rounded-[26px] shadow-[0_20px_60px_rgba(0,0,0,0.55)] w-full ${maxWidth} overflow-hidden flex flex-col max-h-[90vh] ${
+          isDarkMode
+            ? "bg-[#11181d] border border-slate-700/80 text-slate-100"
             : "bg-white border border-gray-100 text-gray-900"
         } app-modal-content`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
-          className={`flex items-center justify-between px-6 py-4 border-b ${
-            isDark ? "border-slate-800" : "border-gray-100"
+          className={`flex items-center justify-between px-6 py-5 ${
+            isDarkMode ? "border-b border-slate-800/80" : "border-b border-gray-100"
           }`}
         >
-          <h3 className={`text-lg font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{title}</h3>
+          <h3 className={`text-lg font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>{title}</h3>
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-              isDark
+            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+              isDarkMode
                 ? "text-slate-400 hover:text-white hover:bg-slate-800"
                 : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
             }`}
@@ -120,7 +123,7 @@ export default function Modal({
         </div>
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto overscroll-contain">{children}</div>
+        <div className="p-0 overflow-y-auto overscroll-contain">{children}</div>
       </div>
     </div>
   );

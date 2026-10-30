@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe, Search } from 'lucide-react';
 import { useTranslation, LANGUAGES } from '@/i18n';
 import { useTheme } from '@/theme';
 import { NOTIFICATION_SETTINGS_CHANGED, readNotificationSettings } from '@/services/notificationSettings';
@@ -25,12 +25,14 @@ const PAGE_TITLES: Record<string, string> = {
 
 export default function Header() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { t, locale, setLocale } = useTranslation();
   const { isDark, toggleTheme } = useTheme();
   const username = localStorage.getItem('username') ?? t('common.user');
   const firstLetter = username.charAt(0).toUpperCase();
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [languageMenuClosing, setLanguageMenuClosing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const languageMenuRef = useRef<HTMLDivElement>(null);
   const languageMenuTimer = useRef<number | null>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -140,22 +142,20 @@ export default function Header() {
     notificationSettings.financeAlert && 'notifications.financeAlert',
   ].filter((key): key is string => Boolean(key));
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    navigate(`${dashboardPath}/bronlar`);
+  };
+
   return (
-    <header
-      className={
-        isDark
-          ? 'flex items-center justify-between px-6 py-3.5 bg-slate-900/90 backdrop-blur-sm border-b border-slate-700/80 shadow-[0_6px_20px_rgba(2,6,23,0.32)] transition-colors'
-          : 'flex items-center justify-between px-6 py-3.5 bg-white/80 backdrop-blur-sm border-b border-sky-100 shadow-[0_6px_20px_rgba(16,42,77,0.06)] transition-colors'
-      }
-    >
-      <nav aria-label="Breadcrumb">
+    <header className="flex h-16 items-center justify-between px-6 bg-card border-b border-border transition-colors">
+      {/* Left: Breadcrumbs */}
+      <nav aria-label="Breadcrumb" className="min-w-0">
         <ol className="flex min-w-0 items-center gap-2 text-sm">
           {isDashboard ? (
-            <li
-              aria-current="page"
-              className={isDark ? 'flex items-center gap-2 font-semibold text-slate-100' : 'flex items-center gap-2 font-semibold text-slate-800'}
-            >
-              <Home size={16} className="text-primary" />
+            <li aria-current="page" className="flex items-center gap-2 font-medium text-foreground">
+              <Home size={15} className="text-muted-foreground" />
               <span>{t(pageTitleKey)}</span>
             </li>
           ) : (
@@ -164,7 +164,7 @@ export default function Header() {
                 <Link
                   to={dashboardPath}
                   aria-label={t('nav.dashboard')}
-                  className={isDark ? 'flex items-center gap-1.5 text-slate-400 transition-colors hover:text-slate-100' : 'flex items-center gap-1.5 text-slate-500 transition-colors hover:text-slate-900'}
+                  className="flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <Home size={15} />
                   <span>{t('nav.dashboard')}</span>
@@ -179,18 +179,15 @@ export default function Header() {
 
                 return (
                   <li key={`${labelKey}-${index}`} className="flex min-w-0 items-center gap-2">
-                    <ChevronRight size={15} className="shrink-0 text-muted-foreground/60" />
+                    <ChevronRight size={14} className="shrink-0 text-muted-foreground/60" />
                     {isLast ? (
-                      <span
-                        aria-current="page"
-                        className={isDark ? 'truncate font-semibold text-slate-100' : 'truncate font-semibold text-slate-800'}
-                      >
+                      <span aria-current="page" className="truncate font-semibold text-foreground">
                         {t(labelKey)}
                       </span>
                     ) : (
                       <Link
                         to={href}
-                        className={isDark ? 'truncate text-slate-400 transition-colors hover:text-slate-100' : 'truncate text-slate-500 transition-colors hover:text-slate-900'}
+                        className="truncate text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {t(labelKey)}
                       </Link>
@@ -203,30 +200,42 @@ export default function Header() {
         </ol>
       </nav>
 
-      <div className="flex items-center gap-4">
+      {/* Center/Right: Search and Controls */}
+      <div className="flex items-center gap-3">
+        {/* Search Bar - Shadcn Zinc Style */}
+        <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center relative">
+          <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Qidiruv... (xona, mehmon)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-8.5 w-48 lg:w-64 rounded-md border border-border bg-muted/40 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all focus:w-72"
+          />
+          <kbd className="pointer-events-none absolute right-2 top-2 hidden h-4.5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground sm:flex">
+            ⌘K
+          </kbd>
+        </form>
+
         {/* Quick Theme Toggle */}
         <button
           type="button"
           onClick={(event) => toggleTheme({ x: event.clientX, y: event.clientY })}
-          className={
-            isDark
-              ? 'p-2 rounded-xl text-white bg-black hover:bg-slate-900 border border-slate-700 transition-all duration-300 active:scale-90 cursor-pointer'
-              : 'p-2 rounded-xl text-slate-600 bg-sky-50 hover:bg-sky-100 hover:text-slate-800 border border-sky-100 transition-all duration-300 active:scale-90 cursor-pointer'
-          }
+          className="p-2 rounded-md text-foreground bg-muted/50 hover:bg-muted border border-border transition-all active:scale-95 cursor-pointer"
           title={isDark ? t('common.lightMode') : t('common.darkMode')}
           aria-label={isDark ? t('common.lightMode') : t('common.darkMode')}
           aria-pressed={isDark}
         >
-          <span className="relative block h-[18px] w-[18px]">
+          <span className="relative block h-4 w-4">
             <Moon
-              size={18}
-              className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+              size={16}
+              className={`absolute inset-0 transition-all duration-300 ${
                 isDark ? 'rotate-180 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
               }`}
             />
             <Sun
-              size={18}
-              className={`absolute inset-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+              size={16}
+              className={`absolute inset-0 transition-all duration-300 ${
                 isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-180 scale-0 opacity-0'
               }`}
             />
@@ -252,24 +261,18 @@ export default function Header() {
             aria-label={t('nav.language')}
             aria-haspopup="listbox"
             aria-expanded={languageMenuOpen && !languageMenuClosing}
-            className={
-              isDark
-                ? 'flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-white outline-none transition hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500'
-                : 'flex items-center gap-2 rounded-xl border border-sky-100 bg-sky-50/70 px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none transition hover:bg-sky-100 focus-visible:ring-2 focus-visible:ring-blue-500'
-            }
+            className="flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 py-1.5 text-xs font-semibold text-foreground outline-none transition hover:bg-muted"
           >
-            <Globe size={14} className={isDark ? 'text-sky-400' : 'text-blue-600'} />
+            <Globe size={14} className="text-muted-foreground" />
             <span>{locale.toUpperCase()}</span>
-            <ChevronDown size={13} className={`transition-transform duration-200 ${languageMenuOpen && !languageMenuClosing ? 'rotate-180' : ''}`} />
+            <ChevronDown size={12} className={`transition-transform duration-200 ${languageMenuOpen && !languageMenuClosing ? 'rotate-180' : ''}`} />
           </button>
           {languageMenuOpen && (
             <div
               role="listbox"
               aria-label={t('nav.language')}
               data-state={languageMenuClosing ? 'closing' : 'open'}
-              className={`language-menu absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-2xl border p-1.5 shadow-xl ${
-                isDark ? 'border-slate-700 bg-slate-900 text-slate-100' : 'border-sky-100 bg-white text-slate-800'
-              }`}
+              className="language-menu absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-md border border-border bg-popover p-1 shadow-md text-popover-foreground"
             >
               {LANGUAGES.map((lang) => {
                 const isSelected = lang.code === locale;
@@ -283,18 +286,14 @@ export default function Header() {
                       setLocale(lang.code);
                       closeLanguageMenu();
                     }}
-                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                    className={`flex w-full items-center justify-between rounded-sm px-2.5 py-2 text-left text-xs transition ${
                       isSelected
-                        ? isDark
-                          ? 'bg-blue-500/15 font-semibold text-sky-300'
-                          : 'bg-blue-50 font-semibold text-blue-700'
-                        : isDark
-                          ? 'text-slate-300 hover:bg-slate-800'
-                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                        ? 'bg-accent font-semibold text-accent-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     }`}
                   >
                     <span>{lang.label}</span>
-                    {isSelected && <Check size={16} />}
+                    {isSelected && <Check size={14} />}
                   </button>
                 );
               })}
@@ -370,9 +369,9 @@ export default function Header() {
           <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[linear-gradient(135deg,#0284c7,#38bdf8)] text-white text-sm font-semibold select-none shadow-sm">
             {firstLetter}
           </div>
-          <div className="hidden sm:flex flex-col leading-tight">
-            <span className={isDark ? 'text-sm font-medium text-slate-100' : 'text-sm font-medium text-slate-800'}>{username}</span>
-            <span className={isDark ? 'text-xs text-slate-400 capitalize' : 'text-xs text-slate-500 capitalize'}>
+          <div className="hidden sm:flex flex-col leading-tight text-left">
+            <span className="text-xs font-semibold text-foreground">{username}</span>
+            <span className="text-[11px] text-muted-foreground capitalize">
               {(localStorage.getItem('role') ?? 'Staff').toLowerCase()}
             </span>
           </div>

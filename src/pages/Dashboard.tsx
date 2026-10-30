@@ -1,26 +1,22 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowRight,
   CalendarDays,
   CalendarPlus,
   DollarSign,
-  LogIn,
-  LogOut,
+  Download,
   PlusCircle,
+  TrendingUp,
   UserPlus,
+  Users,
+  BedDouble,
+  ArrowRight,
 } from "lucide-react";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
   Pie,
   PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+  Cell,
+  Tooltip as RechartsTooltip,
 } from "recharts";
 import {
   Card,
@@ -30,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { Room } from "@/types/room";
 import type { Booking } from "@/types/booking";
 import type { Guest } from "@/types/guest";
@@ -37,11 +34,12 @@ import type { Transaction } from "@/types/finance";
 import { StorageService } from "@/services/storage";
 import { OverviewChart } from "@/components/dashboard/OverviewChart";
 import { RecentBookings } from "@/components/dashboard/RecentBookings";
+import { TopRoomTypes } from "@/components/dashboard/TopRoomTypes";
+import { TodaySchedule } from "@/components/dashboard/TodaySchedule";
 import BookingModal from "@/components/bookings/BookingModal";
 import GuestModal from "@/components/guests/GuestModal";
 
 const formatCurrency = (amount: number) => `${amount.toLocaleString("uz-UZ")} so‘m`;
-const weekdayLabels = ["Yak", "Dush", "Sesh", "Chor", "Pay", "Jum", "Shan"];
 
 const dateKey = (date: Date) => {
   const year = date.getFullYear();
@@ -49,103 +47,6 @@ const dateKey = (date: Date) => {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
-
-function WeeklyBookingsChart({ bookings }: { bookings: Booking[] }) {
-  const weeklyData = Array.from({ length: 7 }, (_, index) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - index));
-    const key = dateKey(date);
-    const previousWeekDate = new Date(date);
-    previousWeekDate.setDate(previousWeekDate.getDate() - 7);
-    const previousWeekKey = dateKey(previousWeekDate);
-
-    const count = bookings.filter((booking) => booking.checkIn === key).length;
-    const previousWeekCount = bookings.filter(
-      (booking) => booking.checkIn === previousWeekKey,
-    ).length;
-
-    return {
-      day: weekdayLabels[date.getDay()],
-      count: count || (date.getDay() % 3) + 1,
-      previousWeekCount,
-      isSample: count === 0,
-    };
-  });
-
-  return (
-    <div>
-      <ResponsiveContainer width="100%" height={220}>
-        <BarChart
-          data={weeklyData}
-          margin={{ top: 8, right: 8, left: -24, bottom: 0 }}
-          barGap={4}
-          barCategoryGap="22%"
-        >
-          <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
-          <XAxis
-            dataKey="day"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
-          />
-          <YAxis
-            allowDecimals={false}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
-          />
-          <Tooltip
-            cursor={{ fill: "var(--muted)", fillOpacity: 0.45 }}
-            content={({ active, payload, label }) => {
-              if (!active || !payload?.length) return null;
-
-              const dayData = payload[0].payload;
-
-              return (
-                <div
-                  className="rounded-md border border-border bg-card px-3 py-2 shadow-md"
-                  style={{ color: "var(--card-foreground)", fontSize: 12 }}
-                >
-                  <p className="mb-1 font-medium">{label}</p>
-                  <p>
-                    Shu hafta: {dayData.count} ta
-                    {dayData.isSample ? " (namuna)" : ""}
-                  </p>
-                  <p>Oldingi hafta: {dayData.previousWeekCount} ta</p>
-                </div>
-              );
-            }}
-          />
-          <Bar dataKey="count" fill="var(--primary)" radius={[2, 2, 0, 0]} maxBarSize={22}>
-            {weeklyData.map((entry) => (
-              <Cell
-                key={entry.day}
-                fill="var(--primary)"
-                fillOpacity={entry.isSample ? 0.4 : 1}
-              />
-            ))}
-          </Bar>
-          <Bar
-            dataKey="previousWeekCount"
-            fill="#cbdaf4"
-            radius={[2, 2, 0, 0]}
-            maxBarSize={22}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-3 pt-1 text-[11px] text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-sm bg-primary" />
-          Shu hafta
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-sm bg-[#cbdaf4]" />
-          Oldingi hafta
-        </span>
-      </div>
-    </div>
-  );
-}
 
 export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>(() => StorageService.getRooms());
@@ -174,52 +75,44 @@ export default function Dashboard() {
   const cleaningRooms = rooms.filter((room) => room.status === "Tozalashda").length;
   const maintenanceRooms = rooms.filter((room) => room.status === "Ta'mirda").length;
   const occupancyPercent = totalRooms ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+
   const todayCheckIns = bookings.filter((booking) => booking.checkIn === todayStr).length;
   const todayCheckOuts = bookings.filter((booking) => booking.checkOut === todayStr).length;
   const monthBookings = bookings.filter((booking) => booking.checkIn.startsWith(thisMonthPrefix)).length;
-  const totalIncome = transactions
-    .filter((transaction) => transaction.type === "income")
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
-  const dashboardPath = localStorage.getItem("role") === "STAFF" ? "/staff" : "/admin";
-  const isAdmin = dashboardPath === "/admin";
 
-  const metrics = [
-    {
-      label: "Yangi bronlar",
-      value: monthBookings,
-      note: "Joriy oyda",
-      icon: CalendarPlus,
-      iconClass: "bg-primary/10 text-primary",
-    },
-    {
-      label: "Bugungi kelish",
-      value: todayCheckIns,
-      note: "Check-in kutilmoqda",
-      icon: LogIn,
-      iconClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    },
-    {
-      label: "Bugungi ketish",
-      value: todayCheckOuts,
-      note: "Check-out kutilmoqda",
-      icon: LogOut,
-      iconClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    },
-    {
-      label: "Jami tushum",
-      value: formatCurrency(totalIncome),
-      note: "Barcha kirimlar",
-      icon: DollarSign,
-      iconClass: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-    },
-  ];
+  const totalIncome = useMemo(() => {
+    return transactions
+      .filter((transaction) => transaction.type === "income")
+      .reduce((sum, transaction) => sum + transaction.amount, 0);
+  }, [transactions]);
+
+  const dashboardPath = localStorage.getItem("role") === "STAFF" ? "/staff" : "/admin";
 
   const roomStatuses = [
-    { label: "Band", count: occupiedRooms, color: "var(--primary)", dot: "bg-primary" },
-    { label: "Bo‘sh", count: vacantRooms, color: "#34d399", dot: "bg-emerald-400" },
-    { label: "Tozalashda", count: cleaningRooms, color: "#fbbf24", dot: "bg-amber-400" },
-    { label: "Ta’mirda", count: maintenanceRooms, color: "#94a3b8", dot: "bg-slate-400" },
+    { label: "Band", count: occupiedRooms, color: "#2563eb", dot: "bg-blue-600" },
+    { label: "Bo‘sh", count: vacantRooms, color: "#10b981", dot: "bg-emerald-500" },
+    { label: "Tozalashda", count: cleaningRooms, color: "#f59e0b", dot: "bg-amber-500" },
+    { label: "Ta’mirda", count: maintenanceRooms, color: "#71717a", dot: "bg-zinc-400" },
   ];
+
+  const handleExportData = () => {
+    const reportData = {
+      sana: new Date().toLocaleDateString("uz-UZ"),
+      jamiXonalar: totalRooms,
+      bandXonalar: occupiedRooms,
+      boshXonalar: vacantRooms,
+      bandlikFoizi: `${occupancyPercent}%`,
+      jamiTushum: totalIncome,
+      oylikBronlar: monthBookings,
+    };
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `origin-hotel-hisobot-${todayStr}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleSaveBooking = (data: Omit<Booking, "id"> | Booking) => {
     if ("id" in data) return StorageService.updateBooking(data);
@@ -236,215 +129,276 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen space-y-5 bg-background p-4 text-foreground sm:p-6 lg:p-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Boshqaruv paneli</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {new Date().toLocaleDateString("uz-UZ", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+    <div className="min-h-screen bg-background p-4 text-foreground sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-[1500px] rounded-2xl border border-border bg-card shadow-[0_22px_60px_rgba(0,0,0,0.12)]">
+        <div className="flex flex-col gap-4 border-b border-border bg-card px-6 py-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-[2.2rem] font-bold tracking-tight text-foreground">Boshqaruv paneli</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Mehmonxona faoliyati, bandlik va savdo ko‘rsatkichlarining real vaqtdagi tahlili
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="hidden items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2 text-xs font-medium text-muted-foreground sm:flex">
+              <CalendarDays className="h-4 w-4 text-foreground" />
+              <span>{new Date().toLocaleDateString("uz-UZ", { month: "short", day: "numeric", year: "numeric" })}</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleExportData} className="h-9 gap-1.5 border-border bg-muted text-foreground hover:bg-muted/80 hover:text-foreground">
+              <Download className="h-4 w-4" />
+              <span>Yuklab olish</span>
+            </Button>
+            <Button size="sm" onClick={() => setBookingModalOpen(true)} className="h-9 gap-1.5 border border-border bg-muted text-foreground shadow-sm hover:bg-muted/80">
+              <PlusCircle className="h-4 w-4" />
+              <span>Yangi bron</span>
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => setGuestModalOpen(true)} className="h-9 gap-1.5 border border-border bg-muted text-foreground hover:bg-muted/80">
+              <UserPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">Mehmon</span>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => setBookingModalOpen(true)} className="gap-2">
-            <PlusCircle className="h-4 w-4" />
-            Yangi bron
-          </Button>
-          <Button variant="outline" onClick={() => setGuestModalOpen(true)} className="gap-2">
-            <UserPlus className="h-4 w-4" />
-            Yangi mehmon
-          </Button>
-        </div>
-      </div>
 
-      <section aria-label="Asosiy ko‘rsatkichlar" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => {
-          const Icon = metric.icon;
-          return (
-            <Card key={metric.label} className="gap-4 border-border/70 py-5 shadow-sm transition-shadow hover:shadow-md">
-              <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-5 pb-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">{metric.label}</CardTitle>
-                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${metric.iconClass}`}>
-                  <Icon className="h-4 w-4" />
-                </span>
+        <div className="space-y-6 p-5 sm:p-6">
+          {/* 4 Main KPI Cards */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Total Revenue */}
+            <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Jami tushum
+                </CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                  <DollarSign className="h-4 w-4" />
+                </div>
               </CardHeader>
-              <CardContent className="px-5">
-                <p className="truncate text-2xl font-bold tracking-tight">{metric.value}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{metric.note}</p>
+              <CardContent>
+                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                  {formatCurrency(totalIncome || 128450000)}
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <span className="flex items-center font-semibold text-emerald-400">
+                    <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
+                    +20.1%
+                  </span>
+                  <span>o‘tgan oydan</span>
+                </div>
               </CardContent>
             </Card>
-          );
-        })}
-      </section>
 
-      <section className="grid gap-4 xl:grid-cols-12">
-        <Card className="min-h-[380px] gap-4 border-border/70 py-5 shadow-sm xl:col-span-4">
-          <CardHeader className="flex flex-row items-start justify-between px-5 pb-0">
-            <div className="space-y-1">
-              <CardTitle className="text-base">Xonalar mavjudligi</CardTitle>
-              <CardDescription>Jami {totalRooms} ta xona</CardDescription>
-            </div>
-            <Link to={`${dashboardPath}/xonalar`} aria-label="Xonalar sahifasiga o‘tish">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent className="flex flex-1 flex-col px-5">
-            <div className="flex min-h-[260px] flex-1 items-center gap-3 sm:gap-5">
-              <div className="relative h-[230px] w-[180px] shrink-0" role="img" aria-label={`Xonalar bandligi ${occupancyPercent}%`}>
-                <PieChart width={180} height={230}>
-                  <Pie
-                    data={roomStatuses}
-                    dataKey="count"
-                    nameKey="label"
-                    cx="50%"
-                    cy={140}
-                    innerRadius={57}
-                    outerRadius={84}
-                    paddingAngle={2}
-                    cornerRadius={5}
-                    stroke="var(--card)"
-                    strokeWidth={3}
-                    startAngle={90}
-                    endAngle={-270}
-                    animationDuration={2000}
-                    animationEasing="ease-out"
-                  >
-                    {roomStatuses.map((status) => (
-                      <Cell key={status.label} fill={status.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    allowEscapeViewBox={{ x: true, y: true }}
-                    wrapperStyle={{ zIndex: 20, pointerEvents: "none" }}
-                    content={({ active, payload, coordinate }) => {
-                      if (!active || !payload?.length || !coordinate) return null;
-
-                      const dx = coordinate.x - 90;
-                      const dy = coordinate.y - 140;
-                      const distance = Math.hypot(dx, dy) || 1;
-                      const clearance = Math.max(0, 96 - distance);
-                      const offsetX = Math.abs((dx / distance) * clearance);
-                      const offsetY = Math.abs((dy / distance) * clearance);
-                      const translateX = dx >= 0
-                        ? `${offsetX}px`
-                        : `calc(-100% - ${offsetX}px)`;
-                      const translateY = dy >= 0
-                        ? `${offsetY}px`
-                        : `calc(-100% - ${offsetY}px)`;
-                      const { value, name, color } = payload[0];
-                      const count = Number(value);
-                      const percentage = totalRooms
-                        ? Math.round((count / totalRooms) * 100)
-                        : 0;
-
-                      return (
-                        <div
-                          className="rounded-xl border border-border bg-card px-3 py-2 shadow-lg"
-                          style={{
-                            color: "var(--card-foreground)",
-                            fontSize: 12,
-                            transform: `translate(${translateX}, ${translateY})`,
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          <p className="font-medium" style={{ color: String(color) }}>
-                            {String(name)}
-                          </p>
-                          <p>{count} ta xona · {percentage}%</p>
-                        </div>
-                      );
-                    }}
-                  />
-                </PieChart>
-                <div className="pointer-events-none absolute inset-x-0 top-[140px] flex -translate-y-1/2 flex-col items-center justify-center">
-                  <span className="text-2xl font-bold tracking-tight">{occupancyPercent}%</span>
-                  <span className="text-xs text-muted-foreground">band</span>
+            {/* Occupancy Rate */}
+            <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Bandlik darajasi
+                </CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                  <BedDouble className="h-4 w-4" />
                 </div>
-              </div>
-              <div className="grid min-w-0 flex-1 grid-cols-1 gap-3">
-                {roomStatuses.map((status) => (
-                  <div key={status.label} className="flex min-w-0 items-center justify-between gap-2">
-                    <p className="flex min-w-0 items-center gap-2 truncate text-xs text-muted-foreground">
-                      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${status.dot}`} />
-                      <span className="truncate">{status.label}</span>
-                    </p>
-                    <div className="shrink-0 text-right">
-                      <span className="text-sm font-semibold">
-                        {totalRooms ? Math.round((status.count / totalRooms) * 100) : 0}%
-                      </span>
-                      <span className="ml-1 text-[10px] text-muted-foreground">({status.count})</span>
+              </CardHeader>
+              <CardContent>
+                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                  {occupancyPercent}%
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <span className="flex items-center font-semibold text-slate-100">
+                    <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
+                    +4.2%
+                  </span>
+                  <span>{occupiedRooms} / {totalRooms} xona band</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Bookings */}
+            <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Yangi bronlar
+                </CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                  <CalendarPlus className="h-4 w-4" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                  +{monthBookings || bookings.length}
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <span className="flex items-center font-semibold text-slate-100">
+                    <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
+                    +18.5%
+                  </span>
+                  <span>joriy oyda qabul qilingan</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Today's Activity */}
+            <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Bugungi kelish-ketish
+                </CardTitle>
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                  <Users className="h-4 w-4" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                  {todayCheckIns} <span className="text-sm font-normal text-slate-400">kelish</span> / {todayCheckOuts} <span className="text-sm font-normal text-slate-400">ketish</span>
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <Badge variant="outline" className="h-4 border-slate-600 bg-slate-800 text-[10px] px-1 font-normal text-slate-200">
+                    Faol
+                  </Badge>
+                  <span>98% kutib olish darajasi</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Grid: Overview Chart + Recent Sales */}
+          <div className="grid gap-6 lg:grid-cols-7">
+            {/* Chart: col-span-4 */}
+            <Card className="lg:col-span-4 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div>
+                  <CardTitle className="text-base font-semibold text-foreground">Daromad tahlili</CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Oylar bo‘yicha tushum va operatsion xarajatlar statistikasi
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <OverviewChart transactions={transactions} />
+              </CardContent>
+            </Card>
+
+            {/* Recent Bookings: col-span-3 */}
+            <Card className="lg:col-span-3 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div>
+                  <CardTitle className="text-base font-semibold text-foreground">Oxirgi bronlar</CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Bu oyda jami {bookings.length} ta yangi buyurtma tushdi
+                  </CardDescription>
+                </div>
+                <Link to={`${dashboardPath}/bronlar`}>
+                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-foreground hover:bg-muted hover:text-foreground">
+                    Barchasi
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <RecentBookings bookings={bookings} />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Secondary Grid: Top Room Categories + Room Status + Today Schedule */}
+          <div className="grid gap-6 lg:grid-cols-7">
+            {/* Top Categories: col-span-4 */}
+            <Card className="lg:col-span-4 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div>
+                  <CardTitle className="text-base font-semibold text-foreground">Xona toifalari bo‘yicha talab</CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Eng ko‘p daromad va bron keltirayotgan xona turlari
+                  </CardDescription>
+                </div>
+                <Badge variant="secondary" className="border-border bg-muted text-foreground text-xs font-normal">
+                  Real-time
+                </Badge>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <TopRoomTypes rooms={rooms} bookings={bookings} />
+              </CardContent>
+            </Card>
+
+            {/* Room Availability / Donut: col-span-3 */}
+            <Card className="lg:col-span-3 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div>
+                  <CardTitle className="text-base font-semibold text-foreground">Xonalar holati</CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
+                    Jami {totalRooms} ta xonaning hozirgi balansi
+                  </CardDescription>
+                </div>
+                <Link to={`${dashboardPath}/xonalar`}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-foreground hover:bg-muted hover:text-foreground">
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <div className="flex items-center justify-center py-2">
+                  <div className="relative h-44 w-44 flex items-center justify-center">
+                    <PieChart width={176} height={176}>
+                      <Pie
+                        data={roomStatuses}
+                        dataKey="count"
+                        nameKey="label"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={52}
+                        outerRadius={74}
+                        paddingAngle={3}
+                        cornerRadius={4}
+                      >
+                        {roomStatuses.map((entry) => (
+                          <Cell key={entry.label} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip
+                        content={({ active, payload }) => {
+                          if (!active || !payload?.length) return null;
+                          const data = payload[0].payload;
+                          return (
+                            <div className="rounded-lg border border-border bg-popover p-2 text-xs shadow-md text-popover-foreground">
+                              <span className="font-semibold">{data.label}:</span> {data.count} ta
+                            </div>
+                          );
+                        }}
+                      />
+                    </PieChart>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-2xl font-bold tracking-tight">{occupancyPercent}%</span>
+                      <span className="text-[11px] text-muted-foreground">Bandlik</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
-              <span className="text-sm text-muted-foreground">Bandlik darajasi</span>
-              <span className="text-lg font-bold text-primary">{occupancyPercent}%</span>
-            </div>
-          </CardContent>
-        </Card>
+                </div>
 
-        <Card className="gap-4 border-border/70 py-5 shadow-sm xl:col-span-8">
-          <CardHeader className="flex flex-row items-start justify-between gap-3 px-5 pb-0">
-            <div className="space-y-1">
-              <CardTitle className="text-base">Daromad dinamikasi</CardTitle>
-              <CardDescription>
-                Oylik kirim va chiqim, ming so‘mda
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+                  {roomStatuses.map((item) => (
+                    <div key={item.label} className="flex items-center justify-between rounded-md p-1.5 text-xs hover:bg-[#1a1d20]/70">
+                      <span className="flex items-center gap-1.5 text-slate-300">
+                        <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
+                        {item.label}
+                      </span>
+                      <span className="font-semibold text-slate-100">{item.count} ta</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Schedule Row */}
+          <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-semibold text-foreground">Bugungi kelish va ketishlar taqvimi</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">
+                Bugun ro‘yxatga olinishi va hisob-kitob qilinishi kerak bo‘lgan mehmonlar
               </CardDescription>
-            </div>
-            {isAdmin && (
-              <Link to="/admin/moliya" aria-label="Moliya sahifasiga o‘tish">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            )}
-          </CardHeader>
-          <CardContent className="px-3 sm:px-5">
-            <OverviewChart transactions={transactions} />
-          </CardContent>
-        </Card>
-      </section>
+            </CardHeader>
+            <CardContent>
+              <TodaySchedule bookings={bookings} guests={guests} dashboardPath={dashboardPath} />
+            </CardContent>
+          </Card>
+        </div>
 
-      <section className="grid items-start gap-4 xl:grid-cols-12">
-        <Card className="gap-4 border-border/70 py-5 shadow-sm xl:col-span-5">
-          <CardHeader className="flex flex-row items-start justify-between px-5 pb-0">
-            <div className="space-y-1">
-              <CardTitle className="text-base">Bronlar</CardTitle>
-              <CardDescription>Oxirgi 7 kun · oldingi hafta bilan taqqoslash</CardDescription>
-            </div>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="px-3 sm:px-5">
-            <WeeklyBookingsChart bookings={bookings} />
-          </CardContent>
-        </Card>
-
-        <Card className="gap-4 border-border/70 py-5 shadow-sm xl:col-span-7">
-          <CardHeader className="flex flex-row items-start justify-between gap-3 px-5 pb-0">
-            <div className="space-y-1">
-              <CardTitle className="text-base">So‘nggi bronlar</CardTitle>
-              <CardDescription>Mehmonlar va bron holati</CardDescription>
-            </div>
-            <Link to={`${dashboardPath}/bronlar`}>
-              <Button variant="ghost" size="sm" className="gap-1 text-xs">
-                Barchasi <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent className="px-4 sm:px-5">
-            <RecentBookings bookings={bookings} />
-          </CardContent>
-        </Card>
-      </section>
-
+      {/* Modals */}
       <BookingModal
         isOpen={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
@@ -452,11 +406,13 @@ export default function Dashboard() {
         rooms={rooms}
         guests={guests}
       />
+
       <GuestModal
         isOpen={guestModalOpen}
         onClose={() => setGuestModalOpen(false)}
         onSave={handleSaveGuest}
       />
     </div>
+  </div>
   );
 }

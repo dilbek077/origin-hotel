@@ -9,9 +9,9 @@ const ThemeContext = createContext<{
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') return true;
     const saved = window.localStorage.getItem('origin-hotel-theme');
-    return saved ? saved === 'dark' : false;
+    return saved ? saved === 'dark' : true;
   });
 
   useEffect(() => {
@@ -25,6 +25,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setIsDark(e.newValue === 'dark');
       }
     };
+
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, [isDark]);
@@ -36,6 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.setAttribute('data-theme', dark ? 'dark' : 'light');
       root.style.colorScheme = dark ? 'dark' : 'light';
       setIsDark(dark);
+      window.localStorage.setItem('origin-hotel-theme', dark ? 'dark' : 'light');
     };
 
     if (origin) {

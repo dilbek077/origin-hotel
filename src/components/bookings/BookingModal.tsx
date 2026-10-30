@@ -135,7 +135,7 @@ export default function BookingModal({
 
   const labelClass = isDark ? "block text-xs font-semibold text-slate-300 mb-1" : "block text-xs font-semibold text-gray-700 mb-1";
   const inputClass = isDark
-    ? "w-full px-3.5 py-2 text-sm border border-slate-700 bg-slate-800 text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+    ? "w-full px-3.5 py-2 text-sm border border-[#1c252d] bg-[#0b1015] text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
     : "w-full px-3.5 py-2 text-sm border border-gray-200 bg-white text-gray-900 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none";
 
   return (
@@ -163,7 +163,7 @@ export default function BookingModal({
               className={inputClass}
             >
               {guests.map((g) => (
-                <option key={g.id} value={g.id} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                <option key={g.id} value={g.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
                   {g.fullName} ({g.phone || "-"})
                 </option>
               ))}
@@ -180,7 +180,7 @@ export default function BookingModal({
               className={inputClass}
             >
               {rooms.map((r) => (
-                <option key={r.id} value={r.id} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                <option key={r.id} value={r.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
                   #{r.number} - {translateRoomType(r.type)} ({r.capacity}) - {r.pricePerNight.toLocaleString()} {t('common.currency')}
                 </option>
               ))}
@@ -227,7 +227,7 @@ export default function BookingModal({
               className={inputClass}
             >
               {BOOKING_STATUSES.map((s) => (
-                <option key={s} value={s} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                <option key={s} value={s} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
                   {translateStatus(s)}
                 </option>
               ))}

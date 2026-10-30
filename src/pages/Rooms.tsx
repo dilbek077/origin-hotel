@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, Search, BedDouble, Eye, Edit, Trash2, Users, ChevronDown, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Search, BedDouble, Eye, Edit, Trash2 } from "lucide-react";
 import type { Room, RoomStatus } from "@/types/room";
 import { StorageService } from "@/services/storage";
 import RoomModal from "@/components/rooms/RoomModal";
@@ -16,10 +16,6 @@ export default function Rooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("Barchasi");
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
-  const [statusMenuClosing, setStatusMenuClosing] = useState(false);
-  const statusMenuRef = useRef<HTMLDivElement>(null);
-  const statusMenuTimer = useRef<number | null>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
@@ -36,45 +32,6 @@ export default function Rooms() {
     window.addEventListener("origin-hotel-storage-change", handleStorageChange);
     return () => window.removeEventListener("origin-hotel-storage-change", handleStorageChange);
   }, []);
-
-  const closeStatusMenu = useCallback(() => {
-    if (statusMenuTimer.current !== null || !statusMenuOpen) return;
-    setStatusMenuClosing(true);
-    statusMenuTimer.current = window.setTimeout(() => {
-      setStatusMenuOpen(false);
-      setStatusMenuClosing(false);
-      statusMenuTimer.current = null;
-    }, 140);
-  }, [statusMenuOpen]);
-
-  const openStatusMenu = () => {
-    if (statusMenuTimer.current !== null) {
-      window.clearTimeout(statusMenuTimer.current);
-      statusMenuTimer.current = null;
-    }
-    setStatusMenuClosing(false);
-    setStatusMenuOpen(true);
-  };
-
-  useEffect(() => () => {
-    if (statusMenuTimer.current !== null) window.clearTimeout(statusMenuTimer.current);
-  }, []);
-
-  useEffect(() => {
-    if (!statusMenuOpen) return;
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (!statusMenuRef.current?.contains(event.target as Node)) closeStatusMenu();
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeStatusMenu();
-    };
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [statusMenuOpen, closeStatusMenu]);
 
   const handleOpenAdd = () => {
     setEditingRoom(null);
@@ -119,236 +76,200 @@ export default function Rooms() {
 
   const getStatusBadge = (status: RoomStatus) => {
     const text = translateStatus(status);
-    let colorClass = "bg-gray-100 text-gray-700 border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
+    let colorClass = isDark
+      ? "border border-slate-700 bg-slate-800/80 text-slate-200"
+      : "border border-slate-200 bg-slate-100 text-slate-700";
     if (status === "Bo'sh") {
-      colorClass = "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30";
+      colorClass = isDark
+        ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-300"
+        : "border border-emerald-200 bg-emerald-50 text-emerald-700";
     } else if (status === "Band") {
-      colorClass = "bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30";
+      colorClass = isDark
+        ? "border border-red-500/30 bg-red-500/15 text-red-300"
+        : "border border-red-200 bg-red-50 text-red-700";
     } else if (status === "Tozalashda") {
-      colorClass = "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30";
+      colorClass = isDark
+        ? "border border-amber-500/30 bg-amber-500/15 text-amber-300"
+        : "border border-amber-200 bg-amber-50 text-amber-700";
     } else if (status === "Ta'mirda") {
-      colorClass = "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-500/20 dark:text-purple-300 dark:border-purple-500/30";
+      colorClass = isDark
+        ? "border border-violet-500/30 bg-violet-500/15 text-violet-300"
+        : "border border-violet-200 bg-violet-50 text-violet-700";
     }
-    return <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${colorClass}`}>{text}</span>;
+    return <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${colorClass}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{text}</span>;
   };
 
   const getTypeBadge = (type: string) => {
     const text = translateRoomType(type);
-    let colorClass = "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800";
+    let colorClass = isDark
+      ? "border border-slate-700 bg-slate-800/80 text-slate-200"
+      : "border border-slate-200 bg-slate-100 text-slate-700";
     if (type === "Deluxe") {
-      colorClass = "bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800";
+      colorClass = isDark
+        ? "border border-violet-500/30 bg-violet-500/10 text-violet-200"
+        : "border border-violet-200 bg-violet-50 text-violet-700";
     } else if (type === "Suite") {
-      colorClass = "bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800";
+      colorClass = isDark
+        ? "border border-sky-500/30 bg-sky-500/10 text-sky-200"
+        : "border border-sky-200 bg-sky-50 text-sky-700";
     } else if (type === "President") {
-      colorClass = "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800";
+      colorClass = isDark
+        ? "border border-amber-500/30 bg-amber-500/10 text-amber-200"
+        : "border border-amber-200 bg-amber-50 text-amber-700";
     }
-    return <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-md border ${colorClass}`}>{text}</span>;
+    return <span className={`inline-flex rounded-md border px-2.5 py-1 text-[11px] font-medium ${colorClass}`}>{text}</span>;
   };
 
   const vacantCount = rooms.filter((r) => r.status === "Bo'sh").length;
   const occupiedCount = rooms.filter((r) => r.status === "Band").length;
 
+  const pageShell = isDark
+    ? "min-h-screen bg-[#05080b] p-6 text-slate-100"
+    : "min-h-screen bg-slate-100 p-6 text-slate-800";
+  const panelShell = isDark
+    ? "mx-auto max-w-[1400px] rounded-[26px] border border-[#1c252d] bg-[#0a0f13] shadow-[0_30px_80px_rgba(2,6,23,0.7)]"
+    : "mx-auto max-w-[1400px] rounded-[26px] border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.08)]";
+  const headerBorder = isDark ? "border-[#1c252d]" : "border-slate-200";
+  const fieldShell = isDark
+    ? "border-[#1c252d] bg-[#0b1015] text-slate-100 placeholder:text-slate-500 focus:border-slate-500"
+    : "border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 focus:border-slate-300";
+  const statShell = isDark
+    ? "border-[#1c252d] bg-[#0b1015] text-slate-400"
+    : "border-slate-200 bg-slate-50 text-slate-600";
+  const panelInner = isDark
+    ? "border-[#1c252d] bg-[#0d1419] shadow-[inset_0_1px_0_rgba(148,163,184,0.04)]"
+    : "border-slate-200 bg-slate-50 shadow-[inset_0_1px_0_rgba(148,163,184,0.12)]";
+
   return (
-    <div className={isDark ? "min-h-screen bg-slate-950 p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>
-            {t('nav.rooms')}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-            {t('rooms.total').replace('{n}', String(rooms.length))} ({t('status.vacant')}: {vacantCount}, {t('status.occupied')}: {occupiedCount})
-          </p>
-        </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-sm self-start sm:self-auto cursor-pointer"
-        >
-          <Plus size={18} />
-          {t('rooms.new')}
-        </button>
-      </div>
+    <div className={pageShell}>
+      <div className={panelShell}>
+        <div className={`mb-0 flex items-center justify-between gap-4 border-b px-6 py-5 ${headerBorder}`}>
+          <div>
+            <h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-slate-900"}`}>Xonalar</h1>
+            <p className={`mt-2 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+              Qavatlar, narxlar va xonalar holatini bir joyda boshqaring.
+            </p>
+          </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        {/* Search */}
-        <div className="relative flex-1 max-w-sm">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500"
-          />
-          <input
-            type="text"
-            placeholder={t('rooms.searchPlaceholder')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={
-              isDark
-                ? "w-full pl-9 pr-4 py-2.5 text-sm bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500 text-white shadow-xs"
-                : "w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-gray-700 shadow-xs"
-            }
-          />
-        </div>
-
-        {/* Status Filter */}
-        <div ref={statusMenuRef} className="relative self-start">
           <button
-            type="button"
-            onClick={() => statusMenuOpen && !statusMenuClosing ? closeStatusMenu() : openStatusMenu()}
-            aria-label={t('rooms.filterStatus')}
-            aria-haspopup="listbox"
-            aria-expanded={statusMenuOpen && !statusMenuClosing}
-            className={
-              isDark
-                ? "flex min-w-40 items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900 px-3 py-2.5 text-sm text-white shadow-xs outline-none transition hover:border-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500"
-                : "flex min-w-40 items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-700 shadow-xs outline-none transition hover:border-blue-200 focus-visible:ring-2 focus-visible:ring-blue-500"
-            }
+            onClick={handleOpenAdd}
+            className={isDark
+              ? "inline-flex items-center gap-2 rounded-xl border border-[#1c252d] bg-[#10171d] px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-slate-500 hover:bg-[#121d26]"
+              : "inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-200"}
           >
-            <span>{statusFilter === "Barchasi" ? t('common.all') : translateStatus(statusFilter)}</span>
-            <ChevronDown size={16} className={`shrink-0 transition-transform duration-200 ${statusMenuOpen && !statusMenuClosing ? "rotate-180" : ""}`} />
+            <Plus size={16} />
+            Xona qo‘shish
           </button>
-          {statusMenuOpen && (
-            <div
-              role="listbox"
-              aria-label={t('rooms.filterStatus')}
-              data-state={statusMenuClosing ? "closing" : "open"}
-              className={`room-status-menu absolute left-0 top-full z-40 mt-2 w-full min-w-44 overflow-hidden rounded-2xl border p-1.5 shadow-xl ${
-                isDark ? "border-slate-700 bg-slate-900 text-slate-100" : "border-sky-100 bg-white text-slate-800"
-              }`}
-            >
-              {STATUS_OPTIONS.map((option) => {
-                const selected = option === statusFilter;
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    onClick={() => {
-                      setStatusFilter(option);
-                      closeStatusMenu();
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
-                      selected
-                        ? isDark
-                          ? "bg-blue-500/15 font-semibold text-sky-300"
-                          : "bg-blue-50 font-semibold text-blue-700"
-                        : isDark
-                          ? "text-slate-300 hover:bg-slate-800"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    }`}
-                  >
-                    <span>{option === "Barchasi" ? t('common.all') : translateStatus(option)}</span>
-                    {selected && <Check size={16} />}
-                  </button>
-                );
-              })}
+        </div>
+
+        <div className="p-5 sm:p-6">
+          <div className={`rounded-[18px] border p-4 ${panelInner}`}>
+            <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_0.8fr]">
+              <div className="relative">
+                <Search size={16} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
+                <input
+                  type="text"
+                  placeholder={t('rooms.searchPlaceholder')}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className={`w-full rounded-xl border py-3 pl-10 pr-4 text-sm outline-none ${fieldShell}`}
+                />
+              </div>
+
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className={`rounded-xl border px-3 py-3 text-sm outline-none ${fieldShell}`}
+              >
+                {STATUS_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt} className="bg-slate-900 text-white">
+                    {opt === "Barchasi" ? t('common.all') : translateStatus(opt)}
+                  </option>
+                ))}
+              </select>
+
+              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
+                {vacantCount} ta bo‘sh
+              </div>
+
+              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
+                {occupiedCount} ta band
+              </div>
+
+              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
+                {rooms.length} ta jami
+              </div>
+            </div>
+          </div>
+
+          <div className={`mt-5 rounded-[18px] border p-4 ${panelInner}`}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                O‘chirib bo‘lishi mumkin: <span className={`font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{filtered.length} ta xona</span>
+              </p>
+              <div className={`flex gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                <span className={isDark ? "rounded-full border border-[#1c252d] bg-[#0d1419] px-2.5 py-1 text-slate-200" : "rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-700"}>Barchasi</span>
+                <span className={isDark ? "rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-emerald-300" : "rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700"}>Bo‘sh</span>
+                <span className={isDark ? "rounded-full border border-red-500/40 bg-red-500/10 px-2.5 py-1 text-red-300" : "rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-red-700"}>Band</span>
+              </div>
+            </div>
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className={`mt-6 flex flex-col items-center justify-center rounded-[18px] border border-dashed py-16 text-center ${isDark ? "border-[#1c252d] bg-[#0d1419]" : "border-slate-200 bg-white"}`}>
+              <BedDouble size={46} className={`mb-3 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
+              <p className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{t('rooms.notFound')}</p>
+              <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>{t('rooms.notFoundDesc')}</p>
+            </div>
+          ) : (
+            <div className={`mt-6 overflow-hidden rounded-[18px] border ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-slate-200 bg-white"}`}>
+              <div className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ${isDark ? "border-[#1c252d] bg-[#0d1419] text-slate-400" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+                <span>Xona</span>
+                <span>Qavat</span>
+                <span>Tur</span>
+                <span>Mehmon</span>
+                <span>Narx</span>
+                <span>Holat</span>
+              </div>
+
+              {filtered.map((room) => (
+                <div
+                  key={room.id}
+                  className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] items-center border-b px-4 py-4 text-sm last:border-b-0 ${isDark ? "border-[#1b2430] text-slate-200 hover:bg-[#0f171d]" : "border-slate-200 text-slate-700 hover:bg-slate-50"}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>#{room.number}</span>
+                    <span className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{room.type}</span>
+                  </div>
+
+                  <span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.floor} qavat</span>
+
+                  <div>{getTypeBadge(room.type)}</div>
+
+                  <span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.capacity} kishi</span>
+
+                  <span className={`font-medium ${isDark ? "text-slate-100" : "text-slate-900"}`}>{formatPrice(room.pricePerNight)}</span>
+
+                  <div className="flex items-center justify-between gap-2">
+                    {getStatusBadge(room.status)}
+                    <div className={`flex items-center gap-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                      <button onClick={() => setViewRoom(room)} className={isDark ? "hover:text-sky-300" : "hover:text-sky-600"} aria-label={t('common.view')}>
+                        <Eye size={15} />
+                      </button>
+                      <button onClick={() => handleOpenEdit(room)} className={isDark ? "hover:text-amber-300" : "hover:text-amber-600"} aria-label={t('common.edit')}>
+                        <Edit size={15} />
+                      </button>
+                      <button onClick={() => handleDelete(room.id)} className={isDark ? "hover:text-red-300" : "hover:text-red-600"} aria-label={t('common.delete')}>
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
       </div>
-
-      {/* Room Cards Grid */}
-      {filtered.length === 0 ? (
-        <div className={isDark ? "flex flex-col items-center justify-center py-20 text-slate-500 bg-slate-900 rounded-2xl border border-slate-800" : "flex flex-col items-center justify-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100"}>
-          <BedDouble size={48} className="mb-3 opacity-40" />
-          <p className={isDark ? "text-base font-semibold text-slate-300" : "text-base font-semibold text-gray-700"}>{t('rooms.notFound')}</p>
-          <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">{t('rooms.notFoundDesc')}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {filtered.map((room) => (
-            <div
-              key={room.id}
-              className={
-                isDark
-                  ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm hover:shadow-xl hover:border-slate-700 transition-all p-5 flex flex-col justify-between group"
-                  : "bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-5 flex flex-col justify-between group"
-              }
-            >
-              <div>
-                {/* Card Top */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">
-                      <BedDouble size={22} />
-                    </div>
-                    <div>
-                      <p className={isDark ? "text-xl font-black text-white leading-none" : "text-xl font-black text-gray-900 leading-none"}>
-                        #{room.number}
-                      </p>
-                      <p className="text-xs text-gray-400 dark:text-slate-400 mt-1">
-                        {room.floor}-{t('common.floor')}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Status Badge */}
-                  {getStatusBadge(room.status)}
-                </div>
-
-                {/* Details */}
-                <div className="flex flex-wrap gap-2 my-3">
-                  {getTypeBadge(room.type)}
-                  <span className={isDark ? "inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md bg-slate-800 text-slate-300" : "inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md bg-gray-100 text-gray-600"}>
-                    <Users size={12} />
-                    {room.capacity}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                {/* Price */}
-                <div className={`border-t pt-3 mb-4 ${isDark ? "border-slate-800" : "border-gray-100"}`}>
-                  <p className="text-[11px] text-gray-400 dark:text-slate-500 font-medium">{t('common.perNight')}</p>
-                  <p className={isDark ? "text-base font-bold text-white" : "text-base font-bold text-gray-900"}>
-                    {formatPrice(room.pricePerNight)}
-                  </p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className={`flex items-center gap-2 pt-2 border-t ${isDark ? "border-slate-800" : "border-gray-50"}`}>
-                  <button
-                    onClick={() => setViewRoom(room)}
-                    title={t('common.view')}
-                    className={
-                      isDark
-                        ? "flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-sky-400 bg-sky-950/40 hover:bg-sky-950/70 py-2 rounded-xl transition cursor-pointer"
-                        : "flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded-xl transition cursor-pointer"
-                    }
-                  >
-                    <Eye size={14} />
-                    {t('common.view')}
-                  </button>
-                  <button
-                    onClick={() => handleOpenEdit(room)}
-                    title={t('common.edit')}
-                    className={
-                      isDark
-                        ? "flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-amber-300 bg-amber-950/40 hover:bg-amber-950/70 py-2 rounded-xl transition cursor-pointer"
-                        : "flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 py-2 rounded-xl transition cursor-pointer"
-                    }
-                  >
-                    <Edit size={14} />
-                    {t('common.edit')}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(room.id)}
-                    title={t('common.delete')}
-                    className={
-                      isDark
-                        ? "p-2 text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-xl transition cursor-pointer"
-                        : "p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition cursor-pointer"
-                    }
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Add / Edit Modal */}
       <RoomModal

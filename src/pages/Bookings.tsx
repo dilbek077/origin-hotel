@@ -8,8 +8,13 @@ import {
   Plus,
   Search,
   LogIn,
-  LogOut,
   FileText,
+  Users,
+  CalendarCheck,
+  Clock3,
+  Check,
+  CircleDollarSign,
+  X,
 } from "lucide-react";
 import type { Booking, BookingStatus } from "@/types/booking";
 import type { Room } from "@/types/room";
@@ -52,6 +57,7 @@ export default function Bookings() {
   const [checkInBooking, setCheckInBooking] = useState<Booking | null>(null);
   const [checkOutBooking, setCheckOutBooking] = useState<Booking | null>(null);
   const [deleteBookingId, setDeleteBookingId] = useState<number | null>(null);
+  const [statusActionError, setStatusActionError] = useState("");
 
   const loadAll = () => {
     setBookings(StorageService.getBookings());
@@ -114,10 +120,15 @@ export default function Bookings() {
     return StorageService.checkOutBooking(id);
   };
 
+  const updateBookingStatus = (booking: Booking, status: BookingStatus) => {
+    const result = StorageService.updateBooking({ ...booking, status });
+    setStatusActionError(result.success ? "" : result.error || "Bron holatini o‘zgartirib bo‘lmadi.");
+  };
+
   const actionView = pathname.endsWith("/kelish-ketish");
   const countByStatus = (status: BookingStatus) =>
     bookings.filter((b) => b.status === status).length;
-  const filtered = actionView
+  const statusFiltered = actionView
     ? bookings.filter((booking) => {
         const matchesStatus =
           actionFilter === "Barchasi"
@@ -125,25 +136,37 @@ export default function Bookings() {
               booking.status === "Kutilmoqda" ||
               booking.status === "Yashamoqda"
             : booking.status === actionFilter;
-        const query = searchQuery.trim().toLocaleLowerCase();
-        const matchesSearch =
-          !query ||
-          booking.guest.toLocaleLowerCase().includes(query) ||
-          booking.room.toLocaleLowerCase().includes(query);
-        return matchesStatus && matchesSearch;
+        return matchesStatus;
       })
     : activeTab === "Barchasi"
       ? bookings
       : bookings.filter((booking) => booking.status === activeTab);
+  const query = searchQuery.trim().toLocaleLowerCase();
+  const filtered = statusFiltered.filter((booking) =>
+    !query ||
+    booking.guest.toLocaleLowerCase().includes(query) ||
+    booking.room.toLocaleLowerCase().includes(query) ||
+    booking.notes?.toLocaleLowerCase().includes(query) ||
+    String(booking.id).includes(query)
+  );
 
   const getStatusBadge = (status: BookingStatus) => {
     const text = translateStatus(status);
-    let colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30";
-    let dotClass = "bg-blue-500";
+    let colorClass = "bg-gray-100 text-gray-700 border-gray-200 dark:bg-[#10171d] dark:text-slate-300 dark:border-[#1c252d]";
+    let dotClass = "bg-gray-500";
 
-    if (status === "Kutilmoqda") {
+    if (status === "Yashamoqda") {
+      colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30";
+      dotClass = "bg-blue-500";
+    } else if (status === "Tasdiqlangan") {
+      colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30";
+      dotClass = "bg-emerald-500";
+    } else if (status === "Kutilmoqda") {
       colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30";
       dotClass = "bg-amber-500";
+    } else if (status === "Bekor") {
+      colorClass = "bg-red-100 text-red-600 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30";
+      dotClass = "bg-red-500";
     }
 
     return (
@@ -155,7 +178,7 @@ export default function Bookings() {
   };
 
   return (
-    <div className={isDark ? "min-h-screen bg-slate-950 p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
+    <div className={isDark ? "min-h-screen bg-[#05080b] p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {actionView ? (
@@ -164,10 +187,13 @@ export default function Bookings() {
           </h1>
         ) : (
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+            <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-100 text-blue-600"}`}>
               <CalendarDays className="h-6 w-6" />
             </div>
             <div>
+              <p className={`mb-1 text-[10px] font-bold uppercase tracking-[0.2em] ${isDark ? "text-blue-400" : "text-blue-600"}`}>
+                Bronlarni boshqarish
+              </p>
               <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>
                 {t('nav.bookings')}
               </h1>
@@ -199,6 +225,44 @@ export default function Bookings() {
         )}
       </div>
 
+      {!actionView && (
+        <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {[
+            { status: "Yashamoqda" as const, label: translateStatus("Yashamoqda"), subtitle: "Hozir mehmonxonada", icon: Users, tone: "blue" },
+            { status: "Tasdiqlangan" as const, label: translateStatus("Tasdiqlangan"), subtitle: "Tasdiqlangan bronlar", icon: CalendarCheck, tone: "emerald" },
+            { status: "Kutilmoqda" as const, label: translateStatus("Kutilmoqda"), subtitle: "Tasdiq kutilmoqda", icon: Clock3, tone: "amber" },
+            { status: "Tugatilgan" as const, label: translateStatus("Tugatilgan"), subtitle: "Yakunlangan bronlar", icon: Check, tone: "slate" },
+            { status: "Bekor" as const, label: translateStatus("Bekor"), subtitle: "Bekor qilingan bronlar", icon: CircleDollarSign, tone: "red" },
+          ].map(({ status, label, subtitle, icon: Icon, tone }) => (
+            <button
+              key={status}
+              type="button"
+              onClick={() => setActiveTab(status)}
+              className={`rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 ${
+                isDark ? "border-[#1c252d] bg-[#0a0f13] hover:bg-[#0d1419]" : "border-gray-200 bg-white hover:bg-gray-50"
+              } ${activeTab === status ? (isDark ? "ring-1 ring-blue-500/50" : "ring-1 ring-blue-300") : ""}`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>{label}</span>
+                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+                  tone === "blue" ? "bg-blue-500/10 text-blue-400" :
+                  tone === "emerald" ? "bg-emerald-500/10 text-emerald-400" :
+                  tone === "amber" ? "bg-amber-500/10 text-amber-400" :
+                  tone === "red" ? "bg-red-500/10 text-red-400" :
+                  isDark ? "bg-[#10171d] text-slate-300" : "bg-slate-100 text-slate-600"
+                }`}>
+                  <Icon size={17} />
+                </span>
+              </div>
+              <div className={`mt-3 text-2xl font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{countByStatus(status)}</div>
+              <div className={`mt-1 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                {subtitle}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Filter Tabs */}
       {actionView ? (
         <div className="mb-4 flex flex-wrap gap-2">
@@ -217,7 +281,7 @@ export default function Bookings() {
                   active
                     ? "border-blue-600 bg-blue-600 text-white"
                     : isDark
-                      ? "border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600"
+                      ? "border-[#1c252d] bg-[#0a0f13] text-slate-300 hover:border-slate-600"
                       : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
                 }`}
               >
@@ -228,7 +292,8 @@ export default function Bookings() {
           })}
         </div>
       ) : (
-        <div className={isDark ? "flex flex-wrap items-center gap-1 mb-6 bg-slate-900 border border-slate-800 rounded-xl p-1 w-fit shadow-xs" : "flex flex-wrap items-center gap-1 mb-6 bg-white border border-gray-200 rounded-xl p-1 w-fit shadow-xs"}>
+        <div className={`mb-5 flex flex-col gap-3 rounded-2xl border p-3 shadow-xs sm:flex-row sm:items-center sm:justify-between ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-gray-200 bg-white"}`}>
+          <div className="flex flex-wrap items-center gap-1">
           {TABS.map((tab) => {
           const count =
             tab === "Barchasi" ? bookings.length : countByStatus(tab as BookingStatus);
@@ -242,7 +307,7 @@ export default function Bookings() {
                 isActive
                   ? "bg-blue-600 text-white shadow-xs"
                   : isDark
-                  ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                  ? "text-slate-400 hover:text-white hover:bg-[#10171d]"
                   : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
@@ -252,7 +317,7 @@ export default function Bookings() {
                   isActive
                     ? "bg-blue-500 text-white"
                     : isDark
-                    ? "bg-slate-800 text-slate-300"
+                    ? "bg-[#10171d] text-slate-300"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
@@ -261,18 +326,37 @@ export default function Bookings() {
             </button>
           );
           })}
+          </div>
+          <div className="relative w-full sm:max-w-xs">
+            <Search className={`pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
+            <input
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={t('bookings.actionSearchPlaceholder')}
+              aria-label={t('bookings.actionSearchPlaceholder')}
+              className={`h-10 w-full rounded-xl border pl-10 pr-4 text-sm outline-none transition ${
+                isDark ? "border-[#1c252d] bg-[#05080b] text-slate-100 placeholder:text-slate-500 focus:border-slate-600" : "border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300"
+              }`}
+            />
+          </div>
+        </div>
+      )}
+
+      {statusActionError && (
+        <div role="alert" className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
+          {statusActionError}
         </div>
       )}
 
       {/* Table */}
-      <div className={isDark ? "bg-slate-900 rounded-2xl shadow-sm border border-slate-800 overflow-hidden" : "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"}>
+      <div className={isDark ? "bg-[#0a0f13] rounded-2xl shadow-sm border border-[#1c252d] overflow-hidden" : "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"}>
         {actionView ? (
           <>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1050px] text-sm">
                 <thead>
                   <tr className={isDark
-                    ? "border-b border-slate-800 bg-slate-800/70 text-left text-xs font-semibold text-slate-400"
+                    ? "border-b border-[#1c252d] bg-[#0d1419] text-left text-xs font-semibold text-slate-400"
                     : "border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-500"}>
                     <th className="px-5 py-4">{t('dashboard.guest')}</th>
                     <th className="px-4 py-4">{t('dashboard.room')}</th>
@@ -284,7 +368,7 @@ export default function Bookings() {
                     <th className="px-5 py-4 text-right">{t('common.actions')}</th>
                   </tr>
                 </thead>
-                <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-slate-200"}`}>
+                <tbody className={`divide-y ${isDark ? "divide-[#1c252d]" : "divide-slate-200"}`}>
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="h-40 text-center text-sm text-muted-foreground">
@@ -297,7 +381,7 @@ export default function Bookings() {
                       return (
                         <tr
                           key={booking.id}
-                          className={isDark ? "transition-colors hover:bg-slate-800/50" : "transition-colors hover:bg-blue-50/40"}
+                          className={`group transition-colors ${isDark ? "hover:bg-[#10171d]" : "hover:bg-blue-50/40"}`}
                         >
                           <td className="whitespace-nowrap px-5 py-4">
                             <div className="flex items-center gap-3">
@@ -321,22 +405,57 @@ export default function Bookings() {
                           </td>
                           <td className="whitespace-nowrap px-4 py-4">{getStatusBadge(booking.status)}</td>
                           <td className="whitespace-nowrap px-5 py-4">
-                            <div className="flex items-center justify-end gap-2">
-                              {booking.status === "Yashamoqda" ? (
+                            <div className="flex items-center justify-end gap-1.5">
+                              {booking.status === "Kutilmoqda" && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateBookingStatus(booking, "Tasdiqlangan")}
+                                    title={translateStatus("Tasdiqlangan")}
+                                    aria-label={`${booking.guest} — ${translateStatus("Tasdiqlangan")}`}
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
+                                  >
+                                    <Check size={16} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateBookingStatus(booking, "Bekor")}
+                                    title={translateStatus("Bekor")}
+                                    aria-label={`${booking.guest} — ${translateStatus("Bekor")}`}
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                                  >
+                                    <X size={16} />
+                                  </button>
+                                </>
+                              )}
+                              {booking.status === "Tasdiqlangan" && (
                                 <button
-                                  onClick={() => handleCheckOut(booking.id)}
-                                  className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white transition hover:bg-blue-700"
-                                >
-                                  <LogOut size={14} />
-                                  {t('bookings.checkOutAction')}
-                                </button>
-                              ) : (
-                                <button
+                                  type="button"
                                   onClick={() => handleCheckIn(booking.id)}
-                                  className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white transition hover:bg-emerald-700"
+                                  className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
                                 >
                                   <LogIn size={14} />
                                   {t('bookings.checkInAction')}
+                                </button>
+                              )}
+                              {booking.status === "Yashamoqda" && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCheckOut(booking.id)}
+                                  className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
+                                >
+                                  <Check size={14} />
+                                  {t('bookings.checkOutAction')}
+                                </button>
+                              )}
+                              {(booking.status === "Tugatilgan" || booking.status === "Bekor") && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDelete(booking.id)}
+                                  className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-rose-50 px-3 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
+                                >
+                                  <Trash2 size={14} />
+                                  {t('common.delete')}
                                 </button>
                               )}
                               <button
@@ -344,7 +463,7 @@ export default function Bookings() {
                                 onClick={() => handleOpenEdit(booking)}
                                 title={t('common.edit')}
                                 aria-label={`${booking.guest} — ${t('common.edit')}`}
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground opacity-0 transition hover:bg-muted hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
                               >
                                 <Pencil className="h-4 w-4" />
                               </button>
@@ -353,7 +472,7 @@ export default function Bookings() {
                                 onClick={() => setViewBooking(booking)}
                                 title={t('common.view')}
                                 aria-label={`${booking.guest} — ${t('common.view')}`}
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground opacity-0 transition hover:bg-muted hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
                               >
                                 <Eye className="h-4 w-4" />
                               </button>
@@ -366,7 +485,7 @@ export default function Bookings() {
                 </tbody>
               </table>
             </div>
-            <div className={`flex flex-wrap items-center justify-between gap-3 border-t px-5 py-4 text-xs ${isDark ? "border-slate-800 text-slate-400" : "border-slate-200 text-slate-500"}`}>
+            <div className={`flex flex-wrap items-center justify-between gap-3 border-t px-5 py-4 text-xs ${isDark ? "border-[#1c252d] text-slate-400" : "border-slate-200 text-slate-500"}`}>
               <span>{t('bookings.total').replace('{n}', String(filtered.length))}</span>
               <span>
                 {t('status.confirmed')}: {countByStatus("Tasdiqlangan")} · {t('status.pending')}: {countByStatus("Kutilmoqda")} · {t('status.living')}: {countByStatus("Yashamoqda")}
@@ -376,110 +495,137 @@ export default function Bookings() {
         ) : (
           <>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[980px] text-xs">
             <thead>
-              <tr className={isDark ? "bg-slate-800/80 border-b border-slate-800 text-slate-300 text-xs font-semibold uppercase tracking-wider" : "bg-gray-50/80 border-b border-gray-100 text-gray-500 text-xs font-semibold uppercase tracking-wider"}>
-                <th className="text-left px-6 py-4">#</th>
-                <th className="text-left px-6 py-4">{t('dashboard.guest')}</th>
-                <th className="text-left px-6 py-4">{t('dashboard.room')}</th>
-                <th className="text-left px-6 py-4">{t('bookings.checkIn')} / {t('bookings.checkOut')}</th>
-                <th className="text-left px-6 py-4">{t('dashboard.duration')}</th>
-                <th className="text-left px-6 py-4">{t('common.amount')}</th>
-                <th className="text-left px-6 py-4">{t('common.status')}</th>
-                <th className="text-left px-6 py-4">{t('common.actions')}</th>
+              <tr className={isDark ? "bg-[#0d1419] border-b border-[#1c252d] text-slate-300 text-xs font-semibold uppercase tracking-wider" : "bg-gray-50/80 border-b border-gray-100 text-gray-500 text-xs font-semibold uppercase tracking-wider"}>
+                <th className="px-3 py-3 text-left">{t('dashboard.guest')}</th>
+                <th className="px-2.5 py-3 text-left">{t('dashboard.room')}</th>
+                <th className="px-2.5 py-3 text-left">{t('bookings.checkIn')} — {t('bookings.checkOut')}</th>
+                <th className="px-2.5 py-3 text-left">{t('dashboard.duration')}</th>
+                <th className="px-2.5 py-3 text-left">{t('common.notes')}</th>
+                <th className="px-2.5 py-3 text-left">{t('common.status')}</th>
+                <th className="px-2.5 py-3 text-right">{t('common.amount')}</th>
+                <th className="px-3 py-3 text-right">{t('common.actions')}</th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-50"}`}>
+            <tbody className={`divide-y ${isDark ? "divide-[#1c252d]" : "divide-gray-50"}`}>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-gray-400 dark:text-slate-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-400 dark:text-slate-500">
                     {t('rooms.notFound')}
                   </td>
                 </tr>
               ) : (
-                filtered.map((booking, index) => (
+                filtered.map((booking) => (
                   <tr
                     key={booking.id}
-                    className={isDark ? "hover:bg-slate-800/50 transition-colors" : "hover:bg-blue-50/30 transition-colors"}
+                    className={`group transition-colors ${isDark ? "hover:bg-[#10171d]" : "hover:bg-blue-50/30"}`}
                   >
-                    <td className="px-6 py-4 text-gray-400 dark:text-slate-500 font-medium">
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
-                          <span className="text-blue-600 dark:text-sky-300 font-bold text-xs">
+                    <td className="whitespace-nowrap px-3 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isDark ? "bg-blue-500/15" : "bg-blue-100"}`}>
+                          <span className={`text-xs font-bold ${isDark ? "text-sky-300" : "text-blue-700"}`}>
                             {booking.guest.charAt(0)}
                           </span>
                         </div>
-                        <span className={isDark ? "font-semibold text-white" : "font-semibold text-gray-900"}>
-                          {booking.guest}
-                        </span>
+                        <div>
+                          <div className={isDark ? "font-semibold text-white" : "font-semibold text-gray-900"}>{booking.guest}</div>
+                          <div className={`mt-0.5 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>OR-{String(booking.id).padStart(6, "0")}</div>
+                        </div>
                       </div>
                     </td>
-                    <td className={isDark ? "px-6 py-4 font-semibold text-slate-300" : "px-6 py-4 font-semibold text-gray-700"}>
+                    <td className={isDark ? "whitespace-nowrap px-2.5 py-3 font-semibold text-slate-300" : "whitespace-nowrap px-2.5 py-3 font-semibold text-gray-700"}>
                       {booking.room}
                     </td>
-                    <td className="px-6 py-4 text-xs font-medium text-gray-500 dark:text-slate-400 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-2.5 py-3 text-[11px] font-medium text-gray-500 dark:text-slate-400">
                       {booking.checkIn} <span className="text-gray-400">→</span> {booking.checkOut}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-2.5 py-3">
                       <span className={isDark ? "font-bold text-slate-200" : "font-bold text-gray-800"}>
                         {booking.nights}
                       </span>
                       <span className="text-gray-400 dark:text-slate-500 ml-1 text-xs">{t('bookings.nights')}</span>
                     </td>
-                    <td className={isDark ? "px-6 py-4 font-bold text-white whitespace-nowrap" : "px-6 py-4 font-bold text-gray-900 whitespace-nowrap"}>
-                      {formatPrice(booking.price)}
+                    <td className={`max-w-36 truncate px-2.5 py-3 text-[11px] ${isDark ? "text-slate-400" : "text-slate-500"}`} title={booking.notes || ""}>
+                      {booking.notes || "—"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="whitespace-nowrap px-2.5 py-3">
                       {getStatusBadge(booking.status)}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        {/* Check-in button */}
-                        {(booking.status === "Tasdiqlangan" || booking.status === "Kutilmoqda") && (
+                    <td className={isDark ? "whitespace-nowrap px-2.5 py-3 text-right font-bold text-white" : "whitespace-nowrap px-2.5 py-3 text-right font-bold text-gray-900"}>
+                      {formatPrice(booking.price)}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-3">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {booking.status === "Kutilmoqda" && (
+                          <>
                           <button
-                            onClick={() => handleCheckIn(booking.id)}
-                            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition cursor-pointer"
+                            type="button"
+                            onClick={() => updateBookingStatus(booking, "Tasdiqlangan")}
+                            title={translateStatus("Tasdiqlangan")}
+                            aria-label={`${booking.guest} — ${translateStatus("Tasdiqlangan")}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
                           >
-                            <LogIn size={13} />
-                            Check-in
+                            <Check size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateBookingStatus(booking, "Bekor")}
+                            title={translateStatus("Bekor")}
+                            aria-label={`${booking.guest} — ${translateStatus("Bekor")}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                          >
+                            <X size={16} />
+                          </button>
+                          </>
+                        )}
+
+                        {booking.status === "Tasdiqlangan" && (
+                          <button
+                            type="button"
+                            onClick={() => handleCheckIn(booking.id)}
+                            className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
+                          >
+                            <LogIn size={14} />
+                            {t('bookings.checkInAction')}
                           </button>
                         )}
 
-                        {/* Check-out button */}
                         {booking.status === "Yashamoqda" && (
                           <button
+                            type="button"
                             onClick={() => handleCheckOut(booking.id)}
-                            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap px-2.5 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition cursor-pointer"
+                            className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
                           >
-                            <LogOut size={13} />
-                            Check-out
+                            <Check size={14} />
+                            {t('bookings.checkOutAction')}
                           </button>
                         )}
 
-                        {/* Regular CRUD actions */}
+                        {(booking.status === "Tugatilgan" || booking.status === "Bekor") && (
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(booking.id)}
+                            className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-rose-50 px-3 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
+                          >
+                            <Trash2 size={14} />
+                            {t('common.delete')}
+                          </button>
+                        )}
+
                         <button
                           onClick={() => setViewBooking(booking)}
                           title={t('common.view')}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-blue-100 dark:hover:bg-blue-950/40 text-gray-400 hover:text-blue-600 transition cursor-pointer"
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition focus-visible:opacity-100 group-hover:opacity-100 ${isDark ? "text-slate-400 hover:bg-[#202421] hover:text-white" : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"}`}
                         >
-                          <Eye className="w-3.5 h-3.5" />
+                          <Eye className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleOpenEdit(booking)}
                           title={t('common.edit')}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 text-gray-400 hover:text-amber-600 transition cursor-pointer"
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition focus-visible:opacity-100 group-hover:opacity-100 ${isDark ? "text-slate-400 hover:bg-[#202421] hover:text-white" : "text-slate-500 hover:bg-amber-50 hover:text-amber-600"}`}
                         >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(booking.id)}
-                          title={t('common.delete')}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-100 dark:hover:bg-red-950/40 text-gray-400 hover:text-red-600 transition cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Pencil className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -491,7 +637,7 @@ export default function Bookings() {
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-3 border-t flex flex-wrap items-center justify-between gap-2 ${isDark ? "border-slate-800 bg-slate-900/60" : "border-gray-100 bg-gray-50/50"}`}>
+        <div className={`px-6 py-3 border-t flex flex-wrap items-center justify-between gap-2 ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-gray-100 bg-gray-50/50"}`}>
           <span className="text-xs text-gray-400 dark:text-slate-400 font-medium">
             {t('bookings.total').replace('{n}', String(filtered.length))}
           </span>
@@ -555,7 +701,7 @@ export default function Bookings() {
           title={`${t('bookings.detailsTitle')} #${viewBooking.id}`}
         >
           <div className="space-y-4">
-            <div className={isDark ? "p-4 bg-slate-800/80 rounded-xl space-y-3 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-3 text-sm"}>
+            <div className={isDark ? "p-4 bg-[#0d1419] rounded-xl space-y-3 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-3 text-sm"}>
               <div className="flex justify-between">
                 <span className="text-gray-400 dark:text-slate-400">{t('dashboard.guest')}:</span>
                 <span className="font-bold text-gray-900 dark:text-white">{viewBooking.guest}</span>
@@ -581,7 +727,7 @@ export default function Bookings() {
               {viewBooking.notes && (
                 <div className={`pt-2 border-t ${isDark ? "border-slate-700" : "border-gray-200"}`}>
                   <span className="block text-gray-400 dark:text-slate-400 mb-1">{t('common.notes')}:</span>
-                  <div className={isDark ? "flex items-start gap-2 bg-slate-900 p-2.5 rounded-lg border border-slate-700 text-xs text-slate-300" : "flex items-start gap-2 bg-white p-2.5 rounded-lg border border-gray-200 text-xs text-gray-700"}>
+                  <div className={isDark ? "flex items-start gap-2 bg-[#0a0f13] p-2.5 rounded-lg border border-[#1c252d] text-xs text-slate-300" : "flex items-start gap-2 bg-white p-2.5 rounded-lg border border-gray-200 text-xs text-gray-700"}>
                     <FileText size={14} className="text-gray-400 mt-0.5" />
                     <span>{viewBooking.notes}</span>
                   </div>
@@ -594,7 +740,7 @@ export default function Bookings() {
                 onClick={() => setViewBooking(null)}
                 className={
                   isDark
-                    ? "px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl transition cursor-pointer"
+                    ? "px-5 py-2 bg-[#10171d] hover:bg-[#17212a] text-slate-200 font-semibold text-sm rounded-xl transition cursor-pointer"
                     : "px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition cursor-pointer"
                 }
               >

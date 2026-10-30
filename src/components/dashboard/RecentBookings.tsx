@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { CalendarDays } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CalendarDays, ArrowUpRight } from "lucide-react";
 import type { Booking } from "@/types/booking";
 
 interface RecentBookingsProps {
@@ -14,72 +15,72 @@ const formatBookingDate = (date: string) => {
 };
 
 export function RecentBookings({ bookings }: RecentBookingsProps) {
-  const getStatusColor = (status: string) => {
+  const getBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
       case "Yashamoqda":
-        return "text-primary";
+        return "default";
       case "Tasdiqlangan":
-        return "text-emerald-600 dark:text-emerald-400";
+        return "secondary";
       case "Bekor":
-        return "text-destructive";
+        return "destructive";
       default:
-        return "text-muted-foreground";
+        return "outline";
     }
   };
 
-  const recent = bookings.slice(0, 6);
+  const recent = bookings.slice(0, 5);
 
   if (recent.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 py-10 text-center text-sm text-muted-foreground">
-        <CalendarDays className="h-5 w-5" />
-        Hozircha hech qanday bron mavjud emas.
+      <div className="flex flex-col items-center justify-center gap-2 py-12 text-center text-sm text-muted-foreground">
+        <CalendarDays className="h-8 w-8 text-muted-foreground/60" />
+        <p>Hozircha yangi bronlar mavjud emas.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {recent.map((booking) => {
         const initials = booking.guest
           .split(" ")
           .map((n) => n[0])
           .slice(0, 2)
-          .join("");
+          .join("")
+          .toUpperCase();
 
         return (
           <div
             key={booking.id}
-            className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2 rounded-xl border border-border/60 p-3 transition-colors hover:bg-muted/40 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:gap-4 sm:p-3.5"
+            className="flex items-center justify-between gap-4 p-2 rounded-lg transition-colors hover:bg-muted/50"
           >
-            <Avatar className="row-span-2 h-10 w-10 self-center border border-primary/10 sm:row-span-1">
-              <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-
-            <div className="min-w-0 self-center">
-              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                <p className="min-w-0 truncate text-sm font-semibold text-foreground">
-                  {booking.guest}
+            <div className="flex items-center gap-3 min-w-0">
+              <Avatar className="h-9 w-9 border border-blue-100 dark:border-blue-900/50">
+                <AvatarFallback className="bg-blue-50 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-sky-300">
+                  {initials || "GH"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-sm font-medium leading-none text-foreground">
+                    {booking.guest}
+                  </p>
+                  <Badge variant={getBadgeVariant(booking.status)} className="h-5 px-1.5 text-[10px] font-medium">
+                    {booking.status}
+                  </Badge>
+                </div>
+                <p className="mt-1 truncate text-xs text-muted-foreground">
+                  Xona {booking.room} · {formatBookingDate(booking.checkIn)} – {formatBookingDate(booking.checkOut)} ({booking.nights} k.)
                 </p>
-                <span className={`shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium ${getStatusColor(booking.status)}`}>
-                  {booking.status}
-                </span>
               </div>
-              <p className="mt-1 truncate text-xs text-muted-foreground">
-                {booking.room}
-                <span className="mx-1.5 text-border">·</span>
-                {formatBookingDate(booking.checkIn)} – {formatBookingDate(booking.checkOut)}
-                <span className="mx-1.5 text-border">·</span>
-                {booking.nights} kecha
-              </p>
             </div>
 
-            <div className="col-start-2 row-start-2 flex items-center justify-between gap-2 sm:col-start-auto sm:row-start-auto">
-              <p className="self-center whitespace-nowrap text-sm font-bold text-foreground sm:text-right">
-                {booking.price.toLocaleString("uz-UZ")} <span className="text-xs font-medium text-muted-foreground">so‘m</span>
+            <div className="text-right shrink-0">
+              <p className="text-sm font-semibold tracking-tight text-foreground flex items-center justify-end">
+                <ArrowUpRight className="mr-0.5 h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                +{booking.price.toLocaleString("uz-UZ")}
               </p>
+              <p className="text-[11px] text-muted-foreground">so‘m</p>
             </div>
           </div>
         );
