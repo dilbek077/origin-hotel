@@ -3,10 +3,10 @@
    ========================================================= */
 
 /* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+/* Font files are served locally by shilla-layout.css. */
 
 .font-display {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: Georgia, 'Times New Roman', serif;
 }
 
 /* ---- Custom utilities ---- */

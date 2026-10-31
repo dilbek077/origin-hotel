@@ -108,7 +108,7 @@ export default function LoginPage() {
   }`;
 
   return (
-    <main className={`login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0a1628]' : 'bg-[#f4f7f0]'}`}>
+    <main className={`hotel-login login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0a1628]' : 'bg-[#f4f7f0]'}`}>
       <section className={`relative flex min-h-[340px] flex-col justify-between overflow-hidden px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-16 ${
         isDark
           ? 'bg-gradient-to-br from-[#082f49] via-[#075985] to-[#0369a1]'

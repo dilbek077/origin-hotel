@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StorageService } from '@/services/storage';
-import { useTheme } from '@/theme';
+import { LANGUAGES, useTranslation } from '@/i18n';
 import {
   Hotel,
   MapPin,
@@ -13,8 +13,6 @@ import {
   Menu,
   X,
   Car,
-  Moon,
-  Sun,
   Dumbbell,
   Waves,
   Clock,
@@ -22,7 +20,14 @@ import {
   BedDouble,
   CalendarCheck,
   ArrowUpRight,
-  Sparkles,
+  Home,
+  Globe,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+  UsersRound,
   Shield,
   Camera,
   Send,
@@ -31,6 +36,7 @@ import {
 import { Link } from 'react-router-dom';
 import type { Room as StorageRoom } from '@/types/room';
 import '../landing.css';
+import '../shilla-layout.css';
 
 /* ─── constants ──────────────────────────────────────────── */
 const IMAGES = {
@@ -134,8 +140,11 @@ const REVIEWS = [
 ];
 
 const NAV_LINKS = [
-  { href: '#rooms',   label: 'Xonalar' },
-  { href: '#about',   label: 'Biz haqimizda' },
+  { href: '#about', label: 'Biz haqimizda' },
+  { href: '#rooms', label: 'Takliflar' },
+  { href: '#rooms', label: 'Xonalar' },
+  { href: '#about', label: 'Qulayliklar' },
+  { href: '#gallery', label: 'Galereya' },
   { href: '#reviews', label: 'Fikrlar' },
   { href: '#contact', label: 'Aloqa' },
 ];
@@ -172,258 +181,124 @@ function useScrollProgress() {
   }, []);
 }
 
-/* ─── Navbar ─────────────────────────────────────────────── */
+/* Screenshot-matched header; existing account routes are retained. */
 function Navbar() {
-  const { isDark, toggleTheme } = useTheme();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    fn();
-    window.addEventListener('scroll', fn, { passive: true });
-    return () => window.removeEventListener('scroll', fn);
+    const update = () => setScrolled(window.scrollY > 160);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
   }, []);
-
-  const onNav = useCallback((href: string) => {
-    setOpen(false);
-    const el = document.querySelector(href);
-    el?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
-
-  const headerClass = [
-    'marketing-header w-full',
-    scrolled ? 'scrolled' : 'at-top',
-  ].join(' ');
-
-  const linkClass = scrolled
-    ? 'text-sm font-medium text-foreground hover:text-[--champagne] transition-colors'
-    : 'text-sm font-medium text-white/85 hover:text-[--champagne] transition-colors';
+  const { locale, setLocale } = useTranslation();
 
   return (
-    <header className={headerClass}>
-      <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-5 lg:px-10">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ background: 'var(--champagne)', color: 'var(--ink)' }}
-          >
-            <Hotel size={18} strokeWidth={2.2} />
-          </div>
-          <span
-            className={`font-bold text-base tracking-tight ${scrolled ? 'text-foreground' : 'text-white'}`}
-          >
-            Origin Hotel
-          </span>
+    <header className={`shilla-header ${scrolled ? 'is-scrolled' : ''}`}>
+      <div className="shilla-header-top">
+        <a href="#about" className="shilla-hotel-link"><Home size={21} strokeWidth={1.2} /><span>Mehmonxona haqida +</span></a>
+        <Link to="/" className="shilla-wordmark" aria-label="Origin Hotel — bosh sahifa">
+          <span>ORIGIN HOTEL</span><small>TOSHKENT</small>
         </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
-          {NAV_LINKS.map((l) => (
-            <button key={l.href} onClick={() => onNav(l.href)} className={linkClass}>
-              {l.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => toggleTheme()}
-            className={[
-              'rounded-full border p-2.5 transition',
-              scrolled
-                ? 'border-border text-foreground hover:border-[--champagne] hover:text-[--champagne]'
-                : 'border-white/30 text-white hover:border-[--champagne] hover:text-[--champagne]',
-            ].join(' ')}
-            aria-label="Mavzu almashtirish"
-          >
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-
-          <Link
-            to="/admin"
-            className={[
-              'hidden sm:inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition',
-              scrolled
-                ? 'border-border text-foreground hover:border-[--champagne] hover:text-[--champagne]'
-                : 'border-white/30 text-white hover:border-[--champagne] hover:text-[--champagne]',
-            ].join(' ')}
-          >
-            Kirish
-          </Link>
-
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden rounded-lg p-2"
-            onClick={() => setOpen(!open)}
-            aria-label="Menyu"
-          >
-            {open ? (
-              <X size={20} className={scrolled ? 'text-foreground' : 'text-white'} />
-            ) : (
-              <Menu size={20} className={scrolled ? 'text-foreground' : 'text-white'} />
-            )}
-          </button>
+        <div className="shilla-account-links">
+          <Link to="/login">Kirish</Link>
+          <Link to="/admin/bronlar">Bronlarim</Link>
+          <Link to="/admin">Boshqaruv</Link>
+          <a href="#contact">Bog‘lanish</a>
+          <div className="shilla-language" onKeyDown={(event) => { if (event.key === 'Escape') setLanguageOpen(false); }}>
+            <button type="button" aria-expanded={languageOpen} aria-label="Tilni tanlash" onClick={() => setLanguageOpen(!languageOpen)}><Globe size={15} strokeWidth={1.1} />{LANGUAGES.find((language) => language.code === locale)?.label}<ChevronDown size={13} /></button>
+            {languageOpen && <div className="shilla-language-options">{LANGUAGES.map((language) => <button type="button" key={language.code} aria-pressed={language.code === locale} onClick={() => { setLocale(language.code); setLanguageOpen(false); }}>{language.label}</button>)}</div>}
+          </div>
         </div>
+        <button type="button" className="shilla-mobile-toggle" aria-label="Menyu" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={23} /> : <Menu size={23} />}</button>
       </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden border-t bg-[--page] border-[--line] px-5 py-4 flex flex-col gap-3">
-          {NAV_LINKS.map((l) => (
-            <button
-              key={l.href}
-              onClick={() => onNav(l.href)}
-              className="text-left text-sm font-medium py-2 border-b border-[--line] last:border-0 hover:text-[--champagne] transition-colors"
-            >
-              {l.label}
-            </button>
-          ))}
-          <Link to="/admin" className="text-sm font-semibold text-[--champagne] pt-1">
-            Boshqaruv tizimi →
-          </Link>
-        </div>
-      )}
+      <nav className={`shilla-primary-nav ${open ? 'is-open' : ''}`} aria-label="Asosiy menyu">
+        {NAV_LINKS.map((link) => <a href={link.href} key={link.label} onClick={() => setOpen(false)}>{link.label}</a>)}
+        <a href="#reservation" className="shilla-nav-reserve" onClick={() => setOpen(false)}>Bron qilish</a>
+      </nav>
     </header>
   );
 }
 
-/* ─── Hero ───────────────────────────────────────────────── */
-function Hero({ rooms }: { rooms: StorageRoom[] }) {
-  const scrollToRooms = () =>
-    document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
+function localDate(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
 
-  const scrollToContact = () =>
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+function ReservationBar({ onSearch }: { onSearch: (summary: string) => void }) {
+  const [mode, setMode] = useState<'room' | 'dining'>('room');
+  const [checkIn, setCheckIn] = useState(() => localDate(new Date()));
+  const [checkOut, setCheckOut] = useState(() => { const day = new Date(); day.setDate(day.getDate() + 1); return localDate(day); });
+  const [adults, setAdults] = useState(2);
+  const [roomCount, setRoomCount] = useState(1);
+  const [guestsOpen, setGuestsOpen] = useState(false);
+  const guestsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!guestsOpen) return;
+    const close = (event: MouseEvent) => { if (!guestsRef.current?.contains(event.target as Node)) setGuestsOpen(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [guestsOpen]);
 
   return (
-    <section className="relative isolate flex min-h-[92vh] items-center overflow-hidden bg-[--ink] text-white">
-      {/* Background */}
-      <img
-        src={IMAGES.exterior}
-        alt="Origin Hotel"
-        className="absolute inset-0 h-full w-full object-cover"
-        fetchPriority="high"
-        decoding="async"
-      />
-      {/* Overlays */}
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[--ink] via-[#0e141799] to-[#0e141733]" />
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0e1417cc] via-transparent to-[#0e141766]" />
+    <form id="reservation" className="shilla-reservation" onSubmit={(event) => {
+      event.preventDefault();
+      setGuestsOpen(false);
+      if (mode === 'dining') { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); return; }
+      onSearch(`${checkIn} — ${checkOut} · ${roomCount} xona · ${adults} mehmon. Xonani tanlab, bronni tasdiqlash uchun biz bilan bog‘laning.`);
+      document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
+    }}>
+      <div className="shilla-booking-mode" aria-label="Bron turi">
+        <button type="button" className={mode === 'room' ? 'active' : ''} aria-pressed={mode === 'room'} onClick={() => setMode('room')}>Xona</button>
+        <button type="button" className={mode === 'dining' ? 'active' : ''} aria-pressed={mode === 'dining'} onClick={() => setMode('dining')}>Restoran</button>
+      </div>
+      <div className="shilla-hotel-field"><span>Origin Hotel · Toshkent</span><MapPin size={23} strokeWidth={1.3} /></div>
+      <div className="shilla-date-field">
+        <label><span className="sr-only">Kelish sanasi</span><input aria-label="Kelish sanasi" type="date" required value={checkIn} min={localDate(new Date())} onChange={(event) => {
+          const value = event.target.value; setCheckIn(value);
+          if (value && checkOut <= value) { const next = new Date(`${value}T12:00:00`); next.setDate(next.getDate() + 1); setCheckOut(localDate(next)); }
+        }} /></label>
+        <span aria-hidden>–</span>
+        <label><span className="sr-only">Ketish sanasi</span><input aria-label="Ketish sanasi" type="date" required value={checkOut} min={(() => { const day = new Date(`${checkIn || localDate(new Date())}T12:00:00`); day.setDate(day.getDate() + 1); return localDate(day); })()} onChange={(event) => setCheckOut(event.target.value)} /></label>
+      </div>
+      <div ref={guestsRef} className="shilla-guest-field" onKeyDown={(event) => { if (event.key === 'Escape') setGuestsOpen(false); }}>
+        <button type="button" aria-expanded={guestsOpen} onClick={() => setGuestsOpen(!guestsOpen)}><span>Xona {roomCount} · Mehmon {adults}</span><UsersRound size={23} strokeWidth={1.2} /></button>
+        {guestsOpen && <div className="shilla-guest-popover">
+          <label>Xonalar<input aria-label="Xonalar soni" type="number" min="1" max="8" value={roomCount} onChange={(event) => setRoomCount(Math.max(1, Math.min(8, Number(event.target.value))))} /></label>
+          <label>Mehmonlar<input aria-label="Mehmonlar soni" type="number" min="1" max="24" value={adults} onChange={(event) => setAdults(Math.max(1, Math.min(24, Number(event.target.value))))} /></label>
+          <button type="button" onClick={() => setGuestsOpen(false)}>Tayyor</button>
+        </div>}
+      </div>
+      <button className="shilla-reservation-submit" type="submit">{mode === 'room' ? 'Bron qilish' : 'Bog‘lanish'}</button>
+    </form>
+  );
+}
 
-      {/* Orbit decorations */}
-      <div aria-hidden className="hero-orbit hero-orbit-one" />
-      <div aria-hidden className="hero-orbit hero-orbit-two" />
+const HERO_SLIDES = [
+  { src: IMAGES.pool, alt: 'Origin Hotel basseyn va dam olish hududi' },
+  { src: IMAGES.exterior, alt: 'Origin Hotel tashqi ko‘rinishi' },
+  { src: IMAGES.presidential, alt: 'Origin Hotel Presidential xonasi' },
+];
 
-      {/* Content */}
-      <div className="relative mx-auto grid w-full max-w-[1440px] items-center gap-12 px-5 py-14 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16 lg:px-10 lg:py-32">
-        <div
-          className="max-w-2xl"
-          style={{ animation: 'slide-up 0.8s ease both' }}
-        >
-          {/* Badge */}
-          <p className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[.2em] text-white/85">
-            <Sparkles size={12} className="text-[--champagne]" />
-            Shahar markazidagi 5 yulduzli mehmonxona
-          </p>
+function Hero() {
+  const [slide, setSlide] = useState(0);
+  const [paused, setPaused] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    if (paused) return;
+    const timer = window.setInterval(() => setSlide((previous) => (previous + 1) % HERO_SLIDES.length), 7000);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+  const nextSlide = (direction: number) => setSlide((previous) => (previous + direction + HERO_SLIDES.length) % HERO_SLIDES.length);
 
-          {/* Headline */}
-          <h1 className="font-display mt-6 text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-[4rem]">
-            Har bir lahza —{' '}
-            <span className="text-[--champagne]">unutilmas</span>{' '}
-            taassurot
-          </h1>
-
-          <p className="mt-5 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
-            Shinam xonalar, samimiy xizmat va o'zingizni uyda his qiladigan
-            muhitdan bahramand bo'ling.
-          </p>
-
-          {/* CTAs */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              onClick={scrollToRooms}
-              className="inline-flex items-center gap-2 rounded-full bg-[--champagne] px-6 py-3.5 text-xs font-bold text-[--ink] transition hover:bg-white"
-            >
-              Xonani bron qilish
-              <BedDouble size={14} />
-            </button>
-            <a
-              href="#rooms"
-              onClick={(e) => { e.preventDefault(); scrollToRooms(); }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/35 px-6 py-3.5 text-xs font-bold text-white transition hover:border-[--champagne] hover:text-[--champagne]"
-            >
-              Xonalarni ko'rish
-            </a>
-          </div>
-
-          {/* Mini stats */}
-          <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-5 border-t border-white/15 pt-7">
-            <div className="flex items-center gap-3">
-              <BedDouble size={18} className="text-[--champagne]" />
-              <div>
-                <dt className="text-[10px] uppercase tracking-[.16em] text-white/55">Xonalar</dt>
-                <dd className="text-sm font-semibold">{rooms.length || 40} ta</dd>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Star size={18} className="text-[--champagne]" />
-              <div>
-                <dt className="text-[10px] uppercase tracking-[.16em] text-white/55">Mehmon reytingi</dt>
-                <dd className="text-sm font-semibold">4.9 / 5</dd>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone size={18} className="text-[--champagne]" />
-              <div>
-                <dt className="text-[10px] uppercase tracking-[.16em] text-white/55">Mehmonlar xizmati</dt>
-                <dd className="text-sm font-semibold">+998 71 200 20 20</dd>
-              </div>
-            </div>
-          </dl>
-        </div>
-
-        {/* Right panel – live availability badge */}
-        <div
-          className="relative lg:justify-self-end w-full max-w-sm lg:max-w-none"
-          style={{ animation: 'slide-up 0.9s 0.2s ease both', opacity: 0, animationFillMode: 'both' }}
-        >
-          <div className="mb-4 flex items-center gap-2 text-[10px] uppercase tracking-[.2em] text-white/80">
-            <span className="hotel-live-dot" />
-            Hozir bron qilish mumkin
-          </div>
-          <div className="rounded-3xl border border-white/15 bg-white/8 p-6 backdrop-blur-sm" style={{ background: '#ffffff10' }}>
-            <p className="text-xs text-white/60 mb-4">Tezkor bron</p>
-            <div className="space-y-3">
-              {ROOM_DATA.slice(0, 3).map((r) => (
-                <div
-                  key={r.type}
-                  className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:border-[--champagne]/40 transition-colors cursor-pointer"
-                  onClick={scrollToRooms}
-                >
-                  <div>
-                    <p className="font-semibold text-xs">{r.label}</p>
-                    <p className="text-white/50 text-[11px]">{r.size} · {r.capacity} kishi</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[--champagne] font-bold text-xs">{formatPrice(r.price)}</p>
-                    <p className="text-white/40 text-[10px]">/ tun</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={scrollToContact}
-              className="mt-4 w-full rounded-2xl bg-[--champagne] py-3 text-xs font-bold text-[--ink] transition hover:bg-white"
-            >
-              Bog'lanish
-            </button>
-          </div>
-          <p className="mt-3 text-center text-[10px] text-white/50">
-            Tasdiqlash odatda 30 daqiqa ichida keladi
-          </p>
-        </div>
+  return (
+    <section className="shilla-hero" aria-label="Origin Hotel suratlari" aria-roledescription="slayder">
+      {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
+      <h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</h1>
+      <div className="shilla-slider-controls">
+        <div className="shilla-slide-progress" aria-label={`${slide + 1} / ${HERO_SLIDES.length}`}><span style={{ width: `${((slide + 1) / HERO_SLIDES.length) * 100}%` }} /></div>
+        <button type="button" aria-label={paused ? 'Slayderni davom ettirish' : 'Slayderni to‘xtatish'} onClick={() => setPaused(!paused)}>{paused ? <Play size={16} /> : <Pause size={16} />}</button>
+        <button type="button" aria-label="Oldingi surat" onClick={() => nextSlide(-1)}><ChevronLeft size={25} strokeWidth={1} /></button>
+        <button type="button" aria-label="Keyingi surat" onClick={() => nextSlide(1)}><ChevronRight size={25} strokeWidth={1} /></button>
       </div>
     </section>
   );
@@ -495,69 +370,16 @@ function Stats({ rooms }: { rooms: StorageRoom[] }) {
 }
 
 /* ─── Rooms ──────────────────────────────────────────────── */
-function RoomCard({
-  room,
-  index,
-  onBook,
-}: {
-  room: typeof ROOM_DATA[0];
-  index: number;
-  onBook: (r: typeof ROOM_DATA[0]) => void;
-}) {
+function RoomCard({ room, onBook }: { room: typeof ROOM_DATA[0]; onBook: (room: typeof ROOM_DATA[0]) => void }) {
   return (
-    <article
-      className={`room-showcase-card surface group flex flex-col overflow-hidden rounded-3xl border border-[--line] anim-fade-up`}
-      style={{ transitionDelay: `${(index % 3) * 100}ms` }}
-    >
-      {/* Image */}
-      <div className="relative aspect-[16/11] overflow-hidden">
-        <img
-          src={room.image}
-          alt={room.label}
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full bg-[--line] object-cover transition duration-500 group-hover:scale-[1.04]"
-        />
-        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-[--ink] dark:bg-[--ink]/80 dark:text-white">
-          {room.size}
-        </span>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 flex-col p-5">
-        <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">
-          {room.label}
-        </p>
-        <h3 className="font-display mt-2 text-xl">{room.label} Xona</h3>
-        <p className="mt-2 text-xs leading-6 text-muted-foreground flex-1">{room.description}</p>
-
-        {/* Features */}
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {room.features.slice(0, 3).map((f) => (
-            <li
-              key={f}
-              className="rounded-full border border-[--line] px-2.5 py-1 text-[10px] font-medium text-muted-foreground"
-            >
-              {f}
-            </li>
-          ))}
-        </ul>
-
-        {/* Price + CTA */}
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-[--line] pt-4">
-          <div>
-            <p className="text-[10px] text-muted-foreground">Tunlik narx</p>
-            <p className="mt-0.5 text-base font-bold text-[--champagne]">{formatPrice(room.price)}</p>
-          </div>
-          <button
-            onClick={() => onBook(room)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[--ink] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[--ink-soft] dark:bg-[--champagne] dark:text-[--ink] dark:hover:bg-white"
-          >
-            Batafsil
-            <ArrowRight size={13} />
-          </button>
-        </div>
-      </div>
+    <article className="shilla-package-card">
+      <button type="button" className="shilla-package-image" onClick={() => onBook(room)} aria-label={`${room.label} xonani ko‘rish`}>
+        <img src={room.image} alt={`${room.label} xona`} loading="lazy" decoding="async" />
+      </button>
+      <h3><button type="button" onClick={() => onBook(room)}>{room.label} Xona</button></h3>
+      <p>{room.description}</p>
+      <p className="shilla-package-features">{room.features.slice(0, 2).join(' · ')}</p>
+      <p className="shilla-package-price">{formatPrice(room.price)} / tun · {room.size} · {room.capacity} kishi</p>
     </article>
   );
 }
@@ -625,28 +447,17 @@ function RoomDetailModal({
   );
 }
 
-function Rooms() {
+function Rooms({ searchSummary }: { searchSummary: string }) {
   const [selected, setSelected] = useState<typeof ROOM_DATA[0] | null>(null);
-
   return (
-    <section id="rooms" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-      <div className="max-w-2xl anim-fade-up">
-        <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">
-          Bizning xonalarimiz
-        </p>
-        <h2 className="font-display mt-3 text-4xl lg:text-5xl">Har bir sayohatga mos xona</h2>
-        <p className="mt-4 text-sm leading-7 text-muted-foreground">
-          Standart xonadan Prezident lyuksigacha — barchasi shahar manzarasi,
-          tezkor Wi-Fi va kundalik xizmat bilan jihozlangan.
-        </p>
+    <section id="rooms" className="shilla-packages">
+      <div className="shilla-packages-heading">
+        <h2>XONALAR</h2>
+        <p>Har bir sayohatga mos xona.</p>
+        <a href="#gallery">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
       </div>
-
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {ROOM_DATA.map((r, i) => (
-          <RoomCard key={r.type} room={r} index={i} onBook={setSelected} />
-        ))}
-      </div>
-
+      {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
+      <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={setSelected} />)}</div>
       {selected && <RoomDetailModal room={selected} onClose={() => setSelected(null)} />}
     </section>
   );
@@ -1093,22 +904,24 @@ function QuickDock() {
 /* ─── LandingPage (root) ─────────────────────────────────── */
 export default function LandingPage() {
   const rooms = StorageService.getRooms();
+  const [searchSummary, setSearchSummary] = useState('');
 
   useScrollProgress();
   useScrollAnimate();
 
   return (
-    <div className="marketing-page">
+    <div className="marketing-page hotel-marketing shilla-site">
       {/* Scroll progress bar */}
       <div className="marketing-progress" aria-hidden />
 
       <Navbar />
 
       <main>
-        <Hero rooms={rooms} />
-        <Ticker />
+        <ReservationBar onSearch={setSearchSummary} />
+        <Hero />
+        <Rooms searchSummary={searchSummary} />
         <Stats rooms={rooms} />
-        <Rooms />
+        <Ticker />
         <About />
         <Gallery />
         <Reviews />
