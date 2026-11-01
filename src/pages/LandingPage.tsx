@@ -143,6 +143,7 @@ const NAV_LINKS = [
   { href: '#about', label: 'Biz haqimizda' },
   { href: '#rooms', label: 'Takliflar' },
   { href: '#rooms', label: 'Xonalar' },
+  { href: '#dining', label: 'Restoran' },
   { href: '#about', label: 'Qulayliklar' },
   { href: '#gallery', label: 'Galereya' },
   { href: '#reviews', label: 'Fikrlar' },
@@ -459,6 +460,104 @@ function Rooms({ searchSummary }: { searchSummary: string }) {
       {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
       <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={setSelected} />)}</div>
       {selected && <RoomDetailModal room={selected} onClose={() => setSelected(null)} />}
+    </section>
+  );
+}
+
+const DINING_CARDS = [
+  {
+    title: 'Restoran',
+    description: 'Origin Hotel restorani va shinam muhit.',
+    image: IMAGES.restaurant,
+    alt: 'Restoran zali',
+  },
+  {
+    title: 'Bepul nonushta',
+    description: 'Standart xona qulayliklari qatorida bepul nonushta.',
+    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1000&q=85',
+    alt: 'Restorandagi dasturxon',
+  },
+  {
+    title: 'Shved stoli',
+    description: 'Deluxe xona mehmonlari uchun shved stoli.',
+    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1000&q=85',
+    alt: 'Restoran interyeri',
+  },
+];
+
+function Dining() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeCard, setActiveCard] = useState(0);
+
+  const moveTo = (index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const next = Math.max(0, Math.min(DINING_CARDS.length - 1, index));
+    const card = track.children[next] as HTMLElement | undefined;
+    const first = track.children[0] as HTMLElement | undefined;
+    if (!card || !first) return;
+    track.scrollTo({
+      left: card.offsetLeft - first.offsetLeft,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+  };
+
+  return (
+    <section id="dining" className="shilla-dining" aria-labelledby="dining-title">
+      <div className="shilla-dining-intro">
+        <h2 id="dining-title">RESTORAN</h2>
+        <p>Origin Hotel restorani, nonushta va shved stoli bilan yoqimli dam oling.</p>
+        <img
+          className="shilla-dining-main-image"
+          src={IMAGES.restaurant}
+          alt="Origin Hotel restoran bo‘limi"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="shilla-dining-gallery">
+        <div
+          ref={trackRef}
+          className="shilla-dining-track"
+          tabIndex={0}
+          role="region"
+          aria-label="Restoran xizmatlari, yon tomonga suring"
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+              event.preventDefault();
+              moveTo(activeCard + (event.key === 'ArrowRight' ? 1 : -1));
+            }
+          }}
+          onScroll={() => {
+            const track = trackRef.current;
+            const first = track?.children[0] as HTMLElement | undefined;
+            const second = track?.children[1] as HTMLElement | undefined;
+            if (!track || !first || !second) return;
+            const step = second.offsetLeft - first.offsetLeft;
+            const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+            setActiveCard(atEnd ? DINING_CARDS.length - 1 : Math.min(DINING_CARDS.length - 1, Math.round(track.scrollLeft / step)));
+          }}
+        >
+          {DINING_CARDS.map((card) => (
+            <article key={card.title} className="shilla-dining-card">
+              <a href="#contact" className="shilla-dining-image-link" aria-label={`${card.title}: bog‘lanish`}>
+                <img src={card.image} alt={card.alt} loading="lazy" decoding="async" />
+              </a>
+              <div className="shilla-dining-caption">
+                <h3><a href="#contact">{card.title}</a></h3>
+                <p>{card.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="shilla-dining-controls">
+          <span aria-live="polite">{String(activeCard + 1).padStart(2, '0')} / {String(DINING_CARDS.length).padStart(2, '0')}</span>
+          <div>
+            <button type="button" aria-label="Oldingi restoran kartochkasi" disabled={activeCard === 0} onClick={() => moveTo(activeCard - 1)}><ChevronLeft size={23} strokeWidth={1} /></button>
+            <button type="button" aria-label="Keyingi restoran kartochkasi" disabled={activeCard === DINING_CARDS.length - 1} onClick={() => moveTo(activeCard + 1)}><ChevronRight size={23} strokeWidth={1} /></button>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -920,6 +1019,7 @@ export default function LandingPage() {
         <ReservationBar onSearch={setSearchSummary} />
         <Hero />
         <Rooms searchSummary={searchSummary} />
+        <Dining />
         <Stats rooms={rooms} />
         <Ticker />
         <About />
