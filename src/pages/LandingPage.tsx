@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import {
-  Hotel,
   MapPin,
   Mail,
   Star,
   Wifi,
   UtensilsCrossed,
-  ArrowRight,
   Menu,
   X,
   Car,
@@ -27,6 +25,9 @@ import {
   Play,
   UsersRound,
   Shield,
+  Tickets,
+  Coffee,
+  Gift,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../landing.css';
@@ -827,140 +828,66 @@ function Contact() {
 
 /* ─── CTA ────────────────────────────────────────────────── */
 function CTA() {
-  const scrollToContact = () =>
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  const benefits = [
+    { icon: Tickets, title: 'Xonalar tanlovi', description: 'Standart, Deluxe, Suite va Presidential — sayohatingizga mos xona.' },
+    { icon: Coffee, title: 'Nonushta va restoran', description: 'Xona turiga mos nonushta va shved stoli, mehmonxona restorani.' },
+    { icon: Gift, title: 'Qulaylik va xizmat', description: 'Basseyn, SPA, fitnes zali va kechayu kunduz ishlaydigan qabulxona.' },
+  ];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[--ink] text-white">
-      <img
-        src={IMAGES.presidential}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover opacity-35"
-      />
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[--ink] via-[#0e1417cc] to-[#0e141788]" />
-      <div className="relative mx-auto flex max-w-[1440px] flex-col items-start gap-8 px-5 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-10 lg:py-20">
-        <div className="max-w-2xl anim-fade-up">
-          <h2 className="font-display text-3xl leading-tight lg:text-4xl">
-            Keyingi tashrifingizni bugun rejalashtiring
-          </h2>
-          <p className="mt-3 text-sm leading-7 text-white/80">
-            Sanalar band bo'lib qolmasidan oldin xonangizni band qiling —
-            tasdiqlash odatda 30 daqiqa ichida keladi.
-          </p>
+    <section id="benefits" className="shilla-benefits" aria-labelledby="benefits-title">
+      <div className="shilla-benefits-intro">
+        <h2 id="benefits-title">Origin Hotel</h2>
+        <p>Keyingi tashrifingizni bugun rejalashtiring. Shinam xonalar, samimiy xizmat va barcha qulayliklar sizni kutmoqda.</p>
+        <div className="shilla-benefits-actions">
+          <a href="#rooms">Batafsil</a>
+          <Link to="/login">Kirish</Link>
         </div>
-        <div className="flex flex-wrap items-center gap-3 anim-fade-up">
-          <button
-            onClick={scrollToContact}
-            className="inline-flex items-center gap-2 rounded-full bg-[--champagne] px-6 py-3.5 text-xs font-bold text-[--ink] transition hover:bg-white"
-          >
-            Bog'lanish
-            <ArrowRight size={14} />
-          </button>
-          <Link
-            to="/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-white/35 px-6 py-3.5 text-xs font-bold text-white transition hover:border-[--champagne] hover:text-[--champagne]"
-          >
-            Boshqaruv tizimi
-          </Link>
-        </div>
+      </div>
+      <div className="shilla-benefits-grid">
+        {benefits.map(({ icon: Icon, title, description }) => (
+          <article key={title} className="shilla-benefit-card">
+            <div className="shilla-benefit-icon" aria-hidden="true"><Icon size={66} strokeWidth={.9} /></div>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>
+        ))}
       </div>
     </section>
   );
 }
 
-/* ─── Footer ─────────────────────────────────────────────── */
 function Footer() {
   const year = new Date().getFullYear();
   const links = [
-    { href: '#rooms',   label: 'Xonalar' },
-    { href: '#about',   label: 'Biz haqimizda' },
+    { href: '#about', label: 'Biz haqimizda' },
+    { href: '#contact', label: 'Joylashuv' },
+    { href: '#rooms', label: 'Xonalar' },
+    { href: '#dining', label: 'Restoran' },
     { href: '#gallery', label: 'Galereya' },
     { href: '#reviews', label: 'Fikrlar' },
-    { href: '#contact', label: 'Aloqa' },
   ];
 
   return (
-    <footer className="border-t border-[--line] bg-[--surface]">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr] lg:px-10">
-
-        {/* Brand */}
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[--champagne]">
-              <Hotel size={16} className="text-[--ink]" />
-            </div>
-            <span className="font-bold">Origin Hotel</span>
-          </div>
-          <p className="mt-4 max-w-sm text-xs leading-6 text-muted-foreground">
-            Toshkent markazidagi 5 yulduzli mehmonxona. Haqiqiy mehmondo'stlik
-            va zamonaviy qulaylik maskani.
-          </p>
-          <p className="font-display mt-5 text-3xl text-foreground">
-            4.9
-            <span className="ml-2 text-xs font-normal text-muted-foreground">Mehmon reytingi</span>
-          </p>
+    <footer className="shilla-footer">
+      <nav className="shilla-footer-brands" aria-label="Origin Hotel xizmatlari">
+        <Link to="/">ORIGIN HOTEL</Link>
+        <a href="#dining">RESTORAN & HORDIQ</a>
+        <a href="#contact">24/7 QABULXONA</a>
+      </nav>
+      <div className="shilla-footer-main">
+        <Link to="/" className="shilla-footer-wordmark" aria-label="Origin Hotel — bosh sahifa"><span>ORIGIN HOTEL</span><small>TOSHKENT</small></Link>
+        <div className="shilla-footer-address">
+          <p><strong>Origin Hotel</strong><span className="shilla-footer-divider" aria-hidden="true" /><span>Amir Temur shoh ko‘chasi 15, Toshkent 100000, O‘zbekiston</span></p>
+          <p><a href="tel:+998712002020">TEL. +998 71 200 20 20</a><a href="mailto:reservations@originhotel.uz">reservations@originhotel.uz</a></p>
         </div>
-
-        {/* Nav */}
-        <nav aria-label="Sayt bo'limlari">
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">Bo'limlar</p>
-          <ul className="mt-4 space-y-2.5">
-            {links.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="text-xs text-muted-foreground transition hover:text-[--champagne]">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <nav className="shilla-footer-links" aria-label="Sayt bo‘limlari">
+          {links.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}
+          <Link to="/admin">Boshqaruv tizimi</Link>
         </nav>
-
-        {/* Contact info */}
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">Aloqa</p>
-          <ul className="mt-4 space-y-2.5 text-xs text-muted-foreground">
-            <li>Amir Temur shoh ko'chasi 15</li>
-            <li>Toshkent 100000, O'zbekiston</li>
-            <li className="pt-1">
-              <a href="tel:+998712002020" className="hover:text-[--champagne] transition-colors">
-                +998 71 200 20 20
-              </a>
-            </li>
-            <li>
-              <a href="mailto:reservations@originhotel.uz" className="hover:text-[--champagne] transition-colors">
-                reservations@originhotel.uz
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Admin CTA */}
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">Boshqaruv</p>
-          <p className="mt-4 text-xs leading-5 text-muted-foreground">
-            Mehmonxona xodimlari va administratorlar uchun boshqaruv paneli.
-          </p>
-          <Link
-            to="/admin"
-            className="mt-4 inline-flex items-center gap-2 rounded-full border border-[--line] bg-[--page] px-4 py-2.5 text-xs font-semibold transition hover:border-[--champagne] hover:text-[--champagne]"
-          >
-            Boshqaruv tizimiga kirish
-            <ArrowRight size={13} />
-          </Link>
-        </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div className="border-t border-[--line] px-5 py-4 lg:px-10">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 text-[11px] text-muted-foreground">
+        <div className="shilla-footer-bottom">
           <p>© {year} Origin Hotel. Barcha huquqlar himoyalangan.</p>
-          <div className="flex gap-4">
-            <span className="cursor-default hover:text-[--champagne] transition-colors">Maxfiylik siyosati</span>
-            <span className="cursor-default hover:text-[--champagne] transition-colors">Foydalanish shartlari</span>
-          </div>
+          <div><span>Mehmon reytingi: 4.9/5</span><span>Maxfiylik siyosati</span><span>Foydalanish shartlari</span></div>
         </div>
       </div>
     </footer>

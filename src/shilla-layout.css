@@ -390,3 +390,68 @@
 @media (prefers-reduced-motion: reduce) {
   .shilla-location-directions > summary svg { transition: none; }
 }
+/* Closing benefits panel and two-tone footer, adapted to Origin Hotel services. */
+.marketing-page.shilla-site .shilla-benefits { display: grid; grid-template-columns: minmax(280px, 29%) minmax(0, 1fr); align-items: center; gap: 36px; padding: 76px 40px 90px; background: #f8f6f3; color: #171717; }
+.shilla-site .shilla-benefits-intro h2 { margin: 0; font-family: 'Roboto Condensed', Arial, sans-serif; font-size: 34px; line-height: 1.3; font-weight: 400; letter-spacing: 0; }
+.shilla-benefits-intro > p { max-width: 345px; margin-top: 26px; font-size: 18px; line-height: 1.65; color: #5e5550; }
+.shilla-benefits-actions { display: flex; gap: 10px; margin-top: 32px; }
+.shilla-benefits-actions > a { display: grid; place-items: center; min-height: 46px; width: 145px; border: 1px solid #b8aeaa; font-size: 17px; color: #493b34; }
+.shilla-benefits-actions > a:hover { border-color: #493b34; background: #eee8df; }
+.shilla-benefits-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+.shilla-benefit-card { position: relative; min-width: 0; padding: 0 25px; text-align: center; }
+.shilla-benefit-card + .shilla-benefit-card { border-left: 1px solid #dedad6; }
+.shilla-benefit-icon { position: relative; display: grid; place-items: center; height: 86px; margin-bottom: 24px; }
+.shilla-benefit-icon::before { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #e5c4a5; top: 23px; left: calc(50% + 1px); }
+.shilla-benefit-icon svg { position: relative; z-index: 1; color: #27211e; }
+.shilla-benefit-card h3 { margin: 0; font-size: 22px; line-height: 1.4; font-weight: 400; }
+.shilla-benefit-card p { max-width: 235px; margin: 14px auto 0; font-size: 17px; line-height: 1.6; color: #66564b; }
+.marketing-page.shilla-site .shilla-footer { border: 0; background: #302425; color: #c9bfbb; }
+.shilla-footer-brands { display: flex; justify-content: space-evenly; align-items: center; gap: 30px; min-height: 118px; padding: 28px 40px; background: #291f20; }
+.shilla-footer-brands > a { font-family: Georgia, 'Times New Roman', serif; font-size: 23px; line-height: 1.5; letter-spacing: .16em; text-align: center; color: #f5f0ec; }
+.shilla-footer-brands > a:hover { color: #d5b88e; }
+.shilla-footer-main { display: grid; grid-template-columns: 215px minmax(300px, 1fr) minmax(360px, 1.1fr); gap: 26px 32px; align-items: start; padding: 50px 40px 24px; }
+.shilla-footer-wordmark { display: block; text-align: center; color: #e5ded9; }
+.shilla-footer-wordmark > span { display: block; font-family: Georgia, serif; font-size: 23px; letter-spacing: .14em; line-height: 1.5; white-space: nowrap; }
+.shilla-footer-wordmark > small { display: block; font-family: Georgia, serif; font-size: 11px; letter-spacing: .24em; line-height: 1.6; }
+.shilla-footer-address { font-size: 15px; line-height: 1.8; }
+.shilla-footer-address > p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 14px; margin: 0; }
+.shilla-footer-address strong { font-weight: 500; white-space: nowrap; }
+.shilla-footer-divider { width: 1px; height: 12px; background: #635252; }
+.shilla-footer-address a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.shilla-footer-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px 22px; padding-top: 3px; font-size: 15px; line-height: 1.6; color: #b6aaa7; }
+.shilla-footer-links > a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.shilla-footer-bottom { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px 28px; padding-top: 18px; border-top: 1px solid #483638; font-size: 13px; color: #a69793; }
+.shilla-footer-bottom p { margin: 0; }
+.shilla-footer-bottom > div { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+@media (max-width: 1100px) {
+  .marketing-page.shilla-site .shilla-benefits { grid-template-columns: minmax(240px, 30%) minmax(0, 1fr); gap: 20px; padding: 55px 25px; }
+  .shilla-benefit-card { padding-inline: 16px; }
+  .shilla-benefit-card h3 { font-size: 20px; }
+  .shilla-benefit-card p { font-size: 16px; }
+  .shilla-benefits-actions > a { width: 120px; }
+  .shilla-footer-brands { gap: 24px; padding-inline: 25px; }
+  .shilla-footer-brands > a { font-size: 19px; letter-spacing: .1em; }
+  .shilla-footer-main { grid-template-columns: 190px minmax(0, 1fr); padding-inline: 25px; }
+  .shilla-footer-links { grid-column: 1 / -1; justify-content: flex-start; }
+}
+@media (max-width: 767px) {
+  .marketing-page.shilla-site .shilla-benefits { grid-template-columns: minmax(0, 1fr); gap: 36px; padding: 40px 20px; }
+  .shilla-site .shilla-benefits-intro h2 { font-size: 30px; }
+  .shilla-benefits-intro > p { max-width: 100%; margin-top: 18px; font-size: 17px; }
+  .shilla-benefits-actions { margin-top: 24px; }
+  .shilla-benefits-actions > a { width: auto; flex: 1; max-width: 145px; }
+  .shilla-benefits-grid { grid-template-columns: minmax(0, 1fr); }
+  .shilla-benefit-card { padding: 26px 0; }
+  .shilla-benefit-card + .shilla-benefit-card { border-left: 0; border-top: 1px solid #dedad6; }
+  .shilla-benefit-card:first-child { padding-top: 0; }
+  .shilla-benefit-card p { max-width: 290px; }
+  .shilla-benefit-icon { margin-bottom: 14px; }
+  .shilla-footer-brands { flex-direction: column; gap: 25px; padding: 35px 20px; }
+  .shilla-footer-brands > a { font-size: 20px; }
+  .shilla-footer-main { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 34px 20px 24px; }
+  .shilla-footer-wordmark { text-align: left; width: max-content; }
+  .shilla-footer-address { font-size: 15px; }
+  .shilla-footer-links { gap: 12px 20px; }
+  .shilla-footer-bottom { font-size: 13px; gap: 16px; }
+  .shilla-footer-bottom > div { gap: 10px 16px; }
+}
