@@ -1,9 +1,9 @@
-/* Warm, quiet loading placeholders shared by the initial page and route content. */
+/* Neutral gray loading placeholders, consistent across the whole site. */
 .hotel-skeleton-block, .startup-skeleton i {
   position: relative;
   display: block;
   overflow: hidden;
-  background: #e9e3d9;
+  background: #e5e7eb;
   isolation: isolate;
 }
 .hotel-skeleton-block::after, .startup-skeleton i::after {
@@ -15,7 +15,7 @@
   animation: hotel-loading-sweep 2.1s ease-in-out infinite;
 }
 @keyframes hotel-loading-sweep { to { transform: translateX(100%); } }
-.dark .hotel-skeleton-block { background: #35312d; }
+.dark .hotel-skeleton-block { background: #303030; }
 .dark .hotel-skeleton-block::after { background: linear-gradient(100deg, transparent 15%, #ffffff0d 48%, transparent 80%); }
 /* Before React is ready, reserve the same header / booking / hero structure. */
 html:has(#startup-loader) { overflow: hidden; }
@@ -28,26 +28,27 @@ html:has(#startup-loader) { overflow: hidden; }
 .startup-page-header i:last-child { width: 240px; }
 .startup-page-nav { height: 52px; display: flex; align-items: center; justify-content: space-evenly; gap: 20px; padding: 0 3%; }
 .startup-page-nav i { height: 14px; width: 72px; border-radius: 3px; }
-.startup-page-booking { height: 76px; padding: 12px 3%; display: grid; grid-template-columns: 1fr 1.2fr 1.5fr 1.2fr .8fr; gap: 24px; background: #f4f1eb; }
+.startup-page-booking { height: 76px; padding: 12px 3%; display: grid; grid-template-columns: 1fr 1.2fr 1.5fr 1.2fr .8fr; gap: 24px; background: #f7f7f7; }
 .startup-page-booking i { border-radius: 3px; }
-.startup-page-hero { height: calc(100dvh - 273px); min-height: 180px; background: #e9e5df; position: relative; }
+.startup-page-hero { height: calc(100dvh - 273px); min-height: 180px; background: #e5e7eb; position: relative; }
 .startup-page-hero i { position: absolute; bottom: 35px; left: 3%; width: 84%; height: 3px; }
 .startup-page-hero i:last-child { left: auto; right: 3%; width: 40px; height: 12px; }
-.startup-page-ticker { height: 57px; background: #f5f2ed; }
+.startup-page-ticker { height: 57px; background: #f7f7f7; }
 /* Once mounted, the real layout supplies the exact skeleton dimensions. */
-#root[data-loading] { pointer-events: none; user-select: none; }
-#root[data-loading] * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; box-shadow: none !important; border-color: transparent !important; caret-color: transparent !important; }
+#root[data-loading] { pointer-events: none; user-select: none; background: #fff; }
+#root[data-loading] * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; box-shadow: none !important; border-color: transparent !important; caret-color: transparent !important; background-color: transparent !important; background-image: none !important; }
+#root[data-loading] *::before, #root[data-loading] *::after { visibility: hidden !important; }
 #root[data-loading] ::placeholder { color: transparent !important; }
 #root[data-loading] :is(img, svg, iframe) { opacity: 0 !important; }
 #root[data-loading] :is(a, button, input, select, h1, h2, h3, p, output) {
-  background-color: #e9e5df !important;
+  background-color: #e5e7eb !important;
   background-image: linear-gradient(100deg, transparent 15%, #ffffff90 48%, transparent 80%) !important;
   background-size: 240% 100% !important;
   animation: hotel-page-sweep 1.7s ease-in-out infinite !important;
   border-radius: 3px !important;
 }
 #root[data-loading] :is(.shilla-hero, .shilla-dining-visual, .shilla-dining-card-image, .shilla-experience-image, .shilla-mobile-featured-offer, .hotel-room-main-photo) {
-  background: #e9e5df !important;
+  background: #e5e7eb !important;
 }
 #root[data-loading] :is(a, button)::after { visibility: hidden !important; }
 @keyframes hotel-page-sweep { from { background-position: 180% 0; } to { background-position: -60% 0; } }
@@ -57,7 +58,7 @@ html:has(#startup-loader) { overflow: hidden; }
   .startup-page-header i:nth-child(2) { width: 180px; height: 28px; }
   .startup-page-header i:last-child { width: 24px; }
   .startup-page-nav { display: none; }
-  .startup-page-booking { position: absolute; z-index: 1; top: 84px; left: 20px; right: 20px; height: 50px; padding: 0; display: block; background: #eeebe6; }
+  .startup-page-booking { position: absolute; z-index: 1; top: 84px; left: 20px; right: 20px; height: 50px; padding: 0; display: block; background: #e5e7eb; }
   .startup-page-booking i { display: none; }
   .startup-page-hero { height: 475px; }
   .startup-page-hero i { bottom: 35px; left: 38%; width: 24%; height: 8px; border-radius: 8px; }

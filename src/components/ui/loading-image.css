@@ -1,7 +1,7 @@
 .hotel-image-loading {
   color: transparent;
-  background-color: #e9e1d5;
-  background-image: linear-gradient(105deg, transparent 20%, #fcfaf5b0 48%, transparent 76%);
+  background-color: #e5e7eb;
+  background-image: linear-gradient(105deg, transparent 20%, #ffffff90 48%, transparent 76%);
   background-size: 240% 100%;
   animation: hotel-image-shimmer 2.1s ease-in-out infinite;
 }
