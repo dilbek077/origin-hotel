@@ -3,18 +3,11 @@ import { LANGUAGES, useTranslation } from '@/i18n';
 import {
   MapPin,
   Mail,
-  Star,
-  Wifi,
-  UtensilsCrossed,
   Menu,
   X,
-  Car,
-  Dumbbell,
-  Waves,
   Clock,
   ChevronUp,
   BedDouble,
-  CalendarCheck,
   ArrowUpRight,
   Home,
   Globe,
@@ -24,7 +17,6 @@ import {
   Pause,
   Play,
   UsersRound,
-  Shield,
   Tickets,
   Coffee,
   Gift,
@@ -91,77 +83,18 @@ const ROOM_DATA = [
   },
 ];
 
-const AMENITIES = [
-  { icon: Wifi,           label: 'Bepul Wi-Fi',      key: 'wifi' },
-  { icon: Waves,          label: 'Basseyn va SPA',   key: 'pool' },
-  { icon: UtensilsCrossed,label: 'Restoran',          key: 'restaurant' },
-  { icon: Car,            label: 'Bepul parking',    key: 'parking' },
-  { icon: Dumbbell,       label: 'Fitnes zali',      key: 'gym' },
-  { icon: Shield,         label: '24/7 xavfsizlik',  key: 'security' },
-  { icon: CalendarCheck,  label: 'Aeroport transfer',key: 'transfer' },
-  { icon: Clock,          label: '24/7 qabulxona',   key: 'reception' },
-];
-
-const GALLERY_PHOTOS = [
-  { src: IMAGES.exterior,    wide: true,  alt: 'Origin Hotel tashqi ko\'rinish' },
-  { src: IMAGES.lobby,       wide: false, alt: 'Qabulxona' },
-  { src: IMAGES.pool,        wide: false, alt: 'Basseyn' },
-  { src: IMAGES.suite,       wide: true,  alt: 'Suite xona' },
-  { src: IMAGES.restaurant,  wide: false, alt: 'Restoran' },
-  { src: IMAGES.spa,         wide: false, alt: 'SPA zona' },
-  { src: IMAGES.gym,         wide: false, alt: 'Fitnes zali' },
-  { src: IMAGES.presidential,wide: true,  alt: 'Presidential suite' },
-];
-
-const REVIEWS = [
-  {
-    name: 'Madina R.',
-    origin: 'Toshkent',
-    rating: 5,
-    text: 'Xona juda tinch, nonushta boy. Xodimlar har bir so\'rovga darhol javob berdi.',
-  },
-  {
-    name: 'Daniel M.',
-    origin: 'London',
-    rating: 5,
-    text: 'Shahar markazida, ammo shovqin eshitilmaydi. Basseyn va spa kutganimdan yaxshi chiqdi.',
-  },
-  {
-    name: 'Elena P.',
-    origin: 'Moskva',
-    rating: 4,
-    text: 'Aeroportdan transfer oldindan kelib, kutishga to\'g\'ri kelmadi. Keyingi safar ham shu yerda qolaman.',
-  },
-];
-
 const NAV_LINKS = [
-  { href: '#about', label: 'Biz haqimizda' },
+  { href: '#benefits', label: 'Biz haqimizda' },
   { href: '#rooms', label: 'Takliflar' },
   { href: '#rooms', label: 'Xonalar' },
   { href: '#dining', label: 'Restoran' },
   { href: '#experiences', label: 'Qulayliklar' },
-  { href: '#gallery', label: 'Galereya' },
-  { href: '#reviews', label: 'Fikrlar' },
+  { href: '#experiences', label: 'Galereya' },
   { href: '#contact', label: 'Aloqa' },
 ];
 
 function formatPrice(n: number) {
   return n.toLocaleString('uz-UZ') + ' so\'m';
-}
-
-/* ─── scroll-animate hook ─────────────────────────────────── */
-function useScrollAnimate() {
-  useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>('.anim-fade-up');
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { (e.target as HTMLElement).classList.add('visible'); }
-      }),
-      { threshold: 0.12 },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
 }
 
 /* ─── scroll-progress hook ────────────────────────────────── */
@@ -193,7 +126,7 @@ function Navbar() {
   return (
     <header className={`shilla-header ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="shilla-header-top">
-        <a href="#about" className="shilla-hotel-link"><Home size={21} strokeWidth={1.2} /><span>Mehmonxona haqida +</span></a>
+        <a href="#benefits" className="shilla-hotel-link"><Home size={21} strokeWidth={1.2} /><span>Mehmonxona haqida +</span></a>
         <Link to="/" className="shilla-wordmark" aria-label="Origin Hotel — bosh sahifa">
           <span>ORIGIN HOTEL</span><small>TOSHKENT</small>
         </Link>
@@ -405,7 +338,7 @@ function Rooms({ searchSummary }: { searchSummary: string }) {
       <div className="shilla-packages-heading">
         <h2>XONALAR</h2>
         <p>Har bir sayohatga mos xona.</p>
-        <a href="#gallery">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
+        <a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
       </div>
       {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
       <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={setSelected} />)}</div>
@@ -600,189 +533,6 @@ function Experiences() {
   );
 }
 
-/* ─── About ──────────────────────────────────────────────── */
-function About() {
-  return (
-    <section id="about" className="border-y border-[--line] bg-[--surface]">
-      <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-24">
-
-        {/* Images */}
-        <div className="relative anim-fade-up">
-          <img
-            src={IMAGES.lobby}
-            alt="Origin Hotel qabulxonasi"
-            loading="lazy"
-            decoding="async"
-            className="aspect-[4/3] w-full rounded-3xl object-cover shadow-lift"
-          />
-          <img
-            src={IMAGES.standard}
-            alt="Origin Hotel xona"
-            loading="lazy"
-            decoding="async"
-            className="absolute -bottom-8 right-4 hidden h-40 w-40 rounded-3xl border-4 border-[--surface] object-cover sm:block lg:h-48 lg:w-48 shadow-lift"
-          />
-        </div>
-
-        {/* Text */}
-        <div className="anim-fade-up">
-          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">
-            Biz haqimizda
-          </p>
-          <h2 className="font-display mt-3 text-4xl lg:text-5xl">Bir tom ostida barcha qulayliklar</h2>
-          <p className="mt-5 text-sm leading-7 text-muted-foreground">
-            Origin Hotel besh qavatda 40 ta xonani birlashtiradi: basseyn va
-            spa, restoran, fitnes zali, bepul parking va aeroportdan transfer.
-            Qabulxona kechayu kunduz ishlaydi.
-          </p>
-
-          {/* Amenity grid */}
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            {AMENITIES.map(({ icon: Icon, label }) => (
-              <div
-                key={label}
-                className="flex items-center gap-3 rounded-2xl border border-[--line] bg-[--page] px-4 py-3.5"
-              >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[--champagne]/15 text-[--champagne]">
-                  <Icon size={18} />
-                </span>
-                <span className="text-xs font-semibold">{label}</span>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[--line] pt-6 text-[11px] text-muted-foreground">
-            <span>Amir Temur shoh ko'chasi 15, Toshkent</span>
-            <span className="text-[--champagne]">Qabulxona: 24/7</span>
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Gallery ────────────────────────────────────────────── */
-function Gallery() {
-  const [lightbox, setLightbox] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!lightbox) return;
-    const fn = (e: KeyboardEvent) => e.key === 'Escape' && setLightbox(null);
-    document.addEventListener('keydown', fn);
-    return () => document.removeEventListener('keydown', fn);
-  }, [lightbox]);
-
-  return (
-    <section id="gallery" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-      <div className="flex flex-wrap items-end justify-between gap-4 anim-fade-up">
-        <div className="max-w-2xl">
-          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">Galereya</p>
-          <h2 className="font-display mt-3 text-4xl lg:text-5xl">Origin muhitini his qiling</h2>
-        </div>
-        <p className="text-[11px] uppercase tracking-[.14em] text-muted-foreground">
-          Suratni kattalashtirish uchun bosing
-        </p>
-      </div>
-
-      <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {GALLERY_PHOTOS.map((p, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setLightbox(p.src)}
-            className={`group relative h-44 overflow-hidden rounded-2xl border border-[--line] sm:h-52 ${
-              p.wide ? 'col-span-2' : ''
-            } anim-fade-up`}
-            style={{ transitionDelay: `${i * 60}ms` }}
-          >
-            <img
-              src={p.src}
-              alt={p.alt}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
-            />
-            <span
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-[--ink]/70 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"
-            />
-            <span className="absolute bottom-3 left-3 rounded-full bg-white/10 p-1.5 opacity-0 backdrop-blur-sm transition group-hover:opacity-100">
-              <ArrowUpRight size={13} className="text-white" />
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {lightbox && (
-        <div className="gallery-overlay" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="Origin Hotel" />
-          <button
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/25 transition backdrop-blur-sm"
-            onClick={() => setLightbox(null)}
-          >
-            <X size={18} />
-          </button>
-        </div>
-      )}
-    </section>
-  );
-}
-
-/* ─── Reviews ────────────────────────────────────────────── */
-function Reviews() {
-  return (
-    <section id="reviews" className="border-y border-[--line] bg-[--surface]">
-      <div className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-        <div className="flex flex-wrap items-end justify-between gap-6 anim-fade-up">
-          <div className="max-w-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">
-              Mehmonlarimiz fikrlari
-            </p>
-            <h2 className="font-display mt-3 text-4xl lg:text-5xl">Mehmonlar fikri</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">
-              So'nggi 12 oyda 1 200 dan ortiq mehmon sharh qoldirdi. O'rtacha baho — 4.9.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-[--champagne]/40 bg-[--champagne]/10 px-5 py-4 text-center">
-            <p className="font-display text-4xl text-foreground">4.9</p>
-            <p className="mt-1 flex items-center justify-center gap-1 text-[--champagne]" aria-hidden>
-              {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={13} fill="currentColor" />)}
-            </p>
-            <p className="mt-2 text-[10px] uppercase tracking-[.14em] text-muted-foreground">Mehmon reytingi</p>
-          </div>
-        </div>
-
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {REVIEWS.map((r, i) => (
-            <figure
-              key={r.name}
-              className="surface flex h-full flex-col rounded-3xl border border-[--line] p-6 anim-fade-up"
-              style={{ transitionDelay: `${i * 100}ms` }}
-            >
-              <Star size={22} className="text-[--champagne]" fill="currentColor" />
-              <blockquote className="mt-4 flex-1 text-sm leading-7 text-foreground">{r.text}</blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 border-t border-[--line] pt-5">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[--ink] text-[11px] font-bold text-[--champagne]">
-                  {r.name[0]}{r.name.split(' ')[1]?.[0]}
-                </span>
-                <span>
-                  <span className="block text-xs font-semibold">{r.name}</span>
-                  <span className="block text-[10px] text-muted-foreground">{r.origin}</span>
-                </span>
-                <span className="ml-auto flex gap-0.5 text-[--champagne]">
-                  {Array.from({ length: r.rating }, (_, j) => (
-                    <Star key={j} size={11} fill="currentColor" />
-                  ))}
-                </span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ─── Contact ────────────────────────────────────────────── */
 function Contact() {
   const address = 'Amir Temur shoh ko‘chasi 15, Toshkent 100000';
@@ -860,12 +610,11 @@ function CTA() {
 function Footer() {
   const year = new Date().getFullYear();
   const links = [
-    { href: '#about', label: 'Biz haqimizda' },
+    { href: '#benefits', label: 'Biz haqimizda' },
     { href: '#contact', label: 'Joylashuv' },
     { href: '#rooms', label: 'Xonalar' },
     { href: '#dining', label: 'Restoran' },
-    { href: '#gallery', label: 'Galereya' },
-    { href: '#reviews', label: 'Fikrlar' },
+    { href: '#experiences', label: 'Galereya' },
   ];
 
   return (
@@ -917,7 +666,6 @@ export default function LandingPage() {
   const [searchSummary, setSearchSummary] = useState('');
 
   useScrollProgress();
-  useScrollAnimate();
 
   return (
     <div className="marketing-page hotel-marketing shilla-site">
@@ -934,9 +682,6 @@ export default function LandingPage() {
         <Dining />
         <Experiences />
         <Contact />
-        <About />
-        <Gallery />
-        <Reviews />
         <CTA />
       </main>
 
