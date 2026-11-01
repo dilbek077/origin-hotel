@@ -300,12 +300,12 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
         <button ref={mobileRef} type="button" className="shilla-mobile-toggle" aria-label={text('Menyu')} aria-controls="hotel-primary-navigation" aria-expanded={mobileOpen} onClick={() => { setMobileOpen(!mobileOpen); setActiveMenu(null); setLanguageOpen(false); }}>{mobileOpen ? <X size={23} /> : <Menu size={23} />}</button>
       </div>
       <nav id="hotel-primary-navigation" className={`shilla-primary-nav ${mobileOpen ? 'is-open' : ''}`} aria-label={text('Asosiy menyu')}>
-        <div className="shilla-mobile-menu-intro">
-          <div className="shilla-mobile-menu-bar">
+        <div className="shilla-mobile-menu-bar">
             <Link to="/" aria-label={text('Bosh sahifaga qaytish')} onClick={goHome}><Home size={25} strokeWidth={1.2} /></Link>
             <a href="tel:+998712002020" aria-label="Mehmonxonaga qo‘ng‘iroq qilish"><Phone size={24} strokeWidth={1.2} /></a>
             <button type="button" className="shilla-mobile-menu-close" aria-label="Menyuni yopish" onClick={() => { closeAll(); mobileRef.current?.focus(); }}><X size={27} strokeWidth={1.2} /></button>
-          </div>
+        </div>
+        <div className="shilla-mobile-menu-intro">
           <div className="shilla-mobile-account-card">
             <Link className="shilla-mobile-account-title" to={accountPath} onClick={closeAll}>{signedIn ? text('Hisobim') : 'Tizimga kirish'}<ChevronRight size={20} strokeWidth={1} /></Link>
             <p>{signedIn ? 'Bronlaringiz va mehmonxona xizmatlarini boshqaring.' : 'Bronlaringizni ko‘rish va mehmonxona xizmatlaridan foydalanish uchun tizimga kiring.'}</p>
@@ -316,9 +316,8 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
               <a href="tel:+998712002020" onClick={closeAll}>Restoran bilan aloqa</a>
             </div>
           </div>
-          <button type="button" className="shilla-mobile-overview" aria-haspopup="dialog" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
-          <Link to="/" className="shilla-mobile-menu-home" onClick={goHome}>{text('Bosh sahifaga qaytish')}</Link>
         </div>
+        <Link to="/" className="shilla-mobile-menu-home" onClick={goHome}>Bosh sahifa</Link>
         {MENUS.map((menu, index) => (
           <div className="shilla-nav-item" key={menu.label} onPointerEnter={(event) => { if (event.pointerType === 'mouse' && window.matchMedia('(min-width: 768px) and (hover: hover)').matches) showMenu(index); }}>
             <button
@@ -367,14 +366,11 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
             )}
           </div>
         ))}
+        <button type="button" className="shilla-mobile-overview" aria-haspopup="dialog" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
+        <a className="shilla-mobile-menu-location" href="#contact" onClick={closeAll}>Mehmonxonani topish</a>
         <div className="shilla-mobile-accounts">
-          <Link to={accountPath} onClick={closeAll}>{text(accountLabel)}</Link>
-          <Link to={`${dashboard}/bronlar`} onClick={closeAll}>{text('Bronlarim')}</Link>
-          <Link to={dashboard} onClick={closeAll}>{text('Boshqaruv')}</Link>
-          <a href="#contact" onClick={closeAll}>{text('Bog‘lanish')}</a>
-          <div className="shilla-mobile-languages" role="group" aria-label={text('Tilni tanlash')}>
-            {LANGUAGES.map((language) => <button type="button" key={language.code} aria-pressed={language.code === locale} onClick={() => { setLocale(language.code); closeAll(); mobileRef.current?.focus(); }}>{language.label}</button>)}
-          </div>
+          <div className="shilla-mobile-menu-brands"><Link to="/" onClick={goHome}>ORIGIN HOTEL</Link><a href="#dining" onClick={closeAll}>RESTORAN</a><a href="#contact" onClick={closeAll}>ALOQA</a></div>
+          <label className="shilla-mobile-menu-language"><span className="sr-only">{text('Tilni tanlash')}</span><select aria-label={text('Tilni tanlash')} value={locale} onChange={(event) => { setLocale(event.target.value as typeof locale); closeAll(); mobileRef.current?.focus(); }}>{LANGUAGES.map((language) => <option key={language.code} value={language.code}>{language.label}</option>)}</select><ChevronDown size={20} strokeWidth={1} /></label>
         </div>
         <a href="#reservation" className="shilla-nav-reserve" onPointerEnter={() => setActiveMenu(null)} onClick={closeAll}>{text('Bron qilish')}</a>
       </nav>

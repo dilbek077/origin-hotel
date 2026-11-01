@@ -858,7 +858,7 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
 @media (prefers-reduced-motion: reduce) { .shilla-calendar-panel { animation: none; } }
 
 /* Mobile composition follows the supplied hotel reference; desktop stays intact. */
-.shilla-mobile-home, .shilla-mobile-menu-intro, .shilla-mobile-hotel-search,
+.shilla-mobile-home, .shilla-mobile-menu-bar, .shilla-mobile-menu-intro, .shilla-mobile-menu-home, .shilla-mobile-menu-location, .shilla-mobile-overview, .shilla-mobile-hotel-search,
 .shilla-mobile-hero-copy, .shilla-mobile-hero-dots, .shilla-mobile-offers,
 .shilla-mobile-experience-copy, .shilla-mobile-experience-progress { display: none; }
 @media (max-width: 767px) {
@@ -874,10 +874,11 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
     position: fixed; inset: 0; z-index: 120; width: 100%; max-width: none; height: 100dvh;
     max-height: none; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
     display: block; padding: 0 22px 32px; margin: 0;
-    background: linear-gradient(#302525 0 300px, #fff 300px 100%); color: #222;
+    background: #fff; color: #222;
   }
-  .shilla-mobile-menu-intro { display: block; }
-  .shilla-mobile-menu-bar { display: flex; align-items: flex-start; gap: 22px; height: 96px; padding-top: 20px; color: #fff; }
+  .shilla-mobile-menu-intro { position: relative; display: block; isolation: isolate; padding-bottom: 1px; }
+  .shilla-mobile-menu-intro::before { content: ''; position: absolute; top: 0; left: -22px; right: -22px; height: calc(100% - 136px); z-index: -1; background: #302525; }
+  .shilla-mobile-menu-bar { position: sticky; top: 0; z-index: 4; display: flex; align-items: flex-start; gap: 22px; height: 96px; margin-inline: -22px; padding: 20px 22px 0; background: #302525; color: #fff; }
   .shilla-mobile-menu-bar > :first-child { margin-right: auto; }
   .shilla-mobile-menu-bar > a, .shilla-mobile-menu-bar > button { display: grid; place-items: center; width: 30px; height: 36px; }
   .shilla-mobile-account-card { padding: 24px 20px; background: #fff; border-radius: 6px; box-shadow: 0 8px 18px #0001; margin: 4px 0 26px; }
@@ -885,16 +886,22 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   .shilla-mobile-account-card > p { margin: 14px 0; color: #777; font-size: 16px; line-height: 1.65; }
   .shilla-mobile-account-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .shilla-mobile-account-grid > a { display: grid; place-items: center; min-height: 60px; padding: 8px; border: 1px solid #eee; border-radius: 3px; font-size: 16px; line-height: 1.35; text-align: center; }
-  .shilla-mobile-menu-intro .shilla-mobile-overview, .shilla-mobile-menu-home { display: flex; align-items: center; width: 100%; min-height: 70px; padding: 20px 0; margin: 0; border: 0; border-bottom: 1px solid #eee; background: #fff; color: #222; font-size: 18px; font-weight: 500; text-align: left; }
+  .shilla-primary-nav .shilla-mobile-overview, .shilla-mobile-menu-home, .shilla-mobile-menu-location { display: flex; align-items: center; width: 100%; min-height: clamp(64px, 14.6vw, 84px); padding: 20px 0; margin: 0; border: 0; border-bottom: 1px solid #eee; background: #fff; color: #222; font-size: clamp(17px, 3.85vw, 22px); font-weight: 500; text-align: left; }
   .shilla-primary-nav .shilla-nav-item { width: 100%; }
-  .shilla-primary-nav .shilla-nav-trigger { min-height: 70px; padding: 20px 0; font-size: 18px; font-weight: 500; }
+  .shilla-primary-nav .shilla-nav-trigger { min-height: clamp(64px, 14.6vw, 84px); padding: 20px 0; font-size: clamp(17px, 3.85vw, 22px); font-weight: 500; }
   .shilla-primary-nav .shilla-nav-panel { padding: 8px 14px 20px; background: #faf9f7; }
   .shilla-primary-nav .shilla-nav-groups { display: grid !important; grid-template-columns: 1fr !important; gap: 20px; }
   .shilla-primary-nav .shilla-nav-group h3 { margin-bottom: 8px; }
-  .shilla-primary-nav .shilla-mobile-accounts { display: block; padding: 20px 0 0; border: 0; }
+  .shilla-primary-nav .shilla-mobile-accounts { display: block; padding: 0; border: 0; margin: 0 -22px -32px; }
+  .shilla-mobile-menu-brands { display: flex; align-items: center; justify-content: center; padding: 25px 16px; border-bottom: 1px solid #eee; gap: 0; }
+  .shilla-mobile-menu-brands > a { flex: 1; text-align: center; font-family: Georgia, serif; font-size: 12px; letter-spacing: .12em; white-space: nowrap; color: #333; }
+  .shilla-mobile-menu-brands > a + a { border-left: 1px solid #eee; }
+  .shilla-mobile-menu-language { display: flex; align-items: center; justify-content: flex-end; gap: 14px; min-height: 72px; padding: 18px 24px; color: #222; }
+  .shilla-mobile-menu-language select { appearance: none; border: 0; background: transparent; padding: 8px 0 8px 20px; font: inherit; font-size: 18px; color: inherit; cursor: pointer; max-width: calc(100% - 40px); }
+  .shilla-mobile-menu-language select:focus-visible { outline: 1px solid #857661; outline-offset: 4px; }
   .shilla-mobile-accounts > a { display: none; }
   .shilla-mobile-languages { gap: 8px; }
-  .shilla-primary-nav .shilla-nav-reserve { display: none; }
+  .shilla-primary-nav > a.shilla-nav-reserve { display: none; }
   .shilla-site .shilla-reservation { display: block; height: 0; min-height: 0; padding: 0; background: transparent; scroll-margin-top: 64px; }
   .shilla-reservation:not(.is-mobile-expanded) > :not(.shilla-mobile-hotel-search) { display: none; }
   .shilla-reservation .shilla-mobile-hotel-search { position: absolute; display: flex; align-items: center; justify-content: space-between; gap: 12px; top: 20px; left: 20px; right: 20px; min-height: 48px; padding: 12px 16px; background: #fffffff0; color: #555; font-size: 16px; text-align: left; box-shadow: 0 2px 8px #0001; }
