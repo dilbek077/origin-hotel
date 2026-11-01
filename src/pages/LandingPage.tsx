@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { LANGUAGES, useTranslation } from '@/i18n';
+import Navbar from '@/components/layout/HotelNavbar';
 import {
   MapPin,
   Hotel,
   Mail,
-  Menu,
   X,
   Clock,
   ChevronUp,
   BedDouble,
   ArrowUpRight,
-  Home,
-  Globe,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Pause,
@@ -84,16 +80,6 @@ const ROOM_DATA = [
   },
 ];
 
-const NAV_LINKS = [
-  { href: '#benefits', label: 'Biz haqimizda' },
-  { href: '#rooms', label: 'Takliflar' },
-  { href: '#rooms', label: 'Xonalar' },
-  { href: '#dining', label: 'Restoran' },
-  { href: '#experiences', label: 'Qulayliklar' },
-  { href: '#experiences', label: 'Galereya' },
-  { href: '#contact', label: 'Aloqa' },
-];
-
 function formatPrice(n: number) {
   return n.toLocaleString('uz-UZ') + ' so\'m';
 }
@@ -109,46 +95,6 @@ function useScrollProgress() {
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
-}
-
-/* Screenshot-matched header; existing account routes are retained. */
-function Navbar() {
-  const [open, setOpen] = useState(false);
-  const [languageOpen, setLanguageOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 160);
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    return () => window.removeEventListener('scroll', update);
-  }, []);
-  const { locale, setLocale } = useTranslation();
-
-  return (
-    <header className={`shilla-header ${scrolled ? 'is-scrolled' : ''}`}>
-      <div className="shilla-header-top">
-        <a href="#benefits" className="shilla-hotel-link"><Home size={21} strokeWidth={1.2} /><span>Mehmonxona haqida +</span></a>
-        <Link to="/" className="shilla-wordmark" aria-label="Origin Hotel — bosh sahifa">
-          <span>ORIGIN HOTEL</span><small>TOSHKENT</small>
-        </Link>
-        <div className="shilla-account-links">
-          <Link to="/login">Kirish</Link>
-          <Link to="/admin/bronlar">Bronlarim</Link>
-          <Link to="/admin">Boshqaruv</Link>
-          <a href="#contact">Bog‘lanish</a>
-          <div className="shilla-language" onKeyDown={(event) => { if (event.key === 'Escape') setLanguageOpen(false); }}>
-            <button type="button" aria-expanded={languageOpen} aria-label="Tilni tanlash" onClick={() => setLanguageOpen(!languageOpen)}><Globe size={15} strokeWidth={1.1} />{LANGUAGES.find((language) => language.code === locale)?.label}<ChevronDown size={13} /></button>
-            {languageOpen && <div className="shilla-language-options">{LANGUAGES.map((language) => <button type="button" key={language.code} aria-pressed={language.code === locale} onClick={() => { setLocale(language.code); setLanguageOpen(false); }}>{language.label}</button>)}</div>}
-          </div>
-        </div>
-        <button type="button" className="shilla-mobile-toggle" aria-label="Menyu" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={23} /> : <Menu size={23} />}</button>
-      </div>
-      <nav className={`shilla-primary-nav ${open ? 'is-open' : ''}`} aria-label="Asosiy menyu">
-        {NAV_LINKS.map((link) => <a href={link.href} key={link.label} onClick={() => setOpen(false)}>{link.label}</a>)}
-        <a href="#reservation" className="shilla-nav-reserve" onClick={() => setOpen(false)}>Bron qilish</a>
-      </nav>
-    </header>
-  );
 }
 
 function localDate(date: Date) {
@@ -276,13 +222,29 @@ function RoomDetailModal({
   room: typeof ROOM_DATA[0];
   onClose: () => void;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    const fn = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    closeRef.current?.focus({ preventScroll: true });
+    const fn = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key !== 'Tab') return;
+      const items = panelRef.current?.querySelectorAll<HTMLElement>('button, a[href]');
+      if (!items?.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', fn);
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', fn);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
+      else document.querySelector<HTMLElement>(window.matchMedia('(max-width: 767px)').matches ? '.shilla-mobile-toggle' : '#hotel-nav-trigger-2')?.focus({ preventScroll: true });
     };
   }, [onClose]);
 
@@ -291,9 +253,12 @@ function RoomDetailModal({
       className="gallery-overlay"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
         <img src={room.image} alt={room.label} className="h-52 w-full object-cover" />
         <button
+          ref={closeRef}
+          type="button"
+          aria-label="Xona tafsilotlarini yopish"
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full bg-[--ink]/60 p-2 text-white hover:bg-[--ink] transition"
         >
@@ -301,7 +266,7 @@ function RoomDetailModal({
         </button>
         <div className="p-6">
           <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">{room.label}</p>
-          <h3 className="font-display mt-1 text-2xl">{room.label} Xona</h3>
+          <h3 id="room-detail-title" className="font-display mt-1 text-2xl">{room.label} Xona</h3>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{room.description}</p>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -332,8 +297,11 @@ function RoomDetailModal({
   );
 }
 
-function Rooms({ searchSummary }: { searchSummary: string }) {
-  const [selected, setSelected] = useState<typeof ROOM_DATA[0] | null>(null);
+function Rooms({ searchSummary, selected, onSelect }: {
+  searchSummary: string;
+  selected: typeof ROOM_DATA[0] | null;
+  onSelect: (room: typeof ROOM_DATA[0] | null) => void;
+}) {
   return (
     <section id="rooms" className="shilla-packages">
       <div className="shilla-packages-heading">
@@ -342,8 +310,8 @@ function Rooms({ searchSummary }: { searchSummary: string }) {
         <a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
       </div>
       {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
-      <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={setSelected} />)}</div>
-      {selected && <RoomDetailModal room={selected} onClose={() => setSelected(null)} />}
+      <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</div>
+      {selected && <RoomDetailModal room={selected} onClose={() => onSelect(null)} />}
     </section>
   );
 }
@@ -369,9 +337,23 @@ const DINING_CARDS = [
   },
 ];
 
-function Dining() {
+function Dining({ selection }: { selection: { index: number; request: number } | null }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeCard, setActiveCard] = useState(0);
+
+  useEffect(() => {
+    if (!selection) return;
+    const frame = requestAnimationFrame(() => {
+      const track = trackRef.current;
+      const first = track?.children[0] as HTMLElement | undefined;
+      const card = track?.children[selection.index] as HTMLElement | undefined;
+      if (track && first && card) track.scrollTo({
+        left: card.offsetLeft - first.offsetLeft,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [selection]);
 
   const moveTo = (index: number) => {
     const track = trackRef.current;
@@ -422,8 +404,8 @@ function Dining() {
             setActiveCard(atEnd ? DINING_CARDS.length - 1 : Math.min(DINING_CARDS.length - 1, Math.round(track.scrollLeft / step)));
           }}
         >
-          {DINING_CARDS.map((card) => (
-            <article key={card.title} className="shilla-dining-card">
+          {DINING_CARDS.map((card, index) => (
+            <article id={`dining-card-${index}`} key={card.title} className="shilla-dining-card">
               <a href="#contact" className="shilla-dining-image-link" aria-label={`${card.title}: bog‘lanish`}>
                 <img src={card.image} alt={card.alt} loading="lazy" decoding="async" />
               </a>
@@ -467,12 +449,9 @@ const EXPERIENCE_SLIDES = [
   },
 ];
 
-function Experiences() {
-  const [activeSlide, setActiveSlide] = useState(0);
+function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSlideChange: (index: number) => void }) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const move = (direction: number) => setActiveSlide((previous) =>
-    (previous + direction + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length
-  );
+  const move = (direction: number) => onSlideChange((activeSlide + direction + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length);
 
   return (
     <section id="experiences" className="shilla-experiences" aria-labelledby="experiences-title">
@@ -553,7 +532,7 @@ function Contact() {
           <a href={openStreetMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-osm" aria-hidden="true" />OpenStreetMap</a>
         </nav>
       </div>
-      <details className="shilla-location-directions">
+      <details id="transport-details" className="shilla-location-directions">
         <summary>Yo‘l va transport ma’lumotlari<ChevronRight size={18} strokeWidth={1} /></summary>
         <div className="shilla-location-directions-content">
           <p>Amir Temur shoh ko‘chasi bo‘yida — aeroportga 20 daqiqa, metro va biznes markazlariga piyoda masofada.</p>
@@ -682,6 +661,9 @@ function QuickDock() {
 /* ─── LandingPage (root) ─────────────────────────────────── */
 export default function LandingPage() {
   const [searchSummary, setSearchSummary] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState<typeof ROOM_DATA[0] | null>(null);
+  const [experienceSlide, setExperienceSlide] = useState(0);
+  const [diningSelection, setDiningSelection] = useState<{ index: number; request: number } | null>(null);
 
   useScrollProgress();
 
@@ -690,15 +672,15 @@ export default function LandingPage() {
       {/* Scroll progress bar */}
       <div className="marketing-progress" aria-hidden />
 
-      <Navbar />
+      <Navbar onRoomSelect={(type) => setSelectedRoom(ROOM_DATA.find((room) => room.type === type) ?? null)} onExperienceSelect={setExperienceSlide} onDiningSelect={(index) => setDiningSelection((previous) => ({ index, request: (previous?.request ?? 0) + 1 }))} />
 
       <main>
         <ReservationBar onSearch={setSearchSummary} />
         <Hero />
         <Ticker />
-        <Rooms searchSummary={searchSummary} />
-        <Dining />
-        <Experiences />
+        <Rooms searchSummary={searchSummary} selected={selectedRoom} onSelect={setSelectedRoom} />
+        <Dining selection={diningSelection} />
+        <Experiences activeSlide={experienceSlide} onSlideChange={setExperienceSlide} />
         <Contact />
         <CTA />
       </main>
