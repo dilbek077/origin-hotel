@@ -17,10 +17,15 @@ The shared source registry is `src/data/hotelPhotos.ts`. Qarshi hero files and
 slideshow references are unchanged. Room category names/prices remain demo data;
 the upload did not establish a category assignment for each photograph.
 
-## Pending source files
+## Website image policy
 
-The image tool can reference only the most recent five conversation images.
-The other uploaded photographs (restaurant, reception, corridor, stairs and
-bathroom) need file attachments, preferably one ZIP, before they can be processed
-faithfully. Their existing stock placeholders are still present pending that
-upload; do not label this batch a complete replacement of all website imagery.
+At the user's request all former stock-photo placements now reuse these five
+available hotel photographs, including events, dining, service dialogs and room
+space galleries. They illustrate the hotel generally; the bedroom seating photo
+is not a photograph of the restaurant, nor are room/exterior photographs proof
+of a pool, spa or gym. Visible image alt text describes the actual photographs.
+Service descriptions and demo business data were not changed by this image task.
+
+No external stock-photo URLs remain in application source. The three Qarshi
+hero photos remain separate and unchanged. Remaining original uploads can be
+restored later if supplied as downloadable file attachments.

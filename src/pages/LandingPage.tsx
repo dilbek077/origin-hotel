@@ -32,16 +32,16 @@ import '../shilla-layout.css';
 /* ─── constants ──────────────────────────────────────────── */
 const IMAGES = {
   exterior:   HOTEL_PHOTOS.exterior,
-  lobby:      'https://images.unsplash.com/photo-1660557989695-14fac79c086d?auto=format&fit=crop&w=1200&q=80',
+  lobby:      HOTEL_PHOTOS.roomSeating,
   standard:   HOTEL_PHOTOS.twinRoom,
   deluxe:     HOTEL_PHOTOS.doubleRoom,
   suite:      HOTEL_PHOTOS.singleRoom,
   family:     HOTEL_PHOTOS.twinRoom,
   presidential: HOTEL_PHOTOS.doubleRoom,
-  pool:       'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
-  spa:        'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=80',
-  restaurant: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
-  gym:        'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+  pool:       HOTEL_PHOTOS.exterior,
+  spa:        HOTEL_PHOTOS.singleRoom,
+  restaurant: HOTEL_PHOTOS.roomSeating,
+  gym:        HOTEL_PHOTOS.twinRoom,
 };
 
 const ROOM_DATA = [
@@ -284,8 +284,8 @@ function Rooms({ searchSummary, selected, onSelect, onInfo }: {
           <article className="shilla-mobile-featured-offer"><button type="button" onClick={() => onSelect(ROOM_DATA[0])} aria-label="Standart xonani ko‘rish"><img src={ROOM_DATA[0].image} alt="Standart xona" loading="lazy" /><h3>Standart xona va nonushta</h3></button><p>{formatPrice(ROOM_DATA[0].price)} / tun <span>Origin Hotel</span></p></article>
           <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <article key={room.type}><button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><img src={room.image} alt={`${room.label} xona`} loading="lazy" /><h3>{room.label} Xona</h3></button><p>{formatPrice(room.price)} / tun</p></article>)}</div>
         </> : <>
-          <article className="shilla-mobile-featured-offer"><button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><img src={IMAGES.pool} alt="Basseyn va dam olish hududi" loading="lazy" /><h3>Basseyn va hordiq</h3></button><p>Mehmonxona qulayliklari <span>Origin Hotel</span></p></article>
-          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <article key={service.key}><button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><img src={service.image} alt={service.title} loading="lazy" /><h3>{service.title}</h3></button><p>Origin Hotel</p></article>)}</div>
+          <article className="shilla-mobile-featured-offer"><button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><img src={IMAGES.pool} alt="Origin Hotel tashqi ko‘rinishi" loading="lazy" /><h3>Basseyn va hordiq</h3></button><p>Mehmonxona qulayliklari <span>Origin Hotel</span></p></article>
+          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <article key={service.key}><button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><img src={service.image} alt="Origin Hotel xonasi" loading="lazy" /><h3>{service.title}</h3></button><p>Origin Hotel</p></article>)}</div>
         </>}
       </div>
       <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</div>
@@ -299,19 +299,19 @@ const DINING_CARDS = [
     title: 'Restoran',
     description: 'Origin Hotel restorani va shinam muhit.',
     image: IMAGES.restaurant,
-    alt: 'Restoran zali',
+    alt: 'Origin Hotel xonasidagi stol va kreslolar',
   },
   {
     title: 'Bepul nonushta',
     description: 'Standart xona qulayliklari qatorida bepul nonushta.',
-    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1000&q=85',
-    alt: 'Restorandagi dasturxon',
+    image: HOTEL_PHOTOS.roomSeating,
+    alt: 'Origin Hotel dam olish burchagi',
   },
   {
     title: 'Shved stoli',
     description: 'Deluxe xona mehmonlari uchun shved stoli.',
-    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1000&q=85',
-    alt: 'Restoran interyeri',
+    image: HOTEL_PHOTOS.roomSeating,
+    alt: 'Origin Hotel xona interyeri',
   },
 ];
 
@@ -354,7 +354,7 @@ function Dining({ selection }: { selection: { index: number; request: number } |
         <img
           className="shilla-dining-main-image"
           src={IMAGES.restaurant}
-          alt="Origin Hotel restoran bo‘limi"
+          alt="Origin Hotel interyeri"
           loading="lazy"
           decoding="async"
         />
@@ -415,13 +415,13 @@ const EXPERIENCE_SLIDES = [
   },
   {
     image: IMAGES.pool,
-    alt: 'Basseyn va dam olish hududi',
+    alt: 'Origin Hotel tashqi ko‘rinishi',
     title: 'Basseyn va SPA — xotirjam hordiq',
     description: 'Basseyn, SPA va fitnes zali — bir tom ostida barcha qulayliklar.',
   },
   {
     image: IMAGES.lobby,
-    alt: 'Origin Hotel qabulxonasi',
+    alt: 'Origin Hotel xonasidagi dam olish burchagi',
     title: 'Origin muhitini his qiling',
     description: 'Qabulxona kechayu kunduz ishlaydi. Amir Temur shoh ko‘chasi 15, Toshkent.',
   },

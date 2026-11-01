@@ -1,3 +1,5 @@
+import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
+
 export type HotelInfoKey = 'pool' | 'spa' | 'fitness' | 'wifi' | 'parking' | 'transfer' | 'reception';
 
 type HotelInformation = {
@@ -5,6 +7,7 @@ type HotelInformation = {
   description: string;
   items: string[];
   image?: string;
+  imageAlt?: string;
 };
 
 export const HOTEL_INFORMATION: Record<HotelInfoKey, HotelInformation> = {
@@ -12,19 +15,22 @@ export const HOTEL_INFORMATION: Record<HotelInfoKey, HotelInformation> = {
     title: 'Basseyn',
     description: 'Origin Hotel qulayliklari qatorida basseyn va dam olish hududi mavjud.',
     items: ['Basseyn va SPA', 'Dam olish uchun mehmonxona muhiti', 'Batafsil ma’lumot uchun qabulxona bilan bog‘laning.'],
-    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=85',
+    image: HOTEL_PHOTOS.exterior,
+    imageAlt: 'Origin Hotel tashqi ko‘rinishi',
   },
   spa: {
     title: 'SPA',
     description: 'Mehmonxonadagi SPA — dam olish qulayliklarimizdan biri.',
     items: ['Basseyn va SPA xizmatlari', 'Tashrifingizni rejalashtirish uchun qabulxonaga murojaat qiling.'],
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=85',
+    image: HOTEL_PHOTOS.singleRoom,
+    imageAlt: 'Origin Hotel xonasi',
   },
   fitness: {
     title: 'Fitnes zali',
     description: 'Origin Hotel’da fitnes zali mavjud — sayohat davomida ham mashg‘ulotlarni davom ettiring.',
     items: ['Mehmonxona fitnes zali', 'Xizmat haqida batafsil ma’lumot: +998 71 200 20 20'],
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=85',
+    image: HOTEL_PHOTOS.twinRoom,
+    imageAlt: 'Origin Hotel ikki karavotli xonasi',
   },
   wifi: {
     title: 'Bepul Wi-Fi',

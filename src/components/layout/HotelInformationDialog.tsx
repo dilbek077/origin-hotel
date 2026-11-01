@@ -23,7 +23,7 @@ export default function HotelInformationDialog({ selection, onClose }: Props) {
         }}
       >
         <DialogClose asChild><button type="button" className="hotel-information-close" aria-label="Ma’lumot oynasini yopish"><X size={20} /></button></DialogClose>
-        {info.image && <img className="hotel-information-image" src={info.image} alt={info.title} />}
+        {info.image && <img className="hotel-information-image" src={info.image} alt={info.imageAlt ?? 'Origin Hotel'} />}
         <DialogHeader>
           <DialogTitle className="hotel-information-title">{info.title}</DialogTitle>
           <DialogDescription className="hotel-information-description">{info.description}</DialogDescription>

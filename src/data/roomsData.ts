@@ -62,8 +62,8 @@ export const ROOMS: Room[] = [
     image: HOTEL_PHOTOS.twinRoom,
     gallery: [
       HOTEL_PHOTOS.twinRoom,
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.singleRoom,
+      HOTEL_PHOTOS.exterior,
       HOTEL_PHOTOS.singleRoom,
       HOTEL_PHOTOS.doubleRoom,
     ],
@@ -83,7 +83,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Hammom',
         size: '6 m²',
         description: 'Marmar bezakli shisha dush kabinasi, iliq pol, kuchli soch feni va tozalik vositalari to‘plami.',
-        image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.singleRoom,
         features: ['Tropik dush', 'Issiq pol tizimi', 'Premium sochiqlar', 'Organik dush geli va shampun'],
       },
       {
@@ -92,7 +92,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Balkon',
         size: '4 m²',
         description: 'Ertalabki qahva uchun sokin ichki hovliga qaragan shinam shaxsiy balkon.',
-        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.exterior,
         features: ['Kofe stoli', '2 ta qulay kreslo', 'Yashil hovli manzarasi'],
       },
     ],
@@ -126,8 +126,8 @@ export const ROOMS: Room[] = [
     gallery: [
       HOTEL_PHOTOS.doubleRoom,
       HOTEL_PHOTOS.roomSeating,
-      'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.singleRoom,
+      HOTEL_PHOTOS.exterior,
       HOTEL_PHOTOS.singleRoom,
     ],
     spaces: [
@@ -155,7 +155,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Hammom',
         size: '6 m²',
         description: 'Chuqur qulay vanna, shisha dush paneli, keng oynali yoritgich va premium vanna to‘plami.',
-        image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.singleRoom,
         features: ['Chuqur akril vanna', 'Yomg‘ir effekti beruvchi dush', 'Yoritgichli katta oyna', 'Premium xalatlar'],
       },
       {
@@ -164,7 +164,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Katta Balkon',
         size: '8 m²',
         description: 'Shahar markazi va tungi chiroqlarni tomosha qilish uchun mebellangan keng balkon.',
-        image: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.exterior,
         features: ['Shisha to‘siqlar', 'Dam olish stoli va stullar', '3-qavat balandlik panoramasi'],
       },
     ],
@@ -198,8 +198,8 @@ export const ROOMS: Room[] = [
       HOTEL_PHOTOS.singleRoom,
       HOTEL_PHOTOS.roomSeating,
       HOTEL_PHOTOS.singleRoom,
-      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.roomSeating,
+      HOTEL_PHOTOS.singleRoom,
     ],
     spaces: [
       {
@@ -235,7 +235,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Oshxona & Oshxona zali',
         size: '12 m²',
         description: 'Mikroto‘lqinli pech, muzlatgich, kofe mashinasi, idish-tovoqlar va 4 kishilik ovqatlanish stoli.',
-        image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.roomSeating,
         features: ['Mikroto‘lqinli pech va muzlatgich', 'Kapsulali kofe apparati', '4 kishilik tushlik stoli', 'Choynak va to‘liq idishlar'],
       },
       {
@@ -244,7 +244,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'SPA Hammom',
         size: '10 m²',
         description: 'Gidromassajli 2 kishilik jakuzi, alohida tropik dush kabinasi va er-xotin uchun juft rakovina.',
-        image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.singleRoom,
         features: ['Gidromassajli zamonaviy jakuzi', 'Alohida dush zonasi', 'Juft marmar rakovinalar', 'Premium spa tuzlari va ko‘piklari'],
       },
     ],
@@ -279,8 +279,8 @@ export const ROOMS: Room[] = [
       HOTEL_PHOTOS.roomSeating,
       HOTEL_PHOTOS.twinRoom,
       HOTEL_PHOTOS.roomSeating,
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.exterior,
+      HOTEL_PHOTOS.singleRoom,
     ],
     spaces: [
       {
@@ -325,7 +325,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Ochiq Terrasa',
         size: '25 m²',
         description: 'Balandlikdan poytaxtning betakror manzarasi, lounge divanlar va kechki ovqat uchun maxsus hudud.',
-        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.exterior,
         features: ['360° shahar panoramasi', 'Ochiq osmon ostidagi lounge mebellar', 'Kechki yoritish chiroqlari', 'Shaxsiy batler xizmati'],
       },
       {
@@ -334,7 +334,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'SPA & Vanna',
         size: '15 m²',
         description: 'Shahar manzarali katta jakuzi, xususiy fin saunasi va BVLGARI eksklyuziv kosmetika to‘plami.',
-        image: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.singleRoom,
         features: ['Katta panoramik jakuzi', 'Fin quruq saunasi', 'Marmar bezaklar', 'BVLGARI parfyumeriya komplekti'],
       },
     ],
