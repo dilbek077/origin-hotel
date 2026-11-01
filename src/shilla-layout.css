@@ -602,6 +602,7 @@ body:has(.hotel-information-dialog) [data-slot='dialog-overlay'] { z-index: 100;
 /* Hotel selector sized to the supplied 1600 × 794 desktop reference. */
 body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; background: #0006; }
 .hotel-overview-dialog {
+  --overview-unit: 1px;
   z-index: 101;
   display: block;
   width: calc(100vw - 80px);
@@ -616,19 +617,29 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   color: #222;
   font-family: 'Roboto Condensed', Arial, sans-serif;
 }
-.hotel-overview-tabs { display: grid; grid-template-columns: 182px minmax(0, 1fr); gap: 0; width: 100%; height: 100%; }
+.hotel-overview-tabs { display: grid; grid-template-columns: calc(182 * var(--overview-unit)) minmax(0, 1fr); gap: 0; width: 100%; height: 100%; }
 .hotel-overview-tab-list { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; width: 100%; height: 100%; padding: 0; gap: 0; border-radius: 0; background: #f7f7f7; }
-.hotel-overview-tab { flex: none; justify-content: flex-start; min-height: 92px; height: auto; padding: 24px 48px; border: 0; border-radius: 0; background: transparent; color: #999; font-size: 18px; font-weight: 500; box-shadow: none; }
+.hotel-overview-tab { flex: none; justify-content: flex-start; min-height: calc(92 * var(--overview-unit)); height: auto; padding: calc(24 * var(--overview-unit)) calc(48 * var(--overview-unit)); border: 0; border-radius: 0; background: transparent; color: #999; font-size: calc(18 * var(--overview-unit)); font-weight: 500; box-shadow: none; }
 .hotel-overview-tab[data-state='active'] { background: #fff; color: #111; box-shadow: none; }
-.hotel-overview-content { min-width: 0; min-height: 0; height: 100%; margin: 0; padding: 10px 60px 40px 40px; overflow-y: auto; }
-.hotel-overview-row { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 30px; padding: 48px 0; border-bottom: 1px solid #eee; }
+.hotel-overview-content { min-width: 0; min-height: 0; height: 100%; margin: 0; padding: calc(10 * var(--overview-unit)) calc(60 * var(--overview-unit)) calc(40 * var(--overview-unit)) calc(40 * var(--overview-unit)); overflow-y: auto; }
+.hotel-overview-row { display: grid; grid-template-columns: calc(220 * var(--overview-unit)) minmax(0, 1fr); gap: calc(30 * var(--overview-unit)); padding: calc(48 * var(--overview-unit)) 0; border-bottom: 1px solid #eee; }
 .hotel-overview-row:last-child { border-bottom: 0; }
-.hotel-overview-row h3 { margin: 0; font-size: 18px; line-height: 1.6; font-weight: 500; }
-.hotel-overview-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px 24px; align-items: start; }
+.hotel-overview-row h3 { margin: 0; font-size: calc(18 * var(--overview-unit)); line-height: 1.6; font-weight: 500; }
+.hotel-overview-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: calc(18 * var(--overview-unit)) calc(24 * var(--overview-unit)); align-items: start; }
 .hotel-overview-links > span { min-width: 0; }
-.hotel-overview-links a, .hotel-overview-links button { display: inline-block; padding: 0; border: 0; background: transparent; color: #808080; font-size: 18px; line-height: 1.6; text-align: left; transition: color 160ms ease; }
+.hotel-overview-links a, .hotel-overview-links button { display: inline-block; padding: 0; border: 0; background: transparent; color: #808080; font-size: calc(18 * var(--overview-unit)); line-height: 1.6; text-align: left; transition: color 160ms ease; }
 .hotel-overview-links a:hover, .hotel-overview-links button:hover { color: #29231e; text-decoration: underline; text-underline-offset: 4px; }
-.hotel-overview-close { position: absolute; right: 28px; top: 26px; display: grid; place-items: center; width: 38px; height: 38px; background: #fff; color: #444; }
+.hotel-overview-close { position: absolute; right: calc(28 * var(--overview-unit)); top: calc(26 * var(--overview-unit)); display: grid; place-items: center; width: calc(38 * var(--overview-unit)); height: calc(38 * var(--overview-unit)); background: #fff; color: #444; }
+/* Use the reference's viewport proportions so desktop zoom does not make
+   the modal nearly fullscreen. The unit also keeps its internal spacing aligned. */
+@media (min-width: 1101px) {
+  .hotel-overview-dialog {
+    --overview-unit: min(1px, calc(100vw / 1917));
+    width: min(1600px, 83.46375vw);
+    height: min(794px, 82.19462dvh);
+  }
+  .hotel-overview-close svg { width: calc(29 * var(--overview-unit)); height: calc(29 * var(--overview-unit)); }
+}
 @media (max-width: 1100px) {
   .hotel-overview-tabs { grid-template-columns: 140px minmax(0, 1fr); }
   .hotel-overview-tab { padding-inline: 30px; }
