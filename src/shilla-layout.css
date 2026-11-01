@@ -50,10 +50,6 @@
 .shilla-date-field input { width: 100%; min-width: 0; max-width: 190px; background: transparent; border: 0; outline-offset: 4px; font: inherit; color: #111; color-scheme: light; padding-block: 6px; }
 .shilla-guest-field { position: relative; }
 .shilla-guest-field > button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px; text-align: left; }
-.shilla-guest-popover { position: absolute; right: 0; top: 50px; width: 270px; background: #fff; padding: 22px; border: 1px solid #d8c9aa; box-shadow: 0 8px 25px #0002; z-index: 20; font-size: 17px; }
-.shilla-guest-popover label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.shilla-guest-popover input { width: 70px; padding: 5px 8px; border: 1px solid #ddd; background: white; color: #222; }
-.shilla-guest-popover > button { background: #302525; color: #fff; width: 100%; padding: 10px; }
 .shilla-reservation-submit { min-height: 50px; width: 100%; background: #302525; color: #fff; font-size: 17px; font-weight: 500; }
 .shilla-reservation-submit:hover { background: #4c3a32; }
 .shilla-site .shilla-hero { position: relative; height: calc(100vh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); height: calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); min-height: 180px; overflow: hidden; background: #a89b86; }
@@ -137,7 +133,6 @@
   .shilla-date-field input { font-size: 16px; }
   .shilla-guest-field { grid-column: 1; grid-row: 3; }
   .shilla-guest-field > button { gap: 8px; font-size: 16px; }
-  .shilla-guest-popover { left: 0; right: auto; width: 240px; }
   .shilla-reservation-submit { grid-column: 2; grid-row: 3; min-height: 46px; font-size: 17px; }
   .shilla-slider-controls { left: 20px; right: 20px; bottom: 35px; gap: 4px; }
   .shilla-site .shilla-packages { padding: 50px 20px; }
@@ -655,4 +650,69 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
 }
 @media (prefers-reduced-motion: reduce) {
   .hotel-overview-links a, .hotel-overview-links button { transition: none; }
+}
+
+/* Full-width room and guest selector below the reservation bar. */
+.shilla-site .shilla-reservation { position: relative; z-index: 40; }
+.shilla-guest-extra { white-space: nowrap; }
+.shilla-guest-field > button > span { line-height: 1.5; }
+.shilla-guest-field > button > svg { flex-shrink: 0; }
+.shilla-guest-panel { position: absolute; top: 100%; left: 40px; right: 40px; z-index: 1; padding: 56px 50px 40px; max-height: calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - 16px); overflow-y: auto; overscroll-behavior: contain; background: #fff; color: #555; box-shadow: 0 12px 28px #0001; font-size: 18px; animation: guest-panel-enter 180ms ease-out; }
+.shilla-guest-panel:focus { outline: none; }
+.shilla-guest-close { position: absolute; right: 15px; top: 12px; width: 30px; height: 30px; display: grid; place-items: center; color: #777; }
+.shilla-guest-room { display: grid; grid-template-columns: minmax(120px, 1fr) repeat(3, minmax(200px, 240px)); align-items: center; gap: 60px; padding: 14px 0 30px; border-bottom: 1px solid #eaeaea; }
+.shilla-guest-room + .shilla-guest-room { padding-top: 28px; }
+.shilla-guest-room-heading h3 { font: inherit; font-size: 20px; color: #222; margin: 0; }
+.shilla-guest-room-heading h3:focus { outline: 1px solid #a58a60; outline-offset: 5px; }
+.shilla-guest-remove { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 14px; color: #888; }
+.shilla-guest-remove:hover { color: #302525; }
+.shilla-guest-counter { display: grid; grid-template-columns: minmax(65px, 1fr) 40px 32px 40px; align-items: center; gap: 12px; }
+.shilla-guest-counter > button { width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #333; transition: border-color 150ms, background 150ms; }
+.shilla-guest-counter > button:hover:not(:disabled) { border-color: #8b7b68; background: #f7f4ee; }
+.shilla-guest-counter > button:disabled { background: #f8f8f8; color: #ddd; border-color: #f8f8f8; cursor: not-allowed; }
+.shilla-guest-counter > output { text-align: center; font-size: 23px; font-variant-numeric: tabular-nums; }
+.shilla-guest-panel-note { display: flex; justify-content: space-between; gap: 25px; align-items: flex-start; padding-top: 22px; }
+.shilla-guest-panel-note p { margin: 0; color: #888; font-size: 16px; line-height: 1.6; }
+.shilla-guest-panel-note small { display: block; font-size: 14px; color: #999; }
+.shilla-guest-add { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; padding: 3px 0; }
+.shilla-guest-add:hover:not(:disabled) { color: #302525; }
+.shilla-guest-add:disabled { color: #bbb; cursor: not-allowed; }
+.shilla-guest-actions { display: flex; justify-content: center; gap: 10px; padding-top: 48px; }
+.shilla-guest-actions > button { min-height: 64px; width: 225px; border: 1px solid #b5aba2; background: #fff; color: #222; font-size: 20px; }
+.shilla-guest-actions > button:last-child { color: #fff; background: #857661; border-color: #857661; }
+.shilla-guest-actions > button:hover { background: #f7f4ee; }
+.shilla-guest-actions > button:last-child:hover { background: #71624f; }
+.shilla-guest-panel button:focus-visible { outline: 2px solid #8c7550; outline-offset: 4px; }
+@keyframes guest-panel-enter { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1499px) {
+  .shilla-guest-panel { left: 30px; right: 30px; padding-inline: 35px; }
+  .shilla-guest-room { gap: 25px; grid-template-columns: minmax(100px, 1fr) repeat(3, minmax(195px, 220px)); }
+  .shilla-guest-counter { gap: 8px; }
+}
+@media (max-width: 1100px) {
+  .shilla-guest-panel { left: 25px; right: 25px; padding: 40px 25px 30px; }
+  .shilla-guest-room { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .shilla-guest-room-heading { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
+  .shilla-guest-remove { margin-top: 0; }
+  .shilla-guest-counter { grid-template-columns: minmax(55px, 1fr) 36px 24px 36px; gap: 5px; font-size: 16px; }
+  .shilla-guest-counter > button { width: 36px; height: 36px; }
+  .shilla-guest-actions { padding-top: 30px; }
+}
+@media (max-width: 767px) {
+  .shilla-guest-panel { left: 12px; right: 12px; padding: 38px 20px 24px; }
+  .shilla-guest-field > button > span { font-size: 14px; }
+  .shilla-guest-extra { display: block; white-space: normal; font-size: 12px; }
+  .shilla-guest-room { grid-template-columns: 1fr; gap: 18px; padding-bottom: 22px; }
+  .shilla-guest-counter { grid-template-columns: minmax(75px, 1fr) 40px 30px 40px; gap: 10px; font-size: 17px; }
+  .shilla-guest-counter > button { width: 40px; height: 40px; }
+  .shilla-guest-panel-note { flex-direction: column; gap: 14px; padding-top: 18px; }
+  .shilla-guest-panel-note p { font-size: 14px; }
+  .shilla-guest-panel-note small { font-size: 12px; }
+  .shilla-guest-add { align-self: flex-end; font-size: 16px; }
+  .shilla-guest-actions { padding-top: 24px; }
+  .shilla-guest-actions > button { width: 50%; min-height: 52px; font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shilla-guest-panel { animation: none; }
+  .shilla-guest-counter > button { transition: none; }
 }

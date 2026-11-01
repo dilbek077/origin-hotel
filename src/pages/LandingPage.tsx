@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Navbar from '@/components/layout/HotelNavbar';
+import ReservationBar from '@/components/layout/ReservationBar';
 import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
 import type { HotelInfoKey } from '@/data/hotelInformation';
 import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
@@ -18,7 +19,6 @@ import {
   ChevronRight,
   Pause,
   Play,
-  UsersRound,
   Tickets,
   Coffee,
   Gift,
@@ -100,59 +100,6 @@ function useScrollProgress() {
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
-}
-
-function localDate(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
-function ReservationBar({ onSearch }: { onSearch: (summary: string) => void }) {
-  const [mode, setMode] = useState<'room' | 'dining'>('room');
-  const [checkIn, setCheckIn] = useState(() => localDate(new Date()));
-  const [checkOut, setCheckOut] = useState(() => { const day = new Date(); day.setDate(day.getDate() + 1); return localDate(day); });
-  const [adults, setAdults] = useState(2);
-  const [roomCount, setRoomCount] = useState(1);
-  const [guestsOpen, setGuestsOpen] = useState(false);
-  const guestsRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!guestsOpen) return;
-    const close = (event: MouseEvent) => { if (!guestsRef.current?.contains(event.target as Node)) setGuestsOpen(false); };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
-  }, [guestsOpen]);
-
-  return (
-    <form id="reservation" className="shilla-reservation" onSubmit={(event) => {
-      event.preventDefault();
-      setGuestsOpen(false);
-      if (mode === 'dining') { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); return; }
-      onSearch(`${checkIn} — ${checkOut} · ${roomCount} xona · ${adults} mehmon. Xonani tanlab, bronni tasdiqlash uchun biz bilan bog‘laning.`);
-      document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
-    }}>
-      <div className="shilla-booking-mode" aria-label="Bron turi">
-        <button type="button" className={mode === 'room' ? 'active' : ''} aria-pressed={mode === 'room'} onClick={() => setMode('room')}>Xona</button>
-        <button type="button" className={mode === 'dining' ? 'active' : ''} aria-pressed={mode === 'dining'} onClick={() => setMode('dining')}>Restoran</button>
-      </div>
-      <div className="shilla-hotel-field"><span>Origin Hotel · Toshkent</span><MapPin size={23} strokeWidth={1.3} /></div>
-      <div className="shilla-date-field">
-        <label><span className="sr-only">Kelish sanasi</span><input aria-label="Kelish sanasi" type="date" required value={checkIn} min={localDate(new Date())} onChange={(event) => {
-          const value = event.target.value; setCheckIn(value);
-          if (value && checkOut <= value) { const next = new Date(`${value}T12:00:00`); next.setDate(next.getDate() + 1); setCheckOut(localDate(next)); }
-        }} /></label>
-        <span aria-hidden>–</span>
-        <label><span className="sr-only">Ketish sanasi</span><input aria-label="Ketish sanasi" type="date" required value={checkOut} min={(() => { const day = new Date(`${checkIn || localDate(new Date())}T12:00:00`); day.setDate(day.getDate() + 1); return localDate(day); })()} onChange={(event) => setCheckOut(event.target.value)} /></label>
-      </div>
-      <div ref={guestsRef} className="shilla-guest-field" onKeyDown={(event) => { if (event.key === 'Escape') setGuestsOpen(false); }}>
-        <button type="button" aria-expanded={guestsOpen} onClick={() => setGuestsOpen(!guestsOpen)}><span>Xona {roomCount} · Mehmon {adults}</span><UsersRound size={23} strokeWidth={1.2} /></button>
-        {guestsOpen && <div className="shilla-guest-popover">
-          <label>Xonalar<input aria-label="Xonalar soni" type="number" min="1" max="8" value={roomCount} onChange={(event) => setRoomCount(Math.max(1, Math.min(8, Number(event.target.value))))} /></label>
-          <label>Mehmonlar<input aria-label="Mehmonlar soni" type="number" min="1" max="24" value={adults} onChange={(event) => setAdults(Math.max(1, Math.min(24, Number(event.target.value))))} /></label>
-          <button type="button" onClick={() => setGuestsOpen(false)}>Tayyor</button>
-        </div>}
-      </div>
-      <button className="shilla-reservation-submit" type="submit">{mode === 'room' ? 'Bron qilish' : 'Bog‘lanish'}</button>
-    </form>
-  );
 }
 
 // City photographs are used only here; room and service imagery stays separate.
@@ -311,7 +258,7 @@ function Rooms({ searchSummary, selected, onSelect }: {
   return (
     <section id="rooms" className="shilla-packages">
       <div className="shilla-packages-heading">
-        <h2>XONALAR</h2>
+        <h2 tabIndex={-1}>XONALAR</h2>
         <p>Har bir sayohatga mos xona.</p>
         <a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
       </div>
