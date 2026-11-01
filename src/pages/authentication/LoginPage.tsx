@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getPostLoginPath } from '@/services/authNavigation';
 import {
   ArrowRight,
   Check,
@@ -24,6 +25,7 @@ const HERO_IMAGE =
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -93,7 +95,7 @@ export default function LoginPage() {
       localStorage.setItem('token', `mock-token-${user.id}`);
       localStorage.setItem('role', user.role);
       localStorage.setItem('username', user.name);
-      navigate(user.role === 'ADMIN' ? '/admin' : '/staff', { replace: true });
+      navigate(getPostLoginPath(user.role, location.state?.from), { replace: true });
     } catch {
       setError('Tizimga kirishda xatolik yuz berdi. Qayta urinib ko‘ring.');
     } finally {

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronDown, Globe, Home, Menu, X } from 'lucide-react';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import type { HotelInfoKey } from '@/data/hotelInformation';
+import { hotelNavigationText } from '@/data/hotelNavigationTranslations';
 
 type SubLink = {
   label: string;
@@ -124,7 +125,12 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
   const closeTimer = useRef<number | null>(null);
   const exitTimer = useRef<number | null>(null);
   const { locale, setLocale } = useTranslation();
-  const dashboard = localStorage.getItem('role') === 'STAFF' ? '/staff' : '/admin';
+  const role = localStorage.getItem('role');
+  const signedIn = Boolean(localStorage.getItem('token')) && (role === 'ADMIN' || role === 'STAFF');
+  const dashboard = signedIn && role === 'STAFF' ? '/staff' : '/admin';
+  const accountPath = signedIn ? dashboard : '/login';
+  const accountLabel = signedIn ? 'Hisobim' : 'Kirish';
+  const text = (caption: string) => hotelNavigationText(caption, locale);
 
   const setActiveMenu = useCallback((index: number | null) => {
     if (exitTimer.current !== null) window.clearTimeout(exitTimer.current);
@@ -194,9 +200,13 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
     closeAll();
   };
 
+  const goHome = () => {
+    closeAll();
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  };
   const renderLink = (link: SubLink) => link.infoKey
-    ? <button type="button" aria-haspopup="dialog" onClick={() => activate(link)}>{link.label}</button>
-    : <a href={link.href} onClick={() => activate(link)}>{link.label}</a>;
+    ? <button type="button" aria-haspopup="dialog" onClick={() => activate(link)}>{text(link.label)}</button>
+    : <a href={link.href} onClick={() => activate(link)}>{text(link.label)}</a>;
 
   return (
     <header
@@ -228,21 +238,24 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
       }}
     >
       <div className="shilla-header-top" onPointerEnter={() => setActiveMenu(null)}>
-        <a href="#benefits" className="shilla-hotel-link" onClick={closeAll}><Home size={21} strokeWidth={1.2} /><span>Mehmonxona haqida +</span></a>
-        <Link to="/" className="shilla-wordmark" aria-label="Origin Hotel — bosh sahifa" onClick={closeAll}><span>ORIGIN HOTEL</span><small>TOSHKENT</small></Link>
+        <div className="shilla-hotel-link">
+          <Link to="/" onClick={goHome} aria-label={text('Bosh sahifaga qaytish')}><Home size={21} strokeWidth={1.2} /></Link>
+          <button type="button" aria-expanded={activeMenu === 0} aria-controls="hotel-submenu-0" onClick={() => { setLanguageOpen(false); setActiveMenu(activeMenu === 0 ? null : 0); }} onKeyDown={(event) => { if (event.key === 'ArrowDown') { event.preventDefault(); focusSubLink(0); } }}>{text('Mehmonxona haqida +')}</button>
+        </div>
+        <Link to="/" className="shilla-wordmark" aria-label={`Origin Hotel — ${text('Bosh sahifaga qaytish')}`} onClick={goHome}><span>ORIGIN HOTEL</span><small>TOSHKENT</small></Link>
         <div className="shilla-account-links">
-          <Link to="/login" onClick={closeAll}>Kirish</Link>
-          <Link to={`${dashboard}/bronlar`} onClick={closeAll}>Bronlarim</Link>
-          <Link to={dashboard} onClick={closeAll}>Boshqaruv</Link>
-          <a href="#contact" onClick={closeAll}>Bog‘lanish</a>
+          <Link to={accountPath} onClick={closeAll}>{text(accountLabel)}</Link>
+          <Link to={`${dashboard}/bronlar`} title={text('Bronlarim')} onClick={closeAll}>{text('Bronlarim')}</Link>
+          <Link to={dashboard} onClick={closeAll}>{text('Boshqaruv')}</Link>
+          <a href="#contact" onClick={closeAll}>{text('Bog‘lanish')}</a>
           <div className="shilla-language">
-            <button ref={languageRef} type="button" aria-expanded={languageOpen} aria-controls="hotel-language-options" aria-label="Tilni tanlash" onClick={() => { setActiveMenu(null); setLanguageOpen(!languageOpen); }}><Globe size={15} strokeWidth={1.1} />{LANGUAGES.find((language) => language.code === locale)?.label}<ChevronDown size={13} /></button>
+            <button ref={languageRef} type="button" aria-expanded={languageOpen} aria-controls="hotel-language-options" aria-label={text('Tilni tanlash')} onClick={() => { setActiveMenu(null); setLanguageOpen(!languageOpen); }}><Globe size={15} strokeWidth={1.1} />{LANGUAGES.find((language) => language.code === locale)?.label}<ChevronDown size={13} /></button>
             {languageOpen && <div id="hotel-language-options" className="shilla-language-options">{LANGUAGES.map((language) => <button type="button" key={language.code} aria-pressed={language.code === locale} onClick={() => { setLocale(language.code); setLanguageOpen(false); languageRef.current?.focus(); }}>{language.label}</button>)}</div>}
           </div>
         </div>
-        <button ref={mobileRef} type="button" className="shilla-mobile-toggle" aria-label="Menyu" aria-controls="hotel-primary-navigation" aria-expanded={mobileOpen} onClick={() => { setMobileOpen(!mobileOpen); setActiveMenu(null); setLanguageOpen(false); }}>{mobileOpen ? <X size={23} /> : <Menu size={23} />}</button>
+        <button ref={mobileRef} type="button" className="shilla-mobile-toggle" aria-label={text('Menyu')} aria-controls="hotel-primary-navigation" aria-expanded={mobileOpen} onClick={() => { setMobileOpen(!mobileOpen); setActiveMenu(null); setLanguageOpen(false); }}>{mobileOpen ? <X size={23} /> : <Menu size={23} />}</button>
       </div>
-      <nav id="hotel-primary-navigation" className={`shilla-primary-nav ${mobileOpen ? 'is-open' : ''}`} aria-label="Asosiy menyu">
+      <nav id="hotel-primary-navigation" className={`shilla-primary-nav ${mobileOpen ? 'is-open' : ''}`} aria-label={text('Asosiy menyu')}>
         {MENUS.map((menu, index) => (
           <div className="shilla-nav-item" key={menu.label} onPointerEnter={(event) => { if (event.pointerType === 'mouse' && window.matchMedia('(min-width: 768px) and (hover: hover)').matches) showMenu(index); }}>
             <button
@@ -252,7 +265,12 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
               type="button"
               aria-expanded={activeMenu === index}
               aria-controls={`hotel-submenu-${index}`}
-              onClick={() => { cancelClose(); setLanguageOpen(false); setActiveMenu(activeMenu === index ? null : index); }}
+              onClick={(event) => {
+                cancelClose();
+                setLanguageOpen(false);
+                const pointerClick = event.detail > 0 && window.matchMedia('(min-width: 768px) and (hover: hover)').matches;
+                setActiveMenu(pointerClick ? index : activeMenu === index ? null : index);
+              }}
               onFocus={() => { if (activeMenu !== null && activeMenu !== index) showMenu(index); }}
               onKeyDown={(event) => {
                 if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -265,7 +283,7 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
                   triggerRefs.current[next]?.focus();
                 }
               }}
-            >{menu.label}<ChevronDown size={14} className="shilla-nav-chevron" aria-hidden="true" /></button>
+            >{text(menu.label)}<ChevronDown size={14} className="shilla-nav-chevron" aria-hidden="true" /></button>
             {menuState.index === index && (
               <div id={`hotel-submenu-${index}`} className={`shilla-nav-panel ${menu.groups ? 'is-grouped' : ''}`} data-state={menuState.closing ? 'closing' : 'open'} inert={menuState.closing} aria-hidden={menuState.closing} aria-labelledby={`hotel-nav-trigger-${index}`}>
                 {menu.groups ? (
@@ -286,7 +304,16 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
             )}
           </div>
         ))}
-        <a href="#reservation" className="shilla-nav-reserve" onPointerEnter={() => setActiveMenu(null)} onClick={closeAll}>Bron qilish</a>
+        <div className="shilla-mobile-accounts">
+          <Link to={accountPath} onClick={closeAll}>{text(accountLabel)}</Link>
+          <Link to={`${dashboard}/bronlar`} onClick={closeAll}>{text('Bronlarim')}</Link>
+          <Link to={dashboard} onClick={closeAll}>{text('Boshqaruv')}</Link>
+          <a href="#contact" onClick={closeAll}>{text('Bog‘lanish')}</a>
+          <div className="shilla-mobile-languages" role="group" aria-label={text('Tilni tanlash')}>
+            {LANGUAGES.map((language) => <button type="button" key={language.code} aria-pressed={language.code === locale} onClick={() => { setLocale(language.code); closeAll(); mobileRef.current?.focus(); }}>{language.label}</button>)}
+          </div>
+        </div>
+        <a href="#reservation" className="shilla-nav-reserve" onPointerEnter={() => setActiveMenu(null)} onClick={closeAll}>{text('Bron qilish')}</a>
       </nav>
     </header>
   );
