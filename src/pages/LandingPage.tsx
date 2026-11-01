@@ -969,8 +969,8 @@ export default function LandingPage() {
 
       <main>
         <ReservationBar onSearch={setSearchSummary} />
-        <Ticker />
         <Hero />
+        <Ticker />
         <Rooms searchSummary={searchSummary} />
         <Dining />
         <About />
