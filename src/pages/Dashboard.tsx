@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   CalendarDays,
@@ -172,7 +172,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {formatCurrency(totalIncome || 128450000)}
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
@@ -196,11 +196,11 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {occupancyPercent}%
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <span className="flex items-center font-semibold text-slate-100">
+                  <span className="flex items-center font-semibold text-foreground">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +4.2%
                   </span>
@@ -220,11 +220,11 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   +{monthBookings || bookings.length}
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <span className="flex items-center font-semibold text-slate-100">
+                  <span className="flex items-center font-semibold text-foreground">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +18.5%
                   </span>
@@ -244,7 +244,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-white">
+                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {todayCheckIns} <span className="text-sm font-normal text-slate-400">kelish</span> / {todayCheckOuts} <span className="text-sm font-normal text-slate-400">ketish</span>
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
@@ -376,7 +376,7 @@ export default function Dashboard() {
                         <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
                         {item.label}
                       </span>
-                      <span className="font-semibold text-slate-100">{item.count} ta</span>
+                      <span className="font-semibold text-foreground">{item.count} ta</span>
                     </div>
                   ))}
                 </div>
