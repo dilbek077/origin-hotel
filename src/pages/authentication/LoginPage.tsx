@@ -1,3 +1,4 @@
+import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getPostLoginPath } from '@/services/authNavigation';
@@ -20,8 +21,7 @@ import { LANGUAGES, useTranslation } from '@/i18n';
 import { MOCK_USERS, authenticateMockUser, type MockUser } from '@/services/mockAuth';
 import { useTheme } from '@/theme';
 
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1800&q=85';
+const HERO_IMAGE = HOTEL_PHOTOS.exterior;
 
 export default function LoginPage() {
   const navigate = useNavigate();

@@ -4,6 +4,7 @@ import ReservationBar from '@/components/layout/ReservationBar';
 import HotelEvents from '@/components/layout/HotelEvents';
 import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
 import type { HotelInfoKey } from '@/data/hotelInformation';
+import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
 import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
 import qarshiMosque from '@/assets/qarshi-hero/02-qarshi-masjid.webp';
 import qarshiCenter from '@/assets/qarshi-hero/03-qarshi-markaz.webp';
@@ -30,13 +31,13 @@ import '../shilla-layout.css';
 
 /* ─── constants ──────────────────────────────────────────── */
 const IMAGES = {
-  exterior:   'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1800&q=82',
+  exterior:   HOTEL_PHOTOS.exterior,
   lobby:      'https://images.unsplash.com/photo-1660557989695-14fac79c086d?auto=format&fit=crop&w=1200&q=80',
-  standard:   'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
-  deluxe:     'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
-  suite:      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
-  family:     'https://images.unsplash.com/photo-1564078516393-cf04bd966897?auto=format&fit=crop&w=1200&q=80',
-  presidential: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1800&q=80',
+  standard:   HOTEL_PHOTOS.twinRoom,
+  deluxe:     HOTEL_PHOTOS.doubleRoom,
+  suite:      HOTEL_PHOTOS.singleRoom,
+  family:     HOTEL_PHOTOS.twinRoom,
+  presidential: HOTEL_PHOTOS.doubleRoom,
   pool:       'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
   spa:        'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=80',
   restaurant: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
@@ -178,6 +179,8 @@ function RoomDetailModal({
   room: typeof ROOM_DATA[0];
   onClose: () => void;
 }) {
+  const [activePhoto, setActivePhoto] = useState(room.image);
+  const photos = [...new Set([room.image, HOTEL_PHOTOS.twinRoom, HOTEL_PHOTOS.singleRoom, HOTEL_PHOTOS.doubleRoom, HOTEL_PHOTOS.roomSeating])];
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -209,8 +212,9 @@ function RoomDetailModal({
       className="gallery-overlay"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
-        <img src={room.image} alt={room.label} className="h-52 w-full object-cover" />
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="hotel-room-detail relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
+        <img src={activePhoto} alt="Origin Hotel xonasining surati" className="hotel-room-main-photo h-52 w-full object-cover" />
+        <div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxona xonalarining boshqa suratlari">{photos.map((photo, index) => <button type="button" key={photo} aria-label={`${index + 1}-xona suratini ko‘rsatish`} aria-pressed={activePhoto === photo} onClick={() => setActivePhoto(photo)}><img src={photo} alt="" loading="lazy" /></button>)}</div>
         <button
           ref={closeRef}
           type="button"

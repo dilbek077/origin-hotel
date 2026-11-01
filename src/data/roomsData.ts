@@ -1,3 +1,5 @@
+import { HOTEL_PHOTOS } from './hotelPhotos';
+
 export interface RoomSpace {
   id: string;
   name: string;
@@ -57,13 +59,13 @@ export const ROOMS: Room[] = [
     description: "Sayohat va qisqa muddatli tashriflar uchun barcha qulayliklarga ega shinam xona.",
     fullDescription: "Standart toifasidagi ushbu xona biznes safari yoki shahar bo'ylab sayohatga kelgan mehmonlar uchun ayni muddao. Ergonomik jihozlangan xona maydoni, qulay ortopedik to'shak va zamonaviy dush xonasi sizga to'laqonli dam olish imkoniyatini beradi. Har bir detal mehmonlarning tinchligi va farovonligi uchun puxta o'ylangan.",
     features: ['Tezkor Wi-Fi', 'Smart TV', 'Konditsioner', 'Bepul nonushta'],
-    image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
+    image: HOTEL_PHOTOS.twinRoom,
     gallery: [
-      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.twinRoom,
       'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.singleRoom,
+      HOTEL_PHOTOS.doubleRoom,
     ],
     spaces: [
       {
@@ -72,7 +74,7 @@ export const ROOMS: Room[] = [
         typeLabel: 'Yotoqxona',
         size: '18 m²',
         description: 'Katta qulay King Size karavot, zamonaviy yoritish tizimi, qulay ish stoli va 43" Smart TV.',
-        image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.twinRoom,
         features: ['Ortopedik matras', 'Ish stoli va qulay stul', 'Garderob va seyf', 'Shovqin o‘tkazmaydigan devorlar'],
       },
       {
@@ -119,14 +121,14 @@ export const ROOMS: Room[] = [
     description: "Keng maydon, shahar panoramik manzarasi va mini-bar bilan jihozlangan lyuks xona.",
     fullDescription: "Deluxe toifasidagi 2 xonali bu lyuks xonadon shahar manzarasi bilan uyg'unlashgan nafis interyerni taqdim etadi. Alohida yotoqxona va shinam zal-mehmonxona qismi mehmonlarga nafaqat dam olish, balki do'stlar yoki hamkasblar bilan bemalol suhbatlashish uchun ham keng sharoit yaratadi.",
     features: ['Panoramik oyna', 'Katta balkon', 'Mini-bar', 'Shved stoli nonushtasi'],
-    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+    image: HOTEL_PHOTOS.doubleRoom,
     popular: true,
     gallery: [
-      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.doubleRoom,
+      HOTEL_PHOTOS.roomSeating,
       'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.singleRoom,
     ],
     spaces: [
       {
@@ -135,7 +137,7 @@ export const ROOMS: Room[] = [
         typeLabel: '1-xona (Yotoqxona)',
         size: '22 m²',
         description: 'Super King-size karavot, panoramik deraza, maxsus yoritish tizimi va keng kiyim shkafi.',
-        image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.doubleRoom,
         features: ['Super King karavot (200x200)', 'Katta kiyinish oynasi', 'Shahar panoramasi', 'Elektron seyf'],
       },
       {
@@ -144,7 +146,7 @@ export const ROOMS: Room[] = [
         typeLabel: '2-xona (Zal)',
         size: '14 m²',
         description: 'Qulay yumshoq burchak divani, jurnal stoli, to‘ldirilgan mini-bar hamda 55" 4K Smart TV.',
-        image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.roomSeating,
         features: ['Ochiladigan yumshoq divan', 'Mini-bar va choy burchagi', '55" 4K Smart TV', 'Kofe mashinasi'],
       },
       {
@@ -191,11 +193,11 @@ export const ROOMS: Room[] = [
     description: "Oilaviy dam olish uchun alohida mehmonxona va yotoqxona qismlariga ega keng suit.",
     fullDescription: "Butun oila a'zolari birgalikda bekamu-ko'st hordiq chiqarishi uchun yaratilgan 3 xonali keng Suite. Asosiy yotoqxona, bolalar/mehmonlar uchun alohida ikkinchi yotoqxona, katta oilaviy yashash zali hamda mini-oshxona to'liq qulaylikni ta'minlaydi. Gidromassajli jakuzi esa kun so'ngida charchoqni chiqarish uchun ajoyib imkoniyat.",
     features: ['2 ta xona', 'Jakuzi vanna', 'Oshxona burchagi', 'VIP xizmat'],
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+    image: HOTEL_PHOTOS.singleRoom,
     gallery: [
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.singleRoom,
+      HOTEL_PHOTOS.roomSeating,
+      HOTEL_PHOTOS.singleRoom,
       'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
     ],
@@ -206,7 +208,7 @@ export const ROOMS: Room[] = [
         typeLabel: '1-xona (Zal)',
         size: '26 m²',
         description: 'Oilaviy suhbatlar uchun keng yumshoq mebel to‘plami, 65" 4K televizor va qulay yorug‘ dizayn.',
-        image: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.roomSeating,
         features: ['L-shaklidagi katta yumshoq divan', '65" 4K Smart TV kinoteatr rejimi', 'Katta jurnal stoli', 'Panoramik derazalar'],
       },
       {
@@ -215,7 +217,7 @@ export const ROOMS: Room[] = [
         typeLabel: '2-xona (Yotoqxona)',
         size: '20 m²',
         description: 'Maxsus ergonomik King Size to‘shak, kiyinish zonasi, shaxsiy balkon chiqishi va sokin muhit.',
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.singleRoom,
         features: ['King Size to‘shak', 'Alohida garderob shkafi', 'Balkonga shaxsiy chiqish eshigi', 'Shaxsiy 50" Smart TV'],
       },
       {
@@ -224,7 +226,7 @@ export const ROOMS: Room[] = [
         typeLabel: '3-xona (Yotoqxona)',
         size: '16 m²',
         description: 'Ikkita mustaqil qulay karavot, dars yoki ish uchun yozuv stoli va kitob javonlari.',
-        image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.singleRoom,
         features: ['2 ta alohida Single karavot', 'Bolalar yoki yoshlar uchun ish stoli', 'O‘yinlar va kitoblar burchagi', 'Xavfsiz rozetkalar'],
       },
       {
@@ -271,12 +273,12 @@ export const ROOMS: Room[] = [
     description: "Eksklyuziv dizayn, yuqori darajadagi xavfsizlik va shaxsiy xizmat ko'rsatuvchi xodim bilan ta'minlangan.",
     fullDescription: "Origin Hotelning eng hashamatli va nufuzli apartamenti. 4 ta alohida xonani o'z ichiga olgan 120 metr kvadratlik bu qasr mehmonlarga mutlaq erkinlik, yuqori darajadagi xavfsizlik, shaxsiy terras va shaxsiy batler xizmatini taqdim etadi. Yuqori martabali mehmonlar, davlat arboblari va lyuks hayot ixlosmandlari uchun ideal tanlov.",
     features: ['Shaxsiy terras', 'Shaxsiy batler', 'Premium spa zonasi', 'Transfer bepul'],
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
+    image: HOTEL_PHOTOS.doubleRoom,
     gallery: [
-      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80',
+      HOTEL_PHOTOS.doubleRoom,
+      HOTEL_PHOTOS.roomSeating,
+      HOTEL_PHOTOS.twinRoom,
+      HOTEL_PHOTOS.roomSeating,
       'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1200&q=80',
     ],
@@ -287,7 +289,7 @@ export const ROOMS: Room[] = [
         typeLabel: '1-xona (Katta Zal)',
         size: '45 m²',
         description: 'Katta diplomatik qabulxona zali, hashamatli mebellar, 75" kinoteatr ekrani va shohona marmar kamin.',
-        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.roomSeating,
         features: ['75" 4K OLED kinoteatr displeyi', '10 kishilik banket va tushlik stoli', 'Marmar kamin burchagi', 'Bang & Olufsen akustika tizimi'],
       },
       {
@@ -296,7 +298,7 @@ export const ROOMS: Room[] = [
         typeLabel: '2-xona (Bosh Yotoqxona)',
         size: '30 m²',
         description: 'Eksklyuziv Royal King karavoti, shaxsiy panoramik ko‘rinish, kiyinish xonasi va maxsus yoritish.',
-        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.doubleRoom,
         features: ['Royal King karavot (220x220)', 'Alohida kiyinish xonasi (Walk-in closet)', 'Avtomatik pardalar boshqaruvi', 'Shaxsiy mini-bar'],
       },
       {
@@ -305,7 +307,7 @@ export const ROOMS: Room[] = [
         typeLabel: '3-xona (Mehmonlar yotoqxonasi)',
         size: '22 m²',
         description: 'Hamrohlar yoki mehmonlar uchun ikkinchi to‘liq jihozlangan King-size yotoqxona va shaxsiy dush.',
-        image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.twinRoom,
         features: ['King Size to‘shak', 'Alohida sanuzel va dush', '55" 4K Smart TV', 'Shinam dam olish kreslosi'],
       },
       {
@@ -314,7 +316,7 @@ export const ROOMS: Room[] = [
         typeLabel: '4-xona (Ish kabineti)',
         size: '18 m²',
         description: 'Muzokaralar va muhim biznes qarorlari uchun eman daraxtidan yasalgan stol va charm mebellar.',
-        image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80',
+        image: HOTEL_PHOTOS.roomSeating,
         features: ['Prezident darajasidagi ish stoli', 'Ergonomik charm kreslo', 'Shaxsiy seyf va shifrlangan Wi-Fi', 'Printer va faks qurilmasi'],
       },
       {

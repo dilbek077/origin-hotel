@@ -1,3 +1,4 @@
+import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
 import { useRef, useState } from 'react';
 import { ChevronRight, X } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -28,7 +29,7 @@ const EVENTS = [
     description: 'Suite xonasi — oila bilan dam olish uchun keng va qulay tanlov.',
     detail: 'Suite xonasi 68 m² maydon va 4 kishigacha sig‘imga ega. Xona tafsilotlari, qulayliklari va narxini xonalar bo‘limida ko‘ring.',
     note: 'Suite · 68 m² · 4 kishigacha',
-    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=85',
+    image: HOTEL_PHOTOS.twinRoom,
     alt: 'Oilaviy hordiq uchun Suite xonasi',
     href: '#rooms',
     action: 'Xonalarni ko‘rish',
