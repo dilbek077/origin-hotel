@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import {
   MapPin,
+  Hotel,
   Mail,
   Menu,
   X,
@@ -631,12 +632,29 @@ function Footer() {
           <p><a href="tel:+998712002020">TEL. +998 71 200 20 20</a><a href="mailto:reservations@originhotel.uz">reservations@originhotel.uz</a></p>
         </div>
         <nav className="shilla-footer-links" aria-label="Sayt bo‘limlari">
-          {links.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}
-          <Link to="/admin">Boshqaruv tizimi</Link>
+          <div className="shilla-footer-link-row">
+            {links.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}
+            <Link to="/login">Kirish</Link>
+          </div>
+          <div className="shilla-footer-link-row shilla-footer-secondary">
+            <Link to="/admin">Boshqaruv tizimi</Link>
+            <span className="shilla-footer-policy">Maxfiylik siyosati</span>
+            <span>Foydalanish shartlari</span>
+          </div>
         </nav>
         <div className="shilla-footer-bottom">
-          <p>© {year} Origin Hotel. Barcha huquqlar himoyalangan.</p>
-          <div><span>Mehmon reytingi: 4.9/5</span><span>Maxfiylik siyosati</span><span>Foydalanish shartlari</span></div>
+          <div className="shilla-footer-legal">
+            <p>Origin Hotel · Amir Temur shoh ko‘chasi 15, Toshkent 100000 · Qabulxona: 24/7</p>
+            <div className="shilla-footer-social-icons">
+              <span role="img" aria-label="Instagram"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none" /></svg></span>
+              <span role="img" aria-label="Facebook" className="shilla-footer-facebook"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 22v-9h3l.5-3H14V8c0-1 .3-1.5 1.5-1.5H18V3h-3c-3 0-5 1.8-5 5v2H7v3h3v9z" /></svg></span>
+            </div>
+          </div>
+          <div className="shilla-footer-feature">
+            <span aria-hidden="true"><Hotel size={28} strokeWidth={1.2} /></span>
+            <div><p>Origin Hotel — Toshkent</p><p>Shinam xonalar, restoran va dam olish qulayliklari.</p></div>
+          </div>
+          <p className="shilla-footer-copyright">© {year} Origin Hotel. Barcha huquqlar himoyalangan.</p>
         </div>
       </div>
     </footer>

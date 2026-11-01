@@ -406,10 +406,10 @@
 .shilla-benefit-card h3 { margin: 0; font-size: 22px; line-height: 1.4; font-weight: 400; }
 .shilla-benefit-card p { max-width: 235px; margin: 14px auto 0; font-size: 17px; line-height: 1.6; color: #66564b; }
 .marketing-page.shilla-site .shilla-footer { border: 0; background: #302425; color: #c9bfbb; }
-.shilla-footer-brands { display: flex; justify-content: space-evenly; align-items: center; gap: 30px; min-height: 118px; padding: 28px 40px; background: #291f20; }
+.shilla-footer-brands { display: flex; justify-content: space-evenly; align-items: center; gap: 30px; min-height: 144px; padding: 32px 50px; background: #291f20; }
 .shilla-footer-brands > a { font-family: Georgia, 'Times New Roman', serif; font-size: 23px; line-height: 1.5; letter-spacing: .16em; text-align: center; color: #f5f0ec; }
 .shilla-footer-brands > a:hover { color: #d5b88e; }
-.shilla-footer-main { display: grid; grid-template-columns: 215px minmax(300px, 1fr) minmax(360px, 1.1fr); gap: 26px 32px; align-items: start; padding: 50px 40px 24px; }
+.shilla-footer-main { display: grid; grid-template-columns: 215px minmax(260px, 1fr) minmax(380px, 1.2fr); gap: 0 40px; align-items: start; padding: 68px 50px 76px; }
 .shilla-footer-wordmark { display: block; text-align: center; color: #e5ded9; }
 .shilla-footer-wordmark > span { display: block; font-family: Georgia, serif; font-size: 23px; letter-spacing: .14em; line-height: 1.5; white-space: nowrap; }
 .shilla-footer-wordmark > small { display: block; font-family: Georgia, serif; font-size: 11px; letter-spacing: .24em; line-height: 1.6; }
@@ -418,11 +418,11 @@
 .shilla-footer-address strong { font-weight: 500; white-space: nowrap; }
 .shilla-footer-divider { width: 1px; height: 12px; background: #635252; }
 .shilla-footer-address a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
-.shilla-footer-links { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px 22px; padding-top: 3px; font-size: 15px; line-height: 1.6; color: #b6aaa7; }
-.shilla-footer-links > a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
-.shilla-footer-bottom { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px 28px; padding-top: 18px; border-top: 1px solid #483638; font-size: 13px; color: #a69793; }
+.shilla-footer-links { display: flex; flex-direction: column; align-items: flex-end; gap: 22px; padding-top: 3px; font-size: 15px; line-height: 1.6; color: #b6aaa7; }
+.shilla-footer-links a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.shilla-footer-bottom { grid-column: 1 / -1; margin-top: 48px; padding-top: 36px; border-top: 1px solid #483638; font-size: 13px; color: #a69793; }
 .shilla-footer-bottom p { margin: 0; }
-.shilla-footer-bottom > div { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+
 @media (max-width: 1100px) {
   .marketing-page.shilla-site .shilla-benefits { grid-template-columns: minmax(240px, 30%) minmax(0, 1fr); gap: 20px; padding: 55px 25px; }
   .shilla-benefit-card { padding-inline: 16px; }
@@ -432,7 +432,7 @@
   .shilla-footer-brands { gap: 24px; padding-inline: 25px; }
   .shilla-footer-brands > a { font-size: 19px; letter-spacing: .1em; }
   .shilla-footer-main { grid-template-columns: 190px minmax(0, 1fr); padding-inline: 25px; }
-  .shilla-footer-links { grid-column: 1 / -1; justify-content: flex-start; }
+  .shilla-footer-links { grid-column: 1 / -1; align-items: flex-start; margin-top: 24px; }
 }
 @media (max-width: 767px) {
   .marketing-page.shilla-site .shilla-benefits { grid-template-columns: minmax(0, 1fr); gap: 36px; padding: 40px 20px; }
@@ -452,6 +452,30 @@
   .shilla-footer-wordmark { text-align: left; width: max-content; }
   .shilla-footer-address { font-size: 15px; }
   .shilla-footer-links { gap: 12px 20px; }
-  .shilla-footer-bottom { font-size: 13px; gap: 16px; }
-  .shilla-footer-bottom > div { gap: 10px 16px; }
+  .shilla-footer-bottom { font-size: 13px; margin-top: 0; padding-top: 28px; }
+
+}
+
+/* Spacious footer detail rows, matching the supplied footer reference. */
+.shilla-footer-link-row { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px 22px; }
+.shilla-footer-secondary { color: #a49793; }
+.shilla-footer-secondary .shilla-footer-policy { color: #f5efeb; }
+.shilla-footer-legal { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; font-size: 15px; line-height: 1.8; }
+.shilla-footer-social-icons { display: flex; align-items: center; gap: 28px; }
+.shilla-footer-social-icons > span { display: grid; place-items: center; width: 38px; height: 38px; color: #f9f5f1; }
+.shilla-footer-social-icons > .shilla-footer-facebook { width: 34px; height: 34px; margin-inline: 2px; border-radius: 50%; background: #f9f5f1; color: #302425; }
+.shilla-footer-feature { display: flex; align-items: center; gap: 14px; margin-top: 36px; font-size: 15px; line-height: 1.9; }
+.shilla-footer-feature > span { display: grid; place-items: center; width: 40px; height: 44px; background: #f8f3eb; color: #b69b70; flex-shrink: 0; }
+.shilla-footer-bottom .shilla-footer-copyright { margin-top: 42px; font-size: 14px; line-height: 1.7; }
+@media (max-width: 1100px) {
+  .shilla-footer-link-row { justify-content: flex-start; }
+}
+@media (max-width: 767px) {
+  .shilla-footer-brands { min-height: 0; }
+  .shilla-footer-links { margin-top: 0; gap: 18px; }
+  .shilla-footer-link-row { gap: 12px 18px; }
+  .shilla-footer-legal { font-size: 14px; gap: 20px; }
+  .shilla-footer-social-icons { gap: 20px; }
+  .shilla-footer-feature { margin-top: 28px; font-size: 14px; gap: 12px; }
+  .shilla-footer-bottom .shilla-footer-copyright { margin-top: 30px; font-size: 13px; }
 }
