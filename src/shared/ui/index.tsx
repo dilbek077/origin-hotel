@@ -6,13 +6,27 @@ export function PageLoading({ message = "Yuklanmoqda..." }: { message?: string }
   return <L.div className="w-full space-y-6 p-6" role="status" aria-busy="true">
     <L.p className="sr-only">{message}</L.p>
     <L.div aria-hidden="true" className="space-y-6">
-      <Skeleton className="h-9 w-52" />
-      <Skeleton className="h-4 w-2/3 max-w-md" />
-      <L.div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-32 w-full" />)}
+      <L.div className="flex items-center justify-between gap-6">
+        <L.div className="w-2/3 space-y-3"><Skeleton className="h-8 w-48 max-w-full" /><Skeleton className="h-3 w-72 max-w-full" /></L.div>
+        <Skeleton className="h-10 w-28" />
       </L.div>
-      <Skeleton className="h-72 w-full" />
-      <Skeleton className="h-36 w-full" />
+      <L.div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => <L.div key={index} className="space-y-5 rounded-xl border border-border bg-card p-5">
+          <Skeleton className="h-3 w-2/3" /><Skeleton className="h-7 w-3/4" /><Skeleton className="h-2 w-1/2" />
+        </L.div>)}
+      </L.div>
+      <L.div className="grid gap-5 lg:grid-cols-3">
+        <L.div className="space-y-6 rounded-xl border border-border bg-card p-5 lg:col-span-2">
+          <Skeleton className="h-4 w-40" />
+          <L.div className="flex h-48 items-end gap-3 border-b border-border pt-6">
+            {[45, 65, 50, 80, 60, 95, 75, 90].map((height, index) => <Skeleton key={index} className="flex-1 rounded-b-none" style={{ height: `${height}%` }} />)}
+          </L.div>
+        </L.div>
+        <L.div className="space-y-6 rounded-xl border border-border bg-card p-5">
+          <Skeleton className="h-4 w-32" />
+          {Array.from({ length: 4 }, (_, index) => <L.div key={index} className="flex items-center gap-3"><Skeleton className="size-9 shrink-0 rounded-full" /><L.div className="w-full space-y-2"><Skeleton className="h-3 w-4/5" /><Skeleton className="h-2 w-1/2" /></L.div></L.div>)}
+        </L.div>
+      </L.div>
     </L.div>
   </L.div>;
 }

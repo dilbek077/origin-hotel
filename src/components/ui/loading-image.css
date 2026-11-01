@@ -1,13 +1,13 @@
 .hotel-image-loading {
   color: transparent;
-  background-color: #e9e5df;
-  background-image: linear-gradient(100deg, transparent 20%, #ffffff80 45%, transparent 70%);
-  background-size: 220% 100%;
-  animation: hotel-image-shimmer 1.5s linear infinite;
+  background-color: #e9e1d5;
+  background-image: linear-gradient(105deg, transparent 20%, #fcfaf5b0 48%, transparent 76%);
+  background-size: 240% 100%;
+  animation: hotel-image-shimmer 2.1s ease-in-out infinite;
 }
 @keyframes hotel-image-shimmer {
-  from { background-position: 200% 0; }
-  to { background-position: -20% 0; }
+  from { background-position: 180% 0; }
+  to { background-position: -60% 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hotel-image-loading { animation: none; }

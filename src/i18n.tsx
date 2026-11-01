@@ -10,13 +10,13 @@ import {
 
 export const LANGUAGES = [
   { code: 'uz', label: 'O‘zbekcha' },
-  { code: 'ru', label: 'Русский' },
   { code: 'en', label: 'English' },
   { code: 'fr', label: 'Français' },
   { code: 'de', label: 'Deutsch' },
 ] as const;
 
-export type LanguageCode = (typeof LANGUAGES)[number]['code'];
+// Keep legacy dictionary columns readable; Russian is not an available UI locale.
+export type LanguageCode = (typeof LANGUAGES)[number]['code'] | 'ru';
 
 export const translations: Record<string, Record<LanguageCode, string>> = {
   // Navigation
@@ -469,9 +469,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'origin-hotel-language' && e.newValue) {
-        if (LANGUAGES.some((l) => l.code === e.newValue)) {
-          setLocale(e.newValue as LanguageCode);
-        }
+        setLocale(LANGUAGES.some((l) => l.code === e.newValue) ? e.newValue as LanguageCode : 'uz');
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -481,7 +479,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       locale,
-      setLocale,
+      setLocale: (next: LanguageCode) => setLocale(LANGUAGES.some((language) => language.code === next) ? next : 'uz'),
       languages: LANGUAGES,
       text: (value: string) => translateSiteText(value, locale, translations),
       t: (key: string, fallback?: string) => {
