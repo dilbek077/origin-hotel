@@ -2,6 +2,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Navbar from '@/components/layout/HotelNavbar';
 import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
 import type { HotelInfoKey } from '@/data/hotelInformation';
+import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
+import qarshiMosque from '@/assets/qarshi-hero/02-qarshi-masjid.webp';
+import qarshiCenter from '@/assets/qarshi-hero/03-qarshi-markaz.webp';
 import {
   MapPin,
   Hotel,
@@ -152,19 +155,11 @@ function ReservationBar({ onSearch }: { onSearch: (summary: string) => void }) {
   );
 }
 
-// Keep city photographs isolated from room, restaurant, and service imagery.
-const qarshiHeroImages = import.meta.glob<string>(
-  '/src/assets/qarshi-hero/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
-  { eager: true, query: '?url', import: 'default' },
-);
-const qarshiHeroSlides = Object.entries(qarshiHeroImages)
-  .sort(([first], [second]) => first.localeCompare(second, 'en', { numeric: true }))
-  .map(([, src], index) => ({ src, alt: `Qarshi shahri — ${index + 1}-surat` }));
-
-const HERO_SLIDES = qarshiHeroSlides.length > 0 ? qarshiHeroSlides : [
-  { src: IMAGES.pool, alt: 'Origin Hotel basseyn va dam olish hududi' },
-  { src: IMAGES.exterior, alt: 'Origin Hotel tashqi ko‘rinishi' },
-  { src: IMAGES.presidential, alt: 'Origin Hotel Presidential xonasi' },
+// City photographs are used only here; room and service imagery stays separate.
+const HERO_SLIDES = [
+  { src: qarshiClockTower, alt: 'Qarshi shahri — soat minorasi va shahar manzarasi', position: '68% center' },
+  { src: qarshiMosque, alt: 'Qarshi shahri — moviy gumbazli tarixiy bino va yashil xiyobon', position: 'center' },
+  { src: qarshiCenter, alt: 'Qarshi shahri — markaziy maydon, favvora va keng ko‘chalar', position: '35% center' },
 ];
 
 function Hero() {
@@ -178,8 +173,8 @@ function Hero() {
   const nextSlide = (direction: number) => setSlide((previous) => (previous + direction + HERO_SLIDES.length) % HERO_SLIDES.length);
 
   return (
-    <section className="shilla-hero" aria-label="Origin Hotel suratlari" aria-roledescription="slayder">
-      {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
+    <section className="shilla-hero" aria-label="Qarshi shahri manzaralari" aria-roledescription="slayder">
+      {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
       <h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</h1>
       <div className="shilla-slider-controls">
         <div className="shilla-slide-progress" aria-label={`${slide + 1} / ${HERO_SLIDES.length}`}><span style={{ width: `${((slide + 1) / HERO_SLIDES.length) * 100}%` }} /></div>

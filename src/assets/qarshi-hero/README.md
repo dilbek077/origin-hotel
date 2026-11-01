@@ -1,19 +1,16 @@
-# Qarshi hero suratlari
+# Qarshi hero rasmlari
 
-Shu papkadagi JPG, PNG, WebP yoki AVIF suratlar bosh sahifaning hero
-slayderiga avtomatik qo‘yiladi. Xona, restoran va xizmat suratlariga ta’sir qilmaydi.
+Uchta WebP fayl faqat bosh sahifaning hero slayderida ishlatiladi.
+Xona, restoran, xizmat va login rasmlari o‘zgartirilmagan.
 
-Tavsiya etilgan tartib:
+- `01-qarshi-soat-minorasi.webp`: soat minorasi va shahar manzarasi.
+- `02-qarshi-masjid.webp`: moviy gumbazli tarixiy bino va xiyobon.
+- `03-qarshi-markaz.webp`: markaziy maydon va ko‘chalar.
 
-1. `01-qarshi-soat-minorasi.jpg`
-2. `02-qarshi-masjid.jpg`
-3. `03-qarshi-markaz.jpg`
+Manba: foydalanuvchi chatda yuborgan uchta kichik Qarshi tasviri.
+Ular foydalanuvchining 4K qilish so‘roviga binoan AI yordamida qayta
+ishlangan, keyin 3840 × 2160 o‘lchamga keltirilgan va WebP formatida
+siqilgan. Bular original kameradan olingan 4K fayllar emas; qayta ishlash
+jarayonida ayrim detallar manba tasviridan farq qilishi mumkin.
 
-GitHub’da `design/shilla-screenshots` branchini tanlab, shu papkaga
-**Add file → Upload files** orqali uchta asl rasm faylini yuklang.
-Keyin loyihani yangilang; ishlayotgan Vite serveri yangi fayllarni aniqlaydi.
-Production uchun qayta build kerak.
-
-Suratlar hali yuklanmagan bo‘lsa, mavjud hero slaydlari saqlanadi.
-Fayllar nom bo‘yicha tartiblanadi. 4K sifat uchun kamida 3840 piksel
-kenglikdagi asl fayllardan foydalaning; kichik screenshot 4K bo‘lib qolmaydi.
+Suratlar tashqi serverlardan yuklanmaydi: Vite ularni build tarkibiga qo‘shadi.
