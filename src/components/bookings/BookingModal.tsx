@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Booking, BookingStatus } from "@/types/booking";
@@ -145,124 +146,124 @@ export default function BookingModal({
       title={initialData ? t('bookings.modalTitleEdit') : t('bookings.modalTitleAdd')}
       maxWidth="max-w-xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <L.form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
+          <L.div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
             {error}
-          </div>
+          </L.div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>
+        <L.div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <L.div>
+            <L.label className={labelClass}>
               {t('bookings.selectGuest')} *
-            </label>
-            <select
+            </L.label>
+            <L.select
               value={guestId}
               onChange={(e) => setGuestId(Number(e.target.value))}
               className={inputClass}
             >
               {guests.map((g) => (
-                <option key={g.id} value={g.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
+                <L.option key={g.id} value={g.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
                   {g.fullName} ({g.phone || "-"})
-                </option>
+                </L.option>
               ))}
-            </select>
-          </div>
+            </L.select>
+          </L.div>
 
-          <div>
-            <label className={labelClass}>
+          <L.div>
+            <L.label className={labelClass}>
               {t('bookings.selectRoom')} *
-            </label>
-            <select
+            </L.label>
+            <L.select
               value={roomId}
               onChange={(e) => setRoomId(Number(e.target.value))}
               className={inputClass}
             >
               {rooms.map((r) => (
-                <option key={r.id} value={r.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
+                <L.option key={r.id} value={r.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
                   #{r.number} - {translateRoomType(r.type)} ({r.capacity}) - {r.pricePerNight.toLocaleString()} {t('common.currency')}
-                </option>
+                </L.option>
               ))}
-            </select>
-          </div>
-        </div>
+            </L.select>
+          </L.div>
+        </L.div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>
+        <L.div className="grid grid-cols-2 gap-4">
+          <L.div>
+            <L.label className={labelClass}>
               {t('bookings.checkIn')} *
-            </label>
-            <input
+            </L.label>
+            <L.input
               type="date"
               required
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
               className={inputClass}
             />
-          </div>
+          </L.div>
 
-          <div>
-            <label className={labelClass}>
+          <L.div>
+            <L.label className={labelClass}>
               {t('bookings.checkOut')} *
-            </label>
-            <input
+            </L.label>
+            <L.input
               type="date"
               required
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
               className={inputClass}
             />
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>
+        <L.div className="grid grid-cols-2 gap-4">
+          <L.div>
+            <L.label className={labelClass}>
               {t('common.status')}
-            </label>
-            <select
+            </L.label>
+            <L.select
               value={status}
               onChange={(e) => setStatus(e.target.value as BookingStatus)}
               className={inputClass}
             >
               {BOOKING_STATUSES.map((s) => (
-                <option key={s} value={s} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
+                <L.option key={s} value={s} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
                   {translateStatus(s)}
-                </option>
+                </L.option>
               ))}
-            </select>
-          </div>
+            </L.select>
+          </L.div>
 
-          <div>
-            <label className={labelClass}>
+          <L.div>
+            <L.label className={labelClass}>
               {t('bookings.totalSum')} ({calculatedNights} {t('bookings.nights')}) *
-            </label>
-            <input
+            </L.label>
+            <L.input
               type="number"
               min={0}
               value={finalPrice}
               onChange={(e) => setCustomPrice(Number(e.target.value))}
               className={inputClass}
             />
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
-        <div>
-          <label className={labelClass}>
+        <L.div>
+          <L.label className={labelClass}>
             {t('common.notes')}
-          </label>
-          <input
+          </L.label>
+          <L.input
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="..."
             className={inputClass}
           />
-        </div>
+        </L.div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
-          <button
+        <L.div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+          <L.button
             type="button"
             onClick={onClose}
             className={
@@ -272,15 +273,15 @@ export default function BookingModal({
             }
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </L.button>
+          <L.button
             type="submit"
             className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
             {initialData ? t('common.save') : t('landing.rooms.book')}
-          </button>
-        </div>
-      </form>
+          </L.button>
+        </L.div>
+      </L.form>
     </Modal>
   );
 }

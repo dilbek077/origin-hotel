@@ -1,4 +1,6 @@
 'use client'
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
@@ -65,15 +67,15 @@ function DialogContent({
         {...props}
       >
         {children}
-        {showCloseButton && (
+        <LocalizedText>{showCloseButton && (
           <DialogPrimitive.Close
             data-slot='dialog-close'
             className="absolute inset-e-4 top-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
-            <span className='sr-only'>Close</span>
+            <L.span className='sr-only'>Close</L.span>
           </DialogPrimitive.Close>
-        )}
+        )}</LocalizedText>
       </DialogPrimitive.Content>
     </DialogPortal>
   )
@@ -81,7 +83,7 @@ function DialogContent({
 
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <div
+    <L.div
       data-slot='dialog-header'
       className={cn('flex flex-col gap-2 text-center sm:text-start', className)}
       {...props}
@@ -91,7 +93,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
 
 function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <div
+    <L.div
       data-slot='dialog-footer'
       className={cn(
         'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',

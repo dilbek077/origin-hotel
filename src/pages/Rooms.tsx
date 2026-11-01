@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import { useState, useEffect } from "react";
 import { Plus, Search, BedDouble, Eye, Edit, Trash2 } from "lucide-react";
 import type { Room, RoomStatus } from "@/types/room";
@@ -96,7 +97,7 @@ export default function Rooms() {
         ? "border border-violet-500/30 bg-violet-500/15 text-violet-300"
         : "border border-violet-200 bg-violet-50 text-violet-700";
     }
-    return <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${colorClass}`}><span className="h-1.5 w-1.5 rounded-full bg-current" />{text}</span>;
+    return <L.span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${colorClass}`}><L.span className="h-1.5 w-1.5 rounded-full bg-current" />{text}</L.span>;
   };
 
   const getTypeBadge = (type: string) => {
@@ -117,7 +118,7 @@ export default function Rooms() {
         ? "border border-amber-500/30 bg-amber-500/10 text-amber-200"
         : "border border-amber-200 bg-amber-50 text-amber-700";
     }
-    return <span className={`inline-flex rounded-md border px-2.5 py-1 text-[11px] font-medium ${colorClass}`}>{text}</span>;
+    return <L.span className={`inline-flex rounded-md border px-2.5 py-1 text-[11px] font-medium ${colorClass}`}>{text}</L.span>;
   };
 
   const vacantCount = rooms.filter((r) => r.status === "Bo'sh").length;
@@ -141,17 +142,17 @@ export default function Rooms() {
     : "border-slate-200 bg-slate-50 shadow-[inset_0_1px_0_rgba(148,163,184,0.12)]";
 
   return (
-    <div className={pageShell}>
-      <div className={panelShell}>
-        <div className={`mb-0 flex items-center justify-between gap-4 border-b px-6 py-5 ${headerBorder}`}>
-          <div>
-            <h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-slate-900"}`}>Xonalar</h1>
-            <p className={`mt-2 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+    <L.div className={pageShell}>
+      <L.div className={panelShell}>
+        <L.div className={`mb-0 flex items-center justify-between gap-4 border-b px-6 py-5 ${headerBorder}`}>
+          <L.div>
+            <L.h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-slate-900"}`}>Xonalar</L.h1>
+            <L.p className={`mt-2 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Qavatlar, narxlar va xonalar holatini bir joyda boshqaring.
-            </p>
-          </div>
+            </L.p>
+          </L.div>
 
-          <button
+          <L.button
             onClick={handleOpenAdd}
             className={isDark
               ? "inline-flex items-center gap-2 rounded-xl border border-[#1c252d] bg-[#10171d] px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-slate-500 hover:bg-[#121d26]"
@@ -159,117 +160,117 @@ export default function Rooms() {
           >
             <Plus size={16} />
             Xona qo‘shish
-          </button>
-        </div>
+          </L.button>
+        </L.div>
 
-        <div className="p-5 sm:p-6">
-          <div className={`rounded-[18px] border p-4 ${panelInner}`}>
-            <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_0.8fr]">
-              <div className="relative">
+        <L.div className="p-5 sm:p-6">
+          <L.div className={`rounded-[18px] border p-4 ${panelInner}`}>
+            <L.div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_0.8fr]">
+              <L.div className="relative">
                 <Search size={16} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
-                <input
+                <L.input
                   type="text"
                   placeholder={t('rooms.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className={`w-full rounded-xl border py-3 pl-10 pr-4 text-sm outline-none ${fieldShell}`}
                 />
-              </div>
+              </L.div>
 
-              <select
+              <L.select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className={`rounded-xl border px-3 py-3 text-sm outline-none ${fieldShell}`}
               >
                 {STATUS_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt} className="bg-slate-900 text-white">
+                  <L.option key={opt} value={opt} className="bg-slate-900 text-white">
                     {opt === "Barchasi" ? t('common.all') : translateStatus(opt)}
-                  </option>
+                  </L.option>
                 ))}
-              </select>
+              </L.select>
 
-              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
+              <L.div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
                 {vacantCount} ta bo‘sh
-              </div>
+              </L.div>
 
-              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
+              <L.div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
                 {occupiedCount} ta band
-              </div>
+              </L.div>
 
-              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
+              <L.div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
                 {rooms.length} ta jami
-              </div>
-            </div>
-          </div>
+              </L.div>
+            </L.div>
+          </L.div>
 
-          <div className={`mt-5 rounded-[18px] border p-4 ${panelInner}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                O‘chirib bo‘lishi mumkin: <span className={`font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{filtered.length} ta xona</span>
-              </p>
-              <div className={`flex gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                <span className={isDark ? "rounded-full border border-[#1c252d] bg-[#0d1419] px-2.5 py-1 text-slate-200" : "rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-700"}>Barchasi</span>
-                <span className={isDark ? "rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-emerald-300" : "rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700"}>Bo‘sh</span>
-                <span className={isDark ? "rounded-full border border-red-500/40 bg-red-500/10 px-2.5 py-1 text-red-300" : "rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-red-700"}>Band</span>
-              </div>
-            </div>
-          </div>
+          <L.div className={`mt-5 rounded-[18px] border p-4 ${panelInner}`}>
+            <L.div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <L.p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                O‘chirib bo‘lishi mumkin: <L.span className={`font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{filtered.length} ta xona</L.span>
+              </L.p>
+              <L.div className={`flex gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                <L.span className={isDark ? "rounded-full border border-[#1c252d] bg-[#0d1419] px-2.5 py-1 text-slate-200" : "rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-700"}>Barchasi</L.span>
+                <L.span className={isDark ? "rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-emerald-300" : "rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700"}>Bo‘sh</L.span>
+                <L.span className={isDark ? "rounded-full border border-red-500/40 bg-red-500/10 px-2.5 py-1 text-red-300" : "rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-red-700"}>Band</L.span>
+              </L.div>
+            </L.div>
+          </L.div>
 
           {filtered.length === 0 ? (
-            <div className={`mt-6 flex flex-col items-center justify-center rounded-[18px] border border-dashed py-16 text-center ${isDark ? "border-[#1c252d] bg-[#0d1419]" : "border-slate-200 bg-white"}`}>
+            <L.div className={`mt-6 flex flex-col items-center justify-center rounded-[18px] border border-dashed py-16 text-center ${isDark ? "border-[#1c252d] bg-[#0d1419]" : "border-slate-200 bg-white"}`}>
               <BedDouble size={46} className={`mb-3 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
-              <p className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{t('rooms.notFound')}</p>
-              <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>{t('rooms.notFoundDesc')}</p>
-            </div>
+              <L.p className={`text-lg font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{t('rooms.notFound')}</L.p>
+              <L.p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>{t('rooms.notFoundDesc')}</L.p>
+            </L.div>
           ) : (
-            <div className={`mt-6 overflow-hidden rounded-[18px] border ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-slate-200 bg-white"}`}>
-              <div className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ${isDark ? "border-[#1c252d] bg-[#0d1419] text-slate-400" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
-                <span>Xona</span>
-                <span>Qavat</span>
-                <span>Tur</span>
-                <span>Mehmon</span>
-                <span>Narx</span>
-                <span>Holat</span>
-              </div>
+            <L.div className={`mt-6 overflow-hidden rounded-[18px] border ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-slate-200 bg-white"}`}>
+              <L.div className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ${isDark ? "border-[#1c252d] bg-[#0d1419] text-slate-400" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+                <L.span>Xona</L.span>
+                <L.span>Qavat</L.span>
+                <L.span>Tur</L.span>
+                <L.span>Mehmon</L.span>
+                <L.span>Narx</L.span>
+                <L.span>Holat</L.span>
+              </L.div>
 
               {filtered.map((room) => (
-                <div
+                <L.div
                   key={room.id}
                   className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] items-center border-b px-4 py-4 text-sm last:border-b-0 ${isDark ? "border-[#1b2430] text-slate-200 hover:bg-[#0f171d]" : "border-slate-200 text-slate-700 hover:bg-slate-50"}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>#{room.number}</span>
-                    <span className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{room.type}</span>
-                  </div>
+                  <L.div className="flex items-center gap-3">
+                    <L.span className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>#{room.number}</L.span>
+                    <L.span className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{room.type}</L.span>
+                  </L.div>
 
-                  <span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.floor} qavat</span>
+                  <L.span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.floor} qavat</L.span>
 
-                  <div>{getTypeBadge(room.type)}</div>
+                  <L.div>{getTypeBadge(room.type)}</L.div>
 
-                  <span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.capacity} kishi</span>
+                  <L.span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.capacity.replace(/\s*kishilik$/, '')} kishi</L.span>
 
-                  <span className={`font-medium ${isDark ? "text-slate-100" : "text-slate-900"}`}>{formatPrice(room.pricePerNight)}</span>
+                  <L.span className={`font-medium ${isDark ? "text-slate-100" : "text-slate-900"}`}>{formatPrice(room.pricePerNight)}</L.span>
 
-                  <div className="flex items-center justify-between gap-2">
+                  <L.div className="flex items-center justify-between gap-2">
                     {getStatusBadge(room.status)}
-                    <div className={`flex items-center gap-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                      <button onClick={() => setViewRoom(room)} className={isDark ? "hover:text-sky-300" : "hover:text-sky-600"} aria-label={t('common.view')}>
+                    <L.div className={`flex items-center gap-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                      <L.button onClick={() => setViewRoom(room)} className={isDark ? "hover:text-sky-300" : "hover:text-sky-600"} aria-label={t('common.view')}>
                         <Eye size={15} />
-                      </button>
-                      <button onClick={() => handleOpenEdit(room)} className={isDark ? "hover:text-amber-300" : "hover:text-amber-600"} aria-label={t('common.edit')}>
+                      </L.button>
+                      <L.button onClick={() => handleOpenEdit(room)} className={isDark ? "hover:text-amber-300" : "hover:text-amber-600"} aria-label={t('common.edit')}>
                         <Edit size={15} />
-                      </button>
-                      <button onClick={() => handleDelete(room.id)} className={isDark ? "hover:text-red-300" : "hover:text-red-600"} aria-label={t('common.delete')}>
+                      </L.button>
+                      <L.button onClick={() => handleDelete(room.id)} className={isDark ? "hover:text-red-300" : "hover:text-red-600"} aria-label={t('common.delete')}>
                         <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                      </L.button>
+                    </L.div>
+                  </L.div>
+                </L.div>
               ))}
-            </div>
+            </L.div>
           )}
-        </div>
-      </div>
+        </L.div>
+      </L.div>
 
       {/* Add / Edit Modal */}
       <RoomModal
@@ -295,35 +296,35 @@ export default function Rooms() {
           onClose={() => setViewRoom(null)}
           title={`${t('rooms.detailsTitle')} #${viewRoom.number}`}
         >
-          <div className="space-y-4">
-            <div className={isDark ? "p-4 bg-slate-800/80 rounded-xl space-y-2.5 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-2.5 text-sm"}>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('rooms.number')}:</span>
-                <span className="font-bold text-gray-900 dark:text-white">#{viewRoom.number}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('rooms.type')}:</span>
-                <span className="font-semibold text-gray-800 dark:text-slate-200">{translateRoomType(viewRoom.type)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('rooms.floor')}:</span>
-                <span className="font-semibold text-gray-800 dark:text-slate-200">{viewRoom.floor}-{t('common.floor')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('rooms.capacity')}:</span>
-                <span className="font-semibold text-gray-800 dark:text-slate-200">{viewRoom.capacity}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 dark:text-slate-400">{t('common.status')}:</span>
+          <L.div className="space-y-4">
+            <L.div className={isDark ? "p-4 bg-slate-800/80 rounded-xl space-y-2.5 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-2.5 text-sm"}>
+              <L.div className="flex justify-between">
+                <L.span className="text-gray-400 dark:text-slate-400">{t('rooms.number')}:</L.span>
+                <L.span className="font-bold text-gray-900 dark:text-white">#{viewRoom.number}</L.span>
+              </L.div>
+              <L.div className="flex justify-between">
+                <L.span className="text-gray-400 dark:text-slate-400">{t('rooms.type')}:</L.span>
+                <L.span className="font-semibold text-gray-800 dark:text-slate-200">{translateRoomType(viewRoom.type)}</L.span>
+              </L.div>
+              <L.div className="flex justify-between">
+                <L.span className="text-gray-400 dark:text-slate-400">{t('rooms.floor')}:</L.span>
+                <L.span className="font-semibold text-gray-800 dark:text-slate-200">{viewRoom.floor}-{t('common.floor')}</L.span>
+              </L.div>
+              <L.div className="flex justify-between">
+                <L.span className="text-gray-400 dark:text-slate-400">{t('rooms.capacity')}:</L.span>
+                <L.span className="font-semibold text-gray-800 dark:text-slate-200">{viewRoom.capacity}</L.span>
+              </L.div>
+              <L.div className="flex justify-between">
+                <L.span className="text-gray-400 dark:text-slate-400">{t('common.status')}:</L.span>
                 {getStatusBadge(viewRoom.status)}
-              </div>
-              <div className={`flex justify-between pt-2 border-t ${isDark ? "border-slate-700" : "border-gray-200"}`}>
-                <span className="text-gray-400 dark:text-slate-400">{t('common.perNight')}:</span>
-                <span className="font-bold text-blue-600 dark:text-sky-400 text-base">{formatPrice(viewRoom.pricePerNight)}</span>
-              </div>
-            </div>
-            <div className="flex justify-end pt-2">
-              <button
+              </L.div>
+              <L.div className={`flex justify-between pt-2 border-t ${isDark ? "border-slate-700" : "border-gray-200"}`}>
+                <L.span className="text-gray-400 dark:text-slate-400">{t('common.perNight')}:</L.span>
+                <L.span className="font-bold text-blue-600 dark:text-sky-400 text-base">{formatPrice(viewRoom.pricePerNight)}</L.span>
+              </L.div>
+            </L.div>
+            <L.div className="flex justify-end pt-2">
+              <L.button
                 onClick={() => setViewRoom(null)}
                 className={
                   isDark
@@ -332,11 +333,11 @@ export default function Rooms() {
                 }
               >
                 {t('common.close')}
-              </button>
-            </div>
-          </div>
+              </L.button>
+            </L.div>
+          </L.div>
         </Modal>
       )}
-    </div>
+    </L.div>
   );
 }

@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useEffect, useMemo, useState } from "react";
 import {
   Download,
@@ -150,51 +152,51 @@ export default function Guests() {
   ];
 
   return (
-    <main className="min-h-screen space-y-6 bg-background p-4 text-foreground sm:p-6 lg:p-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+    <L.main className="min-h-screen space-y-6 bg-background p-4 text-foreground sm:p-6 lg:p-8">
+      <L.header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <L.div>
+          <L.div className="flex items-center gap-2">
+            <L.span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
               Origin Hotel
-            </span>
-            <span className="text-xs text-muted-foreground">/ {t("nav.guests")}</span>
-          </div>
-          <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{t("nav.guests")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Mehmonlar ro‘yxati va aloqa ma’lumotlarini boshqaring</p>
-        </div>
+            </L.span>
+            <L.span className="text-xs text-muted-foreground">/ {t("nav.guests")}</L.span>
+          </L.div>
+          <L.h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{t("nav.guests")}</L.h1>
+          <L.p className="mt-1 text-sm text-muted-foreground">Mehmonlar ro‘yxati va aloqa ma’lumotlarini boshqaring</L.p>
+        </L.div>
         <Button onClick={handleOpenAdd} className="gap-2 self-start sm:self-auto">
           <UserPlus className="h-4 w-4" />
-          {t("guests.new")}
+          <LocalizedText>{t("guests.new")}</LocalizedText>
         </Button>
-      </header>
+      </L.header>
 
-      <section aria-label="Mehmonlar statistikasi" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <L.section aria-label="Mehmonlar statistikasi" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map(({ label, value, detail, icon: Icon, tone }) => (
           <Card key={label} className="gap-4 border-border/70 py-5 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-5 pb-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
-              <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}>
+              <CardTitle className="text-sm font-medium text-muted-foreground"><LocalizedText>{label}</LocalizedText></CardTitle>
+              <L.span className={`flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}>
                 <Icon className="h-5 w-5" />
-              </span>
+              </L.span>
             </CardHeader>
             <CardContent className="px-5">
-              <p className="text-2xl font-bold tracking-tight">{value}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+              <L.p className="text-2xl font-bold tracking-tight">{value}</L.p>
+              <L.p className="mt-1 text-xs text-muted-foreground">{detail}</L.p>
             </CardContent>
           </Card>
         ))}
-      </section>
+      </L.section>
 
       <Card className="gap-0 overflow-hidden border-border/70 py-0 shadow-sm">
         <CardHeader className="flex flex-col gap-4 border-b border-border/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <div>
-            <CardTitle className="text-base">Barcha mehmonlar</CardTitle>
-            <p className="mt-1 text-xs text-muted-foreground">
+          <L.div>
+            <CardTitle className="text-base"><LocalizedText>Barcha mehmonlar</LocalizedText></CardTitle>
+            <L.p className="mt-1 text-xs text-muted-foreground">
               {search ? `${filtered.length} ta natija` : `${guests.length} ta mehmon`}
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <div className="relative min-w-0 sm:w-72">
+            </L.p>
+          </L.div>
+          <L.div className="flex flex-col gap-2 sm:flex-row">
+            <L.div className="relative min-w-0 sm:w-72">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="search"
@@ -204,7 +206,7 @@ export default function Guests() {
                 className="pl-9"
                 aria-label={t("guests.searchPlaceholder")}
               />
-            </div>
+            </L.div>
             <Button
               type="button"
               variant="outline"
@@ -213,18 +215,18 @@ export default function Guests() {
               disabled={!filtered.length}
             >
               <Download className="h-4 w-4" />
-              {selectedGuests.length ? "Tanlanganlarni eksport" : "CSV eksport"}
+              <LocalizedText>{selectedGuests.length ? "Tanlanganlarni eksport" : "CSV eksport"}</LocalizedText>
             </Button>
-          </div>
+          </L.div>
         </CardHeader>
 
-        <div className="divide-y divide-border/50 md:hidden">
+        <L.div className="divide-y divide-border/50 md:hidden">
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 px-4 py-12 text-center text-muted-foreground">
+            <L.div className="flex flex-col items-center gap-2 px-4 py-12 text-center text-muted-foreground">
               <Users className="h-8 w-8 opacity-50" />
-              <p className="font-medium">{search ? t("rooms.notFound") : "Hozircha mehmonlar yo‘q"}</p>
-              {!search && <p className="text-xs">Yangi mehmon qo‘shib ro‘yxatni boshlang.</p>}
-            </div>
+              <L.p className="font-medium">{search ? t("rooms.notFound") : "Hozircha mehmonlar yo‘q"}</L.p>
+              {!search && <L.p className="text-xs">Yangi mehmon qo‘shib ro‘yxatni boshlang.</L.p>}
+            </L.div>
           ) : (
             filtered.map((guest) => {
               const selected = selectedIds.includes(guest.id);
@@ -236,12 +238,12 @@ export default function Guests() {
                 .toUpperCase();
 
               return (
-                <article
+                <L.article
                   key={guest.id}
                   className={`space-y-3 p-4 transition-colors ${selected ? "bg-primary/5" : "hover:bg-muted/30"}`}
                 >
-                  <div className="flex items-start gap-3">
-                    <input
+                  <L.div className="flex items-start gap-3">
+                    <L.input
                       type="checkbox"
                       checked={selected}
                       onChange={() => toggleGuest(guest.id)}
@@ -250,14 +252,14 @@ export default function Guests() {
                     />
                     <Avatar className="h-10 w-10 shrink-0 border border-primary/10">
                       <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-                        {initials}
+                        <LocalizedText>{initials}</LocalizedText>
                       </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{guest.fullName}</p>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">{guest.address || "Manzil kiritilmagan"}</p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-0.5">
+                    <L.div className="min-w-0 flex-1">
+                      <L.p className="truncate text-sm font-semibold">{guest.fullName}</L.p>
+                      <L.p className="mt-0.5 truncate text-xs text-muted-foreground">{guest.address || "Manzil kiritilmagan"}</L.p>
+                    </L.div>
+                    <L.div className="flex shrink-0 items-center gap-0.5">
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10 hover:text-primary" onClick={() => setViewGuest(guest)} aria-label={`${guest.fullName} — ko‘rish`}>
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -267,102 +269,102 @@ export default function Guests() {
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(guest)} aria-label={`${guest.fullName} — o‘chirish`}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 pl-7 text-xs">
-                    <div className="min-w-0">
-                      <p className="text-muted-foreground">{t("common.phone")}</p>
-                      <p className="mt-1 truncate font-medium">{guest.phone || "—"}</p>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-muted-foreground">{t("guests.passport")}</p>
-                      <p className="mt-1 truncate font-mono font-medium">{guest.passport || "—"}</p>
-                    </div>
-                    <div className="col-span-2">
-                      <p className="text-muted-foreground">Oxirgi tashrif</p>
-                      <p className="mt-1 font-medium">{guest.lastVisit || "—"}</p>
-                    </div>
-                  </div>
-                </article>
+                    </L.div>
+                  </L.div>
+                  <L.div className="grid grid-cols-2 gap-3 pl-7 text-xs">
+                    <L.div className="min-w-0">
+                      <L.p className="text-muted-foreground">{t("common.phone")}</L.p>
+                      <L.p className="mt-1 truncate font-medium">{guest.phone || "—"}</L.p>
+                    </L.div>
+                    <L.div className="min-w-0">
+                      <L.p className="text-muted-foreground">{t("guests.passport")}</L.p>
+                      <L.p className="mt-1 truncate font-mono font-medium">{guest.passport || "—"}</L.p>
+                    </L.div>
+                    <L.div className="col-span-2">
+                      <L.p className="text-muted-foreground">Oxirgi tashrif</L.p>
+                      <L.p className="mt-1 font-medium">{guest.lastVisit || "—"}</L.p>
+                    </L.div>
+                  </L.div>
+                </L.article>
               );
             })
           )}
-        </div>
+        </L.div>
 
-        <div className="hidden overflow-x-auto md:block">
-          <table className="w-full min-w-[820px] text-sm">
-            <thead>
-              <tr className="border-b border-border/60 bg-muted/40 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <th className="w-12 px-4 py-3">
-                  <input
+        <L.div className="hidden overflow-x-auto md:block">
+          <L.table className="w-full min-w-[820px] text-sm">
+            <L.thead>
+              <L.tr className="border-b border-border/60 bg-muted/40 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <L.th className="w-12 px-4 py-3">
+                  <L.input
                     type="checkbox"
                     checked={allVisibleSelected}
                     onChange={toggleAllVisible}
                     aria-label="Ko‘rinib turgan barcha mehmonlarni tanlash"
                     className="h-4 w-4 cursor-pointer accent-primary"
                   />
-                </th>
-                <th className="px-4 py-3">{t("guests.name")}</th>
-                <th className="px-4 py-3">{t("common.phone")}</th>
-                <th className="px-4 py-3">{t("guests.passport")}</th>
-                <th className="px-4 py-3">Oxirgi tashrif</th>
-                <th className="px-4 py-3">{t("common.actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
+                </L.th>
+                <L.th className="px-4 py-3">{t("guests.name")}</L.th>
+                <L.th className="px-4 py-3">{t("common.phone")}</L.th>
+                <L.th className="px-4 py-3">{t("guests.passport")}</L.th>
+                <L.th className="px-4 py-3">Oxirgi tashrif</L.th>
+                <L.th className="px-4 py-3">{t("common.actions")}</L.th>
+              </L.tr>
+            </L.thead>
+            <L.tbody>
               {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-14 text-center">
-                    <div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-muted-foreground">
+                <L.tr>
+                  <L.td colSpan={6} className="px-4 py-14 text-center">
+                    <L.div className="mx-auto flex max-w-sm flex-col items-center gap-2 text-muted-foreground">
                       <Users className="h-8 w-8 opacity-50" />
-                      <p className="font-medium">{search ? t("rooms.notFound") : "Hozircha mehmonlar yo‘q"}</p>
-                      {!search && <p className="text-xs">Yangi mehmon qo‘shib ro‘yxatni boshlang.</p>}
-                    </div>
-                  </td>
-                </tr>
+                      <L.p className="font-medium">{search ? t("rooms.notFound") : "Hozircha mehmonlar yo‘q"}</L.p>
+                      {!search && <L.p className="text-xs">Yangi mehmon qo‘shib ro‘yxatni boshlang.</L.p>}
+                    </L.div>
+                  </L.td>
+                </L.tr>
               ) : (
                 filtered.map((guest) => {
                   const selected = selectedIds.includes(guest.id);
                   return (
-                    <tr
+                    <L.tr
                       key={guest.id}
                       className={`border-b border-border/50 transition-colors last:border-0 hover:bg-muted/40 ${selected ? "bg-primary/5" : ""}`}
                     >
-                      <td className="px-4 py-3.5">
-                        <input
+                      <L.td className="px-4 py-3.5">
+                        <L.input
                           type="checkbox"
                           checked={selected}
                           onChange={() => toggleGuest(guest.id)}
                           aria-label={`${guest.fullName}ni tanlash`}
                           className="h-4 w-4 cursor-pointer accent-primary"
                         />
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex min-w-56 items-center gap-3">
+                      </L.td>
+                      <L.td className="px-4 py-3.5">
+                        <L.div className="flex min-w-56 items-center gap-3">
                           <Avatar className="h-10 w-10 border border-primary/10">
                             <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-                              {guest.fullName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}
+                              <LocalizedText>{guest.fullName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</LocalizedText>
                             </AvatarFallback>
                           </Avatar>
-                          <div className="min-w-0">
-                            <p className="truncate font-semibold">{guest.fullName}</p>
-                            {guest.address && <p className="mt-0.5 max-w-52 truncate text-xs text-muted-foreground">{guest.address}</p>}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-muted-foreground">
+                          <L.div className="min-w-0">
+                            <L.p className="truncate font-semibold">{guest.fullName}</L.p>
+                            {guest.address && <L.p className="mt-0.5 max-w-52 truncate text-xs text-muted-foreground">{guest.address}</L.p>}
+                          </L.div>
+                        </L.div>
+                      </L.td>
+                      <L.td className="whitespace-nowrap px-4 py-3.5 text-muted-foreground">
                         {guest.phone || "—"}
-                      </td>
-                      <td className="px-4 py-3.5">
+                      </L.td>
+                      <L.td className="px-4 py-3.5">
                         {guest.passport ? (
-                          <span className="rounded-md bg-muted px-2 py-1 font-mono text-xs">{guest.passport}</span>
-                        ) : <span className="text-muted-foreground">—</span>}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3.5 text-muted-foreground">
+                          <L.span className="rounded-md bg-muted px-2 py-1 font-mono text-xs">{guest.passport}</L.span>
+                        ) : <L.span className="text-muted-foreground">—</L.span>}
+                      </L.td>
+                      <L.td className="whitespace-nowrap px-4 py-3.5 text-muted-foreground">
                         {guest.lastVisit || "—"}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-1">
+                      </L.td>
+                      <L.td className="px-4 py-3.5">
+                        <L.div className="flex items-center gap-1">
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10 hover:text-primary" onClick={() => setViewGuest(guest)} aria-label={`${guest.fullName} — ko‘rish`}>
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -372,23 +374,23 @@ export default function Guests() {
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(guest)} aria-label={`${guest.fullName} — o‘chirish`}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                        </div>
-                      </td>
-                    </tr>
+                        </L.div>
+                      </L.td>
+                    </L.tr>
                   );
                 })
               )}
-            </tbody>
-          </table>
-        </div>
+            </L.tbody>
+          </L.table>
+        </L.div>
 
-        <footer className="flex flex-col gap-3 border-t border-border/70 bg-muted/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <span className="text-xs text-muted-foreground">
+        <L.footer className="flex flex-col gap-3 border-t border-border/70 bg-muted/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <L.span className="text-xs text-muted-foreground">
             {filtered.length} / {guests.length} mehmon ko‘rsatilmoqda
-          </span>
+          </L.span>
           {selectedGuests.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-xs font-medium">{selectedGuests.length} ta tanlandi</span>
+            <L.div className="flex flex-wrap items-center gap-2">
+              <L.span className="mr-1 text-xs font-medium">{selectedGuests.length} ta tanlandi</L.span>
               <Button
                 type="button"
                 size="sm"
@@ -396,19 +398,19 @@ export default function Guests() {
                 className="gap-1.5"
                 onClick={() => downloadGuestsCsv(selectedGuests)}
               >
-                <Download className="h-3.5 w-3.5" />
+                <Download className="h-3.5 w-3.5" /><LocalizedText>
                 Eksport
-              </Button>
+              </LocalizedText></Button>
               <Button type="button" size="sm" variant="destructive" className="gap-1.5" onClick={handleDeleteSelected}>
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3.5 w-3.5" /><LocalizedText>
                 O‘chirish
-              </Button>
-              <Button type="button" size="sm" variant="ghost" onClick={() => setSelectedIds([])}>
+              </LocalizedText></Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setSelectedIds([])}><LocalizedText>
                 Bekor qilish
-              </Button>
-            </div>
+              </LocalizedText></Button>
+            </L.div>
           )}
-        </footer>
+        </L.footer>
       </Card>
 
       <GuestModal
@@ -429,35 +431,35 @@ export default function Guests() {
 
       {viewGuest && (
         <Modal isOpen onClose={() => setViewGuest(null)} title={t("guests.detailsTitle")}>
-          <div className="space-y-4">
-            <div className="space-y-3 rounded-xl bg-muted/40 p-4 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">{t("guests.name")}</span>
-                <span className="text-right font-semibold">{viewGuest.fullName}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">{t("common.phone")}</span>
-                <span className="text-right">{viewGuest.phone || "—"}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">{t("guests.passport")}</span>
-                <span className="font-mono">{viewGuest.passport || "—"}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">{t("common.address")}</span>
-                <span className="text-right">{viewGuest.address || "—"}</span>
-              </div>
-              <div className="border-t border-border pt-3">
-                <span className="text-muted-foreground">{t("common.notes")}</span>
-                <p className="mt-1 leading-relaxed">{viewGuest.notes || "—"}</p>
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={() => setViewGuest(null)}>{t("common.close")}</Button>
-            </div>
-          </div>
+          <L.div className="space-y-4">
+            <L.div className="space-y-3 rounded-xl bg-muted/40 p-4 text-sm">
+              <L.div className="flex justify-between gap-4">
+                <L.span className="text-muted-foreground">{t("guests.name")}</L.span>
+                <L.span className="text-right font-semibold">{viewGuest.fullName}</L.span>
+              </L.div>
+              <L.div className="flex justify-between gap-4">
+                <L.span className="text-muted-foreground">{t("common.phone")}</L.span>
+                <L.span className="text-right">{viewGuest.phone || "—"}</L.span>
+              </L.div>
+              <L.div className="flex justify-between gap-4">
+                <L.span className="text-muted-foreground">{t("guests.passport")}</L.span>
+                <L.span className="font-mono">{viewGuest.passport || "—"}</L.span>
+              </L.div>
+              <L.div className="flex justify-between gap-4">
+                <L.span className="text-muted-foreground">{t("common.address")}</L.span>
+                <L.span className="text-right">{viewGuest.address || "—"}</L.span>
+              </L.div>
+              <L.div className="border-t border-border pt-3">
+                <L.span className="text-muted-foreground">{t("common.notes")}</L.span>
+                <L.p className="mt-1 leading-relaxed">{viewGuest.notes || "—"}</L.p>
+              </L.div>
+            </L.div>
+            <L.div className="flex justify-end">
+              <Button variant="outline" onClick={() => setViewGuest(null)}><LocalizedText>{t("common.close")}</LocalizedText></Button>
+            </L.div>
+          </L.div>
         </Modal>
       )}
-    </main>
+    </L.main>
   );
 }

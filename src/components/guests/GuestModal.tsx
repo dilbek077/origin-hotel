@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Guest } from "@/types/guest";
@@ -82,18 +83,18 @@ export default function GuestModal({
       onClose={onClose}
       title={initialData ? t('guests.modalTitleEdit') : t('guests.modalTitleAdd')}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <L.form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
+          <L.div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
             {error}
-          </div>
+          </L.div>
         )}
 
-        <div>
-          <label className={labelClass}>
+        <L.div>
+          <L.label className={labelClass}>
             {t('guests.name')} *
-          </label>
-          <input
+          </L.label>
+          <L.input
             type="text"
             required
             value={fullName}
@@ -101,64 +102,64 @@ export default function GuestModal({
             placeholder="Jasur Aliyev"
             className={inputClass}
           />
-        </div>
+        </L.div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>
+        <L.div className="grid grid-cols-2 gap-4">
+          <L.div>
+            <L.label className={labelClass}>
               {t('common.phone')}
-            </label>
-            <input
+            </L.label>
+            <L.input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+998 90 123 45 67"
               className={inputClass}
             />
-          </div>
+          </L.div>
 
-          <div>
-            <label className={labelClass}>
+          <L.div>
+            <L.label className={labelClass}>
               {t('guests.passport')}
-            </label>
-            <input
+            </L.label>
+            <L.input
               type="text"
               value={passport}
               onChange={(e) => setPassport(e.target.value.toUpperCase())}
               placeholder="AA 1234567"
               className={`${inputClass} uppercase font-mono`}
             />
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
-        <div>
-          <label className={labelClass}>
+        <L.div>
+          <L.label className={labelClass}>
             {t('common.address')}
-          </label>
-          <input
+          </L.label>
+          <L.input
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Qarshi"
             className={inputClass}
           />
-        </div>
+        </L.div>
 
-        <div>
-          <label className={labelClass}>
+        <L.div>
+          <L.label className={labelClass}>
             {t('common.notes')}
-          </label>
-          <textarea
+          </L.label>
+          <L.textarea
             rows={3}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="..."
             className={`${inputClass} resize-none`}
           />
-        </div>
+        </L.div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
-          <button
+        <L.div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+          <L.button
             type="button"
             onClick={onClose}
             className={
@@ -168,15 +169,15 @@ export default function GuestModal({
             }
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </L.button>
+          <L.button
             type="submit"
             className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
             {t('common.save')}
-          </button>
-        </div>
-      </form>
+          </L.button>
+        </L.div>
+      </L.form>
     </Modal>
   );
 }

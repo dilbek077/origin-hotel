@@ -1,3 +1,6 @@
+import { useTranslation, type LanguageCode } from '@/i18n';
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, ArrowUpRight } from "lucide-react";
@@ -7,14 +10,15 @@ interface RecentBookingsProps {
   bookings: Booking[];
 }
 
-const formatBookingDate = (date: string) => {
+const formatBookingDate = (date: string, locale: LanguageCode) => {
   const parsedDate = new Date(`${date}T00:00:00`);
   return Number.isNaN(parsedDate.getTime())
     ? date
-    : parsedDate.toLocaleDateString("uz-UZ", { day: "numeric", month: "short" });
+    : parsedDate.toLocaleDateString(locale, { day: "numeric", month: "short" });
 };
 
 export function RecentBookings({ bookings }: RecentBookingsProps) {
+  const { locale } = useTranslation();
   const getBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
       case "Yashamoqda":
@@ -32,15 +36,15 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
 
   if (recent.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 py-12 text-center text-sm text-muted-foreground">
+      <L.div className="flex flex-col items-center justify-center gap-2 py-12 text-center text-sm text-muted-foreground">
         <CalendarDays className="h-8 w-8 text-muted-foreground/60" />
-        <p>Hozircha yangi bronlar mavjud emas.</p>
-      </div>
+        <L.p>Hozircha yangi bronlar mavjud emas.</L.p>
+      </L.div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <L.div className="space-y-3">
       {recent.map((booking) => {
         const initials = booking.guest
           .split(" ")
@@ -50,41 +54,41 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
           .toUpperCase();
 
         return (
-          <div
+          <L.div
             key={booking.id}
             className="flex items-center justify-between gap-4 p-2 rounded-lg transition-colors hover:bg-muted/50"
           >
-            <div className="flex items-center gap-3 min-w-0">
+            <L.div className="flex items-center gap-3 min-w-0">
               <Avatar className="h-9 w-9 border border-blue-100 dark:border-blue-900/50">
                 <AvatarFallback className="bg-blue-50 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-sky-300">
-                  {initials || "GH"}
+                  <LocalizedText>{initials || "GH"}</LocalizedText>
                 </AvatarFallback>
               </Avatar>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-sm font-medium leading-none text-foreground">
+              <L.div className="min-w-0">
+                <L.div className="flex items-center gap-2">
+                  <L.p className="truncate text-sm font-medium leading-none text-foreground">
                     {booking.guest}
-                  </p>
+                  </L.p>
                   <Badge variant={getBadgeVariant(booking.status)} className="h-5 px-1.5 text-[10px] font-medium">
-                    {booking.status}
+                    <LocalizedText>{booking.status}</LocalizedText>
                   </Badge>
-                </div>
-                <p className="mt-1 truncate text-xs text-muted-foreground">
-                  Xona {booking.room} · {formatBookingDate(booking.checkIn)} – {formatBookingDate(booking.checkOut)} ({booking.nights} k.)
-                </p>
-              </div>
-            </div>
+                </L.div>
+                <L.p className="mt-1 truncate text-xs text-muted-foreground">
+                  Xona {booking.room} · {formatBookingDate(booking.checkIn, locale)} – {formatBookingDate(booking.checkOut, locale)} ({booking.nights} k.)
+                </L.p>
+              </L.div>
+            </L.div>
 
-            <div className="text-right shrink-0">
-              <p className="text-sm font-semibold tracking-tight text-foreground flex items-center justify-end">
+            <L.div className="text-right shrink-0">
+              <L.p className="text-sm font-semibold tracking-tight text-foreground flex items-center justify-end">
                 <ArrowUpRight className="mr-0.5 h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 +{booking.price.toLocaleString("uz-UZ")}
-              </p>
-              <p className="text-[11px] text-muted-foreground">so‘m</p>
-            </div>
-          </div>
+              </L.p>
+              <L.p className="text-[11px] text-muted-foreground">so‘m</L.p>
+            </L.div>
+          </L.div>
         );
       })}
-    </div>
+    </L.div>
   );
 }

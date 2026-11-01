@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe, Search } from 'lucide-react';
@@ -149,27 +151,27 @@ export default function Header() {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between px-6 bg-card border-b border-border transition-colors">
+    <L.header className="flex h-16 items-center justify-between px-6 bg-card border-b border-border transition-colors">
       {/* Left: Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="min-w-0">
-        <ol className="flex min-w-0 items-center gap-2 text-sm">
+      <L.nav aria-label="Breadcrumb" className="min-w-0">
+        <L.ol className="flex min-w-0 items-center gap-2 text-sm">
           {isDashboard ? (
-            <li aria-current="page" className="flex items-center gap-2 font-medium text-foreground">
+            <L.li aria-current="page" className="flex items-center gap-2 font-medium text-foreground">
               <Home size={15} className="text-muted-foreground" />
-              <span>{t(pageTitleKey)}</span>
-            </li>
+              <L.span>{t(pageTitleKey)}</L.span>
+            </L.li>
           ) : (
             <>
-              <li>
+              <L.li>
                 <Link
                   to={dashboardPath}
                   aria-label={t('nav.dashboard')}
                   className="flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <Home size={15} />
-                  <span>{t('nav.dashboard')}</span>
+                  <L.span>{t('nav.dashboard')}</L.span>
                 </Link>
-              </li>
+              </L.li>
               {breadcrumbLabels.map((labelKey, index) => {
                 const isLast = index === breadcrumbLabels.length - 1;
                 const href =
@@ -178,47 +180,47 @@ export default function Header() {
                     : pathname;
 
                 return (
-                  <li key={`${labelKey}-${index}`} className="flex min-w-0 items-center gap-2">
+                  <L.li key={`${labelKey}-${index}`} className="flex min-w-0 items-center gap-2">
                     <ChevronRight size={14} className="shrink-0 text-muted-foreground/60" />
                     {isLast ? (
-                      <span aria-current="page" className="truncate font-semibold text-foreground">
+                      <L.span aria-current="page" className="truncate font-semibold text-foreground">
                         {t(labelKey)}
-                      </span>
+                      </L.span>
                     ) : (
                       <Link
                         to={href}
                         className="truncate text-muted-foreground transition-colors hover:text-foreground"
                       >
-                        {t(labelKey)}
+                        <LocalizedText>{t(labelKey)}</LocalizedText>
                       </Link>
                     )}
-                  </li>
+                  </L.li>
                 );
               })}
             </>
           )}
-        </ol>
-      </nav>
+        </L.ol>
+      </L.nav>
 
       {/* Center/Right: Search and Controls */}
-      <div className="flex items-center gap-3">
+      <L.div className="flex items-center gap-3">
         {/* Search Bar - Shadcn Zinc Style */}
-        <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center relative">
+        <L.form onSubmit={handleSearchSubmit} className="hidden md:flex items-center relative">
           <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-          <input
+          <L.input
             type="text"
             placeholder="Qidiruv... (xona, mehmon)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-8.5 w-48 lg:w-64 rounded-md border border-border bg-muted/40 pl-8 pr-8 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-all focus:w-72"
           />
-          <kbd className="pointer-events-none absolute right-2 top-2 hidden h-4.5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground sm:flex">
+          <L.kbd className="pointer-events-none absolute right-2 top-2 hidden h-4.5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground sm:flex">
             ⌘K
-          </kbd>
-        </form>
+          </L.kbd>
+        </L.form>
 
         {/* Quick Theme Toggle */}
-        <button
+        <L.button
           type="button"
           onClick={(event) => toggleTheme({ x: event.clientX, y: event.clientY })}
           className="p-2 rounded-md text-foreground bg-muted/50 hover:bg-muted border border-border transition-all active:scale-95 cursor-pointer"
@@ -226,7 +228,7 @@ export default function Header() {
           aria-label={isDark ? t('common.lightMode') : t('common.darkMode')}
           aria-pressed={isDark}
         >
-          <span className="relative block h-4 w-4">
+          <L.span className="relative block h-4 w-4">
             <Moon
               size={16}
               className={`absolute inset-0 transition-all duration-300 ${
@@ -239,12 +241,12 @@ export default function Header() {
                 isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-180 scale-0 opacity-0'
               }`}
             />
-          </span>
-        </button>
+          </L.span>
+        </L.button>
 
         {/* Quick Language Selector */}
-        <div ref={languageMenuRef} className="relative flex items-center">
-          <button
+        <L.div ref={languageMenuRef} className="relative flex items-center">
+          <L.button
             type="button"
             onClick={() => {
               if (languageMenuOpen && !languageMenuClosing) {
@@ -264,11 +266,11 @@ export default function Header() {
             className="flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-2.5 py-1.5 text-xs font-semibold text-foreground outline-none transition hover:bg-muted"
           >
             <Globe size={14} className="text-muted-foreground" />
-            <span>{locale.toUpperCase()}</span>
+            <L.span>{locale.toUpperCase()}</L.span>
             <ChevronDown size={12} className={`transition-transform duration-200 ${languageMenuOpen && !languageMenuClosing ? 'rotate-180' : ''}`} />
-          </button>
+          </L.button>
           {languageMenuOpen && (
-            <div
+            <L.div
               role="listbox"
               aria-label={t('nav.language')}
               data-state={languageMenuClosing ? 'closing' : 'open'}
@@ -277,7 +279,7 @@ export default function Header() {
               {LANGUAGES.map((lang) => {
                 const isSelected = lang.code === locale;
                 return (
-                  <button
+                  <L.button
                     key={lang.code}
                     type="button"
                     role="option"
@@ -292,23 +294,23 @@ export default function Header() {
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     }`}
                   >
-                    <span>{lang.label}</span>
+                    <L.span>{lang.label}</L.span>
                     {isSelected && <Check size={14} />}
-                  </button>
+                  </L.button>
                 );
               })}
-            </div>
+            </L.div>
           )}
-        </div>
+        </L.div>
 
         {/* Notifications */}
-        <div
+        <L.div
           ref={notificationsRef}
           className="relative"
           onMouseEnter={openNotifications}
           onMouseLeave={closeNotifications}
         >
-          <button
+          <L.button
             type="button"
             onClick={() => notificationsOpen && !notificationsClosing ? closeNotifications() : openNotifications()}
             onFocus={openNotifications}
@@ -323,13 +325,13 @@ export default function Header() {
             aria-controls="header-notifications"
           >
             <Bell size={18} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-          </button>
+            <L.span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+          </L.button>
           {notificationsOpen && (
-            <div
+            <L.div
               className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-2"
             >
-              <div
+              <L.div
                 id="header-notifications"
                 role="dialog"
                 aria-label={t('nav.notifications')}
@@ -338,45 +340,45 @@ export default function Header() {
                   isDark ? 'border-slate-700 bg-slate-900 text-slate-100' : 'border-sky-100 bg-white text-slate-800'
                 }`}
               >
-                <div className="flex items-center gap-2">
+                <L.div className="flex items-center gap-2">
                   <Bell size={16} className={isDark ? 'text-sky-400' : 'text-blue-600'} />
-                  <h2 className="text-sm font-semibold">{t('nav.notifications')}</h2>
-                </div>
-                <p className={isDark ? 'mt-2 text-xs leading-relaxed text-slate-400' : 'mt-2 text-xs leading-relaxed text-slate-500'}>
+                  <L.h2 className="text-sm font-semibold">{t('nav.notifications')}</L.h2>
+                </L.div>
+                <L.p className={isDark ? 'mt-2 text-xs leading-relaxed text-slate-400' : 'mt-2 text-xs leading-relaxed text-slate-500'}>
                   {enabledNotifications.length > 0
                     ? t('notifications.enabledDescription')
                     : t('notifications.noneEnabled')}
-                </p>
+                </L.p>
                 {enabledNotifications.length > 0 && (
-                  <ul className="mt-3 space-y-2">
+                  <L.ul className="mt-3 space-y-2">
                     {enabledNotifications.map((key) => (
-                      <li key={key} className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs ${
+                      <L.li key={key} className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs ${
                         isDark ? 'bg-slate-800/70 text-slate-300' : 'bg-sky-50 text-slate-700'
                       }`}>
                         <Check size={14} className="shrink-0 text-emerald-500" />
-                        <span>{t(key)}</span>
-                      </li>
+                        <L.span>{t(key)}</L.span>
+                      </L.li>
                     ))}
-                  </ul>
+                  </L.ul>
                 )}
-              </div>
-            </div>
+              </L.div>
+            </L.div>
           )}
-        </div>
+        </L.div>
 
         {/* User profile */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[linear-gradient(135deg,#0284c7,#38bdf8)] text-white text-sm font-semibold select-none shadow-sm">
+        <L.div className="flex items-center gap-2.5 pl-2 border-l border-slate-200 dark:border-slate-800">
+          <L.div className="flex items-center justify-center w-9 h-9 rounded-full bg-[linear-gradient(135deg,#0284c7,#38bdf8)] text-white text-sm font-semibold select-none shadow-sm">
             {firstLetter}
-          </div>
-          <div className="hidden sm:flex flex-col leading-tight text-left">
-            <span className="text-xs font-semibold text-foreground">{username}</span>
-            <span className="text-[11px] text-muted-foreground capitalize">
+          </L.div>
+          <L.div className="hidden sm:flex flex-col leading-tight text-left">
+            <L.span className="text-xs font-semibold text-foreground">{username}</L.span>
+            <L.span className="text-[11px] text-muted-foreground capitalize">
               {(localStorage.getItem('role') ?? 'Staff').toLowerCase()}
-            </span>
-          </div>
-        </div>
-      </div>
-    </header>
+            </L.span>
+          </L.div>
+        </L.div>
+      </L.div>
+    </L.header>
   );
 }

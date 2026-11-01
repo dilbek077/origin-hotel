@@ -1,3 +1,6 @@
+import { useTranslation } from '@/i18n';
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -49,6 +52,7 @@ const dateKey = (date: Date) => {
 };
 
 export default function Dashboard() {
+  const { locale } = useTranslation();
   const [rooms, setRooms] = useState<Room[]>(() => StorageService.getRooms());
   const [bookings, setBookings] = useState<Booking[]>(() => StorageService.getBookings());
   const [guests, setGuests] = useState<Guest[]>(() => StorageService.getGuests());
@@ -129,145 +133,145 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 text-foreground sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-[1500px] rounded-2xl border border-border bg-card shadow-[0_22px_60px_rgba(0,0,0,0.12)]">
-        <div className="flex flex-col gap-4 border-b border-border bg-card px-6 py-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-[2.2rem] font-bold tracking-tight text-foreground">Boshqaruv paneli</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+    <L.div className="min-h-screen bg-background p-4 text-foreground sm:p-6 lg:p-8">
+      <L.div className="mx-auto max-w-[1500px] rounded-2xl border border-border bg-card shadow-[0_22px_60px_rgba(0,0,0,0.12)]">
+        <L.div className="flex flex-col gap-4 border-b border-border bg-card px-6 py-4 md:flex-row md:items-center md:justify-between">
+          <L.div>
+            <L.h2 className="text-[2.2rem] font-bold tracking-tight text-foreground">Boshqaruv paneli</L.h2>
+            <L.p className="mt-1 text-sm text-muted-foreground">
               Mehmonxona faoliyati, bandlik va savdo ko‘rsatkichlarining real vaqtdagi tahlili
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="hidden items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2 text-xs font-medium text-muted-foreground sm:flex">
+            </L.p>
+          </L.div>
+          <L.div className="flex flex-wrap items-center gap-2">
+            <L.div className="hidden items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2 text-xs font-medium text-muted-foreground sm:flex">
               <CalendarDays className="h-4 w-4 text-foreground" />
-              <span>{new Date().toLocaleDateString("uz-UZ", { month: "short", day: "numeric", year: "numeric" })}</span>
-            </div>
+              <L.span>{new Date().toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}</L.span>
+            </L.div>
             <Button variant="outline" size="sm" onClick={handleExportData} className="h-9 gap-1.5 border-border bg-muted text-foreground hover:bg-muted/80 hover:text-foreground">
               <Download className="h-4 w-4" />
-              <span>Yuklab olish</span>
+              <L.span>Yuklab olish</L.span>
             </Button>
             <Button size="sm" onClick={() => setBookingModalOpen(true)} className="h-9 gap-1.5 border border-border bg-muted text-foreground shadow-sm hover:bg-muted/80">
               <PlusCircle className="h-4 w-4" />
-              <span>Yangi bron</span>
+              <L.span>Yangi bron</L.span>
             </Button>
             <Button variant="secondary" size="sm" onClick={() => setGuestModalOpen(true)} className="h-9 gap-1.5 border border-border bg-muted text-foreground hover:bg-muted/80">
               <UserPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Mehmon</span>
+              <L.span className="hidden sm:inline">Mehmon</L.span>
             </Button>
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
-        <div className="space-y-6 p-5 sm:p-6">
+        <L.div className="space-y-6 p-5 sm:p-6">
           {/* 4 Main KPI Cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <L.div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Total Revenue */}
             <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-muted-foreground"><LocalizedText>
                   Jami tushum
-                </CardTitle>
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                </LocalizedText></CardTitle>
+                <L.div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
                   <DollarSign className="h-4 w-4" />
-                </div>
+                </L.div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
+                <L.div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {formatCurrency(totalIncome || 128450000)}
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <span className="flex items-center font-semibold text-emerald-400">
+                </L.div>
+                <L.div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <L.span className="flex items-center font-semibold text-emerald-400">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +20.1%
-                  </span>
-                  <span>o‘tgan oydan</span>
-                </div>
+                  </L.span>
+                  <L.span>o‘tgan oydan</L.span>
+                </L.div>
               </CardContent>
             </Card>
 
             {/* Occupancy Rate */}
             <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-muted-foreground"><LocalizedText>
                   Bandlik darajasi
-                </CardTitle>
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                </LocalizedText></CardTitle>
+                <L.div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
                   <BedDouble className="h-4 w-4" />
-                </div>
+                </L.div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
+                <L.div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {occupancyPercent}%
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <span className="flex items-center font-semibold text-foreground">
+                </L.div>
+                <L.div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <L.span className="flex items-center font-semibold text-foreground">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +4.2%
-                  </span>
-                  <span>{occupiedRooms} / {totalRooms} xona band</span>
-                </div>
+                  </L.span>
+                  <L.span>{occupiedRooms} / {totalRooms} xona band</L.span>
+                </L.div>
               </CardContent>
             </Card>
 
             {/* Bookings */}
             <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-muted-foreground"><LocalizedText>
                   Yangi bronlar
-                </CardTitle>
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                </LocalizedText></CardTitle>
+                <L.div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
                   <CalendarPlus className="h-4 w-4" />
-                </div>
+                </L.div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
+                <L.div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   +{monthBookings || bookings.length}
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <span className="flex items-center font-semibold text-foreground">
+                </L.div>
+                <L.div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <L.span className="flex items-center font-semibold text-foreground">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +18.5%
-                  </span>
-                  <span>joriy oyda qabul qilingan</span>
-                </div>
+                  </L.span>
+                  <L.span>joriy oyda qabul qilingan</L.span>
+                </L.div>
               </CardContent>
             </Card>
 
             {/* Today's Activity */}
             <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)] transition-shadow hover:shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-muted-foreground"><LocalizedText>
                   Bugungi kelish-ketish
-                </CardTitle>
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
+                </LocalizedText></CardTitle>
+                <L.div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-foreground">
                   <Users className="h-4 w-4" />
-                </div>
+                </L.div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
-                  {todayCheckIns} <span className="text-sm font-normal text-slate-400">kelish</span> / {todayCheckOuts} <span className="text-sm font-normal text-slate-400">ketish</span>
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <Badge variant="outline" className="h-4 border-slate-600 bg-slate-800 text-[10px] px-1 font-normal text-slate-200">
+                <L.div className="text-[1.9rem] font-bold tracking-tight text-foreground">
+                  {todayCheckIns} <L.span className="text-sm font-normal text-slate-400">kelish</L.span> / {todayCheckOuts} <L.span className="text-sm font-normal text-slate-400">ketish</L.span>
+                </L.div>
+                <L.div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                  <Badge variant="outline" className="h-4 border-slate-600 bg-slate-800 text-[10px] px-1 font-normal text-slate-200"><LocalizedText>
                     Faol
-                  </Badge>
-                  <span>98% kutib olish darajasi</span>
-                </div>
+                  </LocalizedText></Badge>
+                  <L.span>98% kutib olish darajasi</L.span>
+                </L.div>
               </CardContent>
             </Card>
-          </div>
+          </L.div>
 
           {/* Main Grid: Overview Chart + Recent Sales */}
-          <div className="grid gap-6 lg:grid-cols-7">
+          <L.div className="grid gap-6 lg:grid-cols-7">
             {/* Chart: col-span-4 */}
             <Card className="lg:col-span-4 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div>
-                  <CardTitle className="text-base font-semibold text-foreground">Daromad tahlili</CardTitle>
-                  <CardDescription className="text-xs text-muted-foreground">
+                <L.div>
+                  <CardTitle className="text-base font-semibold text-foreground"><LocalizedText>Daromad tahlili</LocalizedText></CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground"><LocalizedText>
                     Oylar bo‘yicha tushum va operatsion xarajatlar statistikasi
-                  </CardDescription>
-                </div>
+                  </LocalizedText></CardDescription>
+                </L.div>
               </CardHeader>
               <CardContent className="pt-2">
                 <OverviewChart transactions={transactions} />
@@ -277,16 +281,16 @@ export default function Dashboard() {
             {/* Recent Bookings: col-span-3 */}
             <Card className="lg:col-span-3 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div>
-                  <CardTitle className="text-base font-semibold text-foreground">Oxirgi bronlar</CardTitle>
-                  <CardDescription className="text-xs text-muted-foreground">
-                    Bu oyda jami {bookings.length} ta yangi buyurtma tushdi
-                  </CardDescription>
-                </div>
+                <L.div>
+                  <CardTitle className="text-base font-semibold text-foreground"><LocalizedText>Oxirgi bronlar</LocalizedText></CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground"><LocalizedText>
+                    Bu oyda jami </LocalizedText><LocalizedText>{bookings.length}</LocalizedText><LocalizedText> ta yangi buyurtma tushdi
+                  </LocalizedText></CardDescription>
+                </L.div>
                 <Link to={`${dashboardPath}/bronlar`}>
-                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-foreground hover:bg-muted hover:text-foreground">
+                  <Button variant="ghost" size="sm" className="h-8 text-xs gap-1 text-foreground hover:bg-muted hover:text-foreground"><LocalizedText>
                     Barchasi
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    </LocalizedText><ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </Link>
               </CardHeader>
@@ -294,22 +298,22 @@ export default function Dashboard() {
                 <RecentBookings bookings={bookings} />
               </CardContent>
             </Card>
-          </div>
+          </L.div>
 
           {/* Secondary Grid: Top Room Categories + Room Status + Today Schedule */}
-          <div className="grid gap-6 lg:grid-cols-7">
+          <L.div className="grid gap-6 lg:grid-cols-7">
             {/* Top Categories: col-span-4 */}
             <Card className="lg:col-span-4 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div>
-                  <CardTitle className="text-base font-semibold text-foreground">Xona toifalari bo‘yicha talab</CardTitle>
-                  <CardDescription className="text-xs text-muted-foreground">
+                <L.div>
+                  <CardTitle className="text-base font-semibold text-foreground"><LocalizedText>Xona toifalari bo‘yicha talab</LocalizedText></CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground"><LocalizedText>
                     Eng ko‘p daromad va bron keltirayotgan xona turlari
-                  </CardDescription>
-                </div>
-                <Badge variant="secondary" className="border-border bg-muted text-foreground text-xs font-normal">
+                  </LocalizedText></CardDescription>
+                </L.div>
+                <Badge variant="secondary" className="border-border bg-muted text-foreground text-xs font-normal"><LocalizedText>
                   Real-time
-                </Badge>
+                </LocalizedText></Badge>
               </CardHeader>
               <CardContent className="pt-4">
                 <TopRoomTypes rooms={rooms} bookings={bookings} />
@@ -319,12 +323,12 @@ export default function Dashboard() {
             {/* Room Availability / Donut: col-span-3 */}
             <Card className="lg:col-span-3 border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div>
-                  <CardTitle className="text-base font-semibold text-foreground">Xonalar holati</CardTitle>
-                  <CardDescription className="text-xs text-muted-foreground">
-                    Jami {totalRooms} ta xonaning hozirgi balansi
-                  </CardDescription>
-                </div>
+                <L.div>
+                  <CardTitle className="text-base font-semibold text-foreground"><LocalizedText>Xonalar holati</LocalizedText></CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground"><LocalizedText>
+                    Jami </LocalizedText><LocalizedText>{totalRooms}</LocalizedText><LocalizedText> ta xonaning hozirgi balansi
+                  </LocalizedText></CardDescription>
+                </L.div>
                 <Link to={`${dashboardPath}/xonalar`}>
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-foreground hover:bg-muted hover:text-foreground">
                     <ArrowRight className="h-4 w-4" />
@@ -332,8 +336,8 @@ export default function Dashboard() {
                 </Link>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="flex items-center justify-center py-2">
-                  <div className="relative h-44 w-44 flex items-center justify-center">
+                <L.div className="flex items-center justify-center py-2">
+                  <L.div className="relative h-44 w-44 flex items-center justify-center">
                     <PieChart width={176} height={176}>
                       <Pie
                         data={roomStatuses}
@@ -355,48 +359,48 @@ export default function Dashboard() {
                           if (!active || !payload?.length) return null;
                           const data = payload[0].payload;
                           return (
-                            <div className="rounded-lg border border-border bg-popover p-2 text-xs shadow-md text-popover-foreground">
-                              <span className="font-semibold">{data.label}:</span> {data.count} ta
-                            </div>
+                            <L.div className="rounded-lg border border-border bg-popover p-2 text-xs shadow-md text-popover-foreground">
+                              <L.span className="font-semibold">{data.label}:</L.span> {data.count} ta
+                            </L.div>
                           );
                         }}
                       />
                     </PieChart>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-2xl font-bold tracking-tight">{occupancyPercent}%</span>
-                      <span className="text-[11px] text-muted-foreground">Bandlik</span>
-                    </div>
-                  </div>
-                </div>
+                    <L.div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <L.span className="text-2xl font-bold tracking-tight">{occupancyPercent}%</L.span>
+                      <L.span className="text-[11px] text-muted-foreground">Bandlik</L.span>
+                    </L.div>
+                  </L.div>
+                </L.div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+                <L.div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
                   {roomStatuses.map((item) => (
-                    <div key={item.label} className="flex items-center justify-between rounded-md p-1.5 text-xs hover:bg-[#1a1d20]/70">
-                      <span className="flex items-center gap-1.5 text-slate-300">
-                        <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
+                    <L.div key={item.label} className="flex items-center justify-between rounded-md p-1.5 text-xs hover:bg-[#1a1d20]/70">
+                      <L.span className="flex items-center gap-1.5 text-slate-300">
+                        <L.span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
                         {item.label}
-                      </span>
-                      <span className="font-semibold text-foreground">{item.count} ta</span>
-                    </div>
+                      </L.span>
+                      <L.span className="font-semibold text-foreground">{item.count} ta</L.span>
+                    </L.div>
                   ))}
-                </div>
+                </L.div>
               </CardContent>
             </Card>
-          </div>
+          </L.div>
 
           {/* Quick Schedule Row */}
           <Card className="border-border bg-card shadow-[0_0_0_1px_rgba(148,163,184,0.06)]">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold text-foreground">Bugungi kelish va ketishlar taqvimi</CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
+              <CardTitle className="text-base font-semibold text-foreground"><LocalizedText>Bugungi kelish va ketishlar taqvimi</LocalizedText></CardTitle>
+              <CardDescription className="text-xs text-muted-foreground"><LocalizedText>
                 Bugun ro‘yxatga olinishi va hisob-kitob qilinishi kerak bo‘lgan mehmonlar
-              </CardDescription>
+              </LocalizedText></CardDescription>
             </CardHeader>
             <CardContent>
               <TodaySchedule bookings={bookings} guests={guests} dashboardPath={dashboardPath} />
             </CardContent>
           </Card>
-        </div>
+        </L.div>
 
       {/* Modals */}
       <BookingModal
@@ -412,7 +416,7 @@ export default function Dashboard() {
         onClose={() => setGuestModalOpen(false)}
         onSave={handleSaveGuest}
       />
-    </div>
-  </div>
+    </L.div>
+  </L.div>
   );
 }

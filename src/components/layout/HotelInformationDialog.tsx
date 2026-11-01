@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { X } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { HOTEL_INFORMATION, type HotelInfoKey } from '@/data/hotelInformation';
@@ -22,17 +24,17 @@ export default function HotelInformationDialog({ selection, onClose }: Props) {
           target?.focus({ preventScroll: true });
         }}
       >
-        <DialogClose asChild><button type="button" className="hotel-information-close" aria-label="Ma’lumot oynasini yopish"><X size={20} /></button></DialogClose>
-        {info.image && <img className="hotel-information-image" src={info.image} alt={info.imageAlt ?? 'Origin Hotel'} />}
+        <DialogClose asChild><L.button type="button" className="hotel-information-close" aria-label="Ma’lumot oynasini yopish"><X size={20} /></L.button></DialogClose>
+        <LocalizedText>{info.image && <L.img className="hotel-information-image" src={info.image} alt={info.imageAlt ?? 'Origin Hotel'} />}</LocalizedText>
         <DialogHeader>
-          <DialogTitle className="hotel-information-title">{info.title}</DialogTitle>
-          <DialogDescription className="hotel-information-description">{info.description}</DialogDescription>
+          <DialogTitle className="hotel-information-title"><LocalizedText>{info.title}</LocalizedText></DialogTitle>
+          <DialogDescription className="hotel-information-description"><LocalizedText>{info.description}</LocalizedText></DialogDescription>
         </DialogHeader>
-        <ul className="hotel-information-list">{info.items.map((item) => <li key={item}>{item}</li>)}</ul>
-        <div className="hotel-information-actions">
-          <a href="tel:+998712002020">Qo‘ng‘iroq qilish</a>
-          <a href="#contact" onClick={onClose}>Manzil va aloqa</a>
-        </div>
+        <L.ul className="hotel-information-list">{info.items.map((item) => <L.li key={item}>{item}</L.li>)}</L.ul>
+        <L.div className="hotel-information-actions">
+          <L.a href="tel:+998712002020">Qo‘ng‘iroq qilish</L.a>
+          <L.a href="#contact" onClick={onClose}>Manzil va aloqa</L.a>
+        </L.div>
       </DialogContent>
     </Dialog>
   );

@@ -1,7 +1,7 @@
 import type { LanguageCode } from '@/i18n';
 
 // Menu captions only; hotel names, room names and stored business data stay intact.
-const rows: [string, string, string, string, string][] = [
+export const hotelNavigationMessages: [string, string, string, string, string][] = [
   ['Ichki yo‘lak', 'Hallway', 'Коридор', 'Couloir', 'Flur'],
   ['Tadbirlar', 'Events', 'Мероприятия', 'Événements', 'Veranstaltungen'],
   ['Mehmonxona haqida', 'About the hotel', 'Об отеле', 'À propos de l’hôtel', 'Über das Hotel'],
@@ -60,7 +60,7 @@ const rows: [string, string, string, string, string][] = [
   ['Tashqi ko‘rinish', 'Hotel exterior', 'Внешний вид', 'Extérieur de l’hôtel', 'Außenansicht'],
 ];
 const columns: Record<LanguageCode, number> = { uz: 0, en: 1, ru: 2, fr: 3, de: 4 };
-const captions = new Map(rows.map((row) => [row[0], row]));
+const captions = new Map(hotelNavigationMessages.map((row) => [row[0], row]));
 
 export function hotelNavigationText(text: string, language: LanguageCode): string {
   const row = captions.get(text);

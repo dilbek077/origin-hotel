@@ -1,3 +1,4 @@
+import { translateSiteText } from './localization/translate';
 import {
   createContext,
   useContext,
@@ -352,6 +353,17 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'settings.newPassword': { uz: 'Yangi parol', ru: 'Новый пароль', en: 'New Password', fr: 'Nouveau mot de passe', de: 'Neues Passwort' },
   'settings.passwordHint': { uz: 'Kamida 8 ta belgi, raqam va harf', ru: 'Минимум 8 знаков, буквы и цифры', en: 'At least 8 characters, letters and numbers', fr: 'Au moins 8 caractères, lettres et chiffres', de: 'Mindestens 8 Zeichen, Buchstaben und Ziffern' },
   'settings.role': { uz: 'Lavozim', ru: 'Роль', en: 'Role', fr: 'Rôle', de: 'Rolle' },
+  "bookings.modalTitleAdd": {"uz": "Yangi bron", "en": "New reservation", "ru": "Новое бронирование", "fr": "Nouvelle réservation", "de": "Neue Buchung"},
+  "bookings.modalTitleEdit": {"uz": "Bronni tahrirlash", "en": "Edit reservation", "ru": "Изменить бронирование", "fr": "Modifier la réservation", "de": "Buchung bearbeiten"},
+  "finance.modalExpenseTitle": {"uz": "Yangi chiqim", "en": "New expense", "ru": "Новый расход", "fr": "Nouvelle dépense", "de": "Neue Ausgabe"},
+  "finance.modalIncomeTitle": {"uz": "Yangi kirim", "en": "New income", "ru": "Новый доход", "fr": "Nouvelle recette", "de": "Neue Einnahme"},
+  "guests.modalTitleAdd": {"uz": "Yangi mehmon", "en": "New guest", "ru": "Новый гость", "fr": "Nouveau client", "de": "Neuer Gast"},
+  "guests.modalTitleEdit": {"uz": "Mehmonni tahrirlash", "en": "Edit guest", "ru": "Изменить гостя", "fr": "Modifier le client", "de": "Gast bearbeiten"},
+  "rooms.modalTitleAdd": {"uz": "Yangi xona", "en": "New room", "ru": "Новый номер", "fr": "Nouvelle chambre", "de": "Neues Zimmer"},
+  "rooms.modalTitleEdit": {"uz": "Xonani tahrirlash", "en": "Edit room", "ru": "Изменить номер", "fr": "Modifier la chambre", "de": "Zimmer bearbeiten"},
+  "reports.allOperations": {"uz": "Barcha amaliyotlar", "en": "All transactions", "ru": "Все операции", "fr": "Toutes les opérations", "de": "Alle Buchungen"},
+  "reports.expenseStructure": {"uz": "Xarajatlar tarkibi", "en": "Expense breakdown", "ru": "Структура расходов", "fr": "Répartition des dépenses", "de": "Ausgabenübersicht"},
+  "reports.incomeStructure": {"uz": "Daromadlar tarkibi", "en": "Income breakdown", "ru": "Структура доходов", "fr": "Répartition des recettes", "de": "Einnahmenübersicht"},
 };
 
 export function translateStatus(status: string, locale: LanguageCode): string {
@@ -428,6 +440,7 @@ interface LanguageContextType {
   locale: LanguageCode;
   setLocale: (value: LanguageCode) => void;
   t: (key: string, fallback?: string) => string;
+  text: (value: string) => string;
   translateStatus: (status: string) => string;
   translateRoomType: (type: string) => string;
   translateCategory: (category: string) => string;
@@ -470,6 +483,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       locale,
       setLocale,
       languages: LANGUAGES,
+      text: (value: string) => translateSiteText(value, locale, translations),
       t: (key: string, fallback?: string) => {
         const item = translations[key];
         if (item && item[locale]) {

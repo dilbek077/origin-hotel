@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useState } from "react";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,39 +41,39 @@ export function CheckInConfirmDialog({
       title="Check-inni tasdiqlash"
       maxWidth="max-w-md"
     >
-      <div className="space-y-5">
-        <p className="text-sm text-muted-foreground">
+      <L.div className="space-y-5">
+        <L.p className="text-sm text-muted-foreground">
           Mehmonni ro‘yxatga olib, xonani band holatiga o‘tkazmoqchimisiz?
-        </p>
+        </L.p>
         {booking && (
-          <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-4 text-sm">
-            <div className="flex justify-between gap-4">
-              <span className="text-muted-foreground">Mehmon</span>
-              <span className="text-right font-medium">{booking.guest}</span>
-            </div>
-            <div className="flex justify-between gap-4">
-              <span className="text-muted-foreground">Xona</span>
-              <span className="text-right font-medium">{booking.room}</span>
-            </div>
-            <div className="flex justify-between gap-4">
-              <span className="text-muted-foreground">Kelish sanasi</span>
-              <span className="text-right font-medium">{booking.checkIn}</span>
-            </div>
-          </div>
+          <L.div className="space-y-2 rounded-xl border border-border bg-muted/40 p-4 text-sm">
+            <L.div className="flex justify-between gap-4">
+              <L.span className="text-muted-foreground">Mehmon</L.span>
+              <L.span className="text-right font-medium">{booking.guest}</L.span>
+            </L.div>
+            <L.div className="flex justify-between gap-4">
+              <L.span className="text-muted-foreground">Xona</L.span>
+              <L.span className="text-right font-medium">{booking.room}</L.span>
+            </L.div>
+            <L.div className="flex justify-between gap-4">
+              <L.span className="text-muted-foreground">Kelish sanasi</L.span>
+              <L.span className="text-right font-medium">{booking.checkIn}</L.span>
+            </L.div>
+          </L.div>
         )}
 
-        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        {error && <L.p role="alert" className="text-sm text-destructive">{error}</L.p>}
 
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+        <L.div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}><LocalizedText>
             Bekor qilish
-          </Button>
+          </LocalizedText></Button>
           <Button type="button" onClick={handleConfirm} disabled={!booking}>
-            <LogIn className="h-4 w-4" />
+            <LogIn className="h-4 w-4" /><LocalizedText>
             Check-in qilish
-          </Button>
-        </div>
-      </div>
+          </LocalizedText></Button>
+        </L.div>
+      </L.div>
     </Modal>
   );
 }

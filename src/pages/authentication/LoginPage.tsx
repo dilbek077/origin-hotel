@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -110,60 +111,60 @@ export default function LoginPage() {
   }`;
 
   return (
-    <main className={`hotel-login login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0a1628]' : 'bg-[#f4f7f0]'}`}>
-      <section className={`relative flex min-h-[340px] flex-col justify-between overflow-hidden px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-16 ${
+    <L.main className={`hotel-login login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0a1628]' : 'bg-[#f4f7f0]'}`}>
+      <L.section className={`relative flex min-h-[340px] flex-col justify-between overflow-hidden px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-16 ${
         isDark
           ? 'bg-gradient-to-br from-[#082f49] via-[#075985] to-[#0369a1]'
           : 'bg-gradient-to-br from-[#075985] via-[#0369a1] to-[#0284c7]'
       }`}>
-        <img
+        <L.img
           src={HERO_IMAGE}
           alt=""
           className="absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-luminosity"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2342]/70 via-sky-900/40 to-slate-950/70" />
-        <div className="absolute -top-28 -right-20 h-96 w-96 rounded-full bg-sky-300/15 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-20 -left-28 h-80 w-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
-        <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:44px_44px] pointer-events-none" />
+        <L.div className="absolute inset-0 bg-gradient-to-br from-[#0a2342]/70 via-sky-900/40 to-slate-950/70" />
+        <L.div className="absolute -top-28 -right-20 h-96 w-96 rounded-full bg-sky-300/15 blur-3xl pointer-events-none" />
+        <L.div className="absolute bottom-20 -left-28 h-80 w-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
+        <L.div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:44px_44px] pointer-events-none" />
 
-        <a href="/" className="relative z-10 inline-flex w-fit items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#11263d]">
+        <L.a href="/" className="relative z-10 inline-flex w-fit items-center gap-3">
+          <L.span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#11263d]">
             <Hotel className="h-5 w-5" />
-          </span>
-          <span>
-            <span className="block text-lg font-semibold leading-tight">Origin Hotel</span>
-            <span className="mt-1 block text-[9px] tracking-[0.24em] text-white/75">
+          </L.span>
+          <L.span>
+            <L.span className="block text-lg font-semibold leading-tight">Origin Hotel</L.span>
+            <L.span className="mt-1 block text-[9px] tracking-[0.24em] text-white/75">
               {t('landing.tagline').toLocaleUpperCase()}
-            </span>
-          </span>
-        </a>
+            </L.span>
+          </L.span>
+        </L.a>
 
-        <div className="relative z-10 my-10 max-w-lg md:my-0 md:py-12">
-          <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl xl:text-5xl">
+        <L.div className="relative z-10 my-10 max-w-lg md:my-0 md:py-12">
+          <L.h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl xl:text-5xl">
             {t('login.welcome')}
-          </h1>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-white/85 sm:text-base">
+          </L.h1>
+          <L.p className="mt-4 max-w-sm text-sm leading-6 text-white/85 sm:text-base">
             {t('login.subtitle')}
-          </p>
-        </div>
+          </L.p>
+        </L.div>
 
-        <div className="relative z-10 grid max-w-xl grid-cols-3 divide-x divide-white/20">
+        <L.div className="relative z-10 grid max-w-xl grid-cols-3 divide-x divide-white/20">
           {[
             { icon: ShieldCheck, label: t('login.feature.security') },
             { icon: Headset, label: t('login.feature.support') },
             { icon: Star, label: t('login.feature.quality') },
           ].map(({ icon: Icon, label }) => (
-            <div key={label} className="flex flex-col gap-2 px-3 first:pl-0 sm:px-5">
+            <L.div key={label} className="flex flex-col gap-2 px-3 first:pl-0 sm:px-5">
               <Icon className="h-5 w-5 text-white/90" strokeWidth={1.7} />
-              <span className="text-xs leading-4 text-white/85">{label}</span>
-            </div>
+              <L.span className="text-xs leading-4 text-white/85">{label}</L.span>
+            </L.div>
           ))}
-        </div>
-      </section>
+        </L.div>
+      </L.section>
 
-      <section className={`relative flex min-h-[620px] items-center justify-center px-5 py-14 sm:px-10 md:min-h-screen md:px-6 lg:px-12 ${isDark ? 'bg-slate-950' : 'bg-[#fbfcfe]'}`}>
-        <div className="absolute right-6 top-6 flex items-center gap-2 sm:right-10 sm:top-8">
-          <button
+      <L.section className={`relative flex min-h-[620px] items-center justify-center px-5 py-14 sm:px-10 md:min-h-screen md:px-6 lg:px-12 ${isDark ? 'bg-slate-950' : 'bg-[#fbfcfe]'}`}>
+        <L.div className="absolute right-6 top-6 flex items-center gap-2 sm:right-10 sm:top-8">
+          <L.button
             type="button"
             onClick={(event) => toggleTheme({ x: event.clientX, y: event.clientY })}
             className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
@@ -174,9 +175,9 @@ export default function LoginPage() {
             aria-label={isDark ? 'Yorug‘ mavzu' : 'Qorong‘i mavzu'}
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
-          <div ref={languageMenuRef} className="relative">
-            <button
+          </L.button>
+          <L.div ref={languageMenuRef} className="relative">
+            <L.button
               type="button"
               onClick={() => {
                 if (languageMenuOpen && !languageMenuClosing) {
@@ -199,13 +200,13 @@ export default function LoginPage() {
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               }`}
             >
-              <span>{LANGUAGES.find((language) => language.code === locale)?.label}</span>
+              <L.span>{LANGUAGES.find((language) => language.code === locale)?.label}</L.span>
               <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${
                 languageMenuOpen && !languageMenuClosing ? 'rotate-180' : ''
               }`} />
-            </button>
+            </L.button>
             {languageMenuOpen && (
-              <div
+              <L.div
                 role="listbox"
                 aria-label={t('common.language')}
                 data-state={languageMenuClosing ? 'closing' : 'open'}
@@ -218,7 +219,7 @@ export default function LoginPage() {
                 {LANGUAGES.map((language) => {
                   const isSelected = language.code === locale;
                   return (
-                    <button
+                    <L.button
                       key={language.code}
                       type="button"
                       role="option"
@@ -239,44 +240,44 @@ export default function LoginPage() {
                     >
                       {language.label}
                       {isSelected && <Check className="h-4 w-4" />}
-                    </button>
+                    </L.button>
                   );
                 })}
-              </div>
+              </L.div>
             )}
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
-        <div className="w-full max-w-md pt-8">
-          <div className={`rounded-2xl border p-6 shadow-[0_12px_40px_rgba(15,35,64,0.07)] sm:p-8 ${
+        <L.div className="w-full max-w-md pt-8">
+          <L.div className={`rounded-2xl border p-6 shadow-[0_12px_40px_rgba(15,35,64,0.07)] sm:p-8 ${
             isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200/80 bg-white'
           }`}>
-            <div className="mb-7">
-              <h2 className={`font-serif text-2xl font-semibold sm:text-[28px] ${
+            <L.div className="mb-7">
+              <L.h2 className={`font-serif text-2xl font-semibold sm:text-[28px] ${
                 isDark ? 'text-white' : 'text-[#17283d]'
               }`}>
                 {t('nav.login')}
-              </h2>
-              <p className={`mt-2 text-sm leading-5 ${
+              </L.h2>
+              <L.p className={`mt-2 text-sm leading-5 ${
                 isDark ? 'text-slate-400' : 'text-slate-500'
               }`}>
                 {t('login.brandText')}
-              </p>
-            </div>
+              </L.p>
+            </L.div>
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
-              <div>
-                <label
+            <L.form onSubmit={handleSubmit} noValidate className="space-y-5">
+              <L.div>
+                <L.label
                   htmlFor="username"
                   className={`mb-2 block text-xs font-medium ${
                     isDark ? 'text-slate-300' : 'text-slate-700'
                   }`}
                 >
                   {t('login.username')}
-                </label>
-                <div className="relative">
+                </L.label>
+                <L.div className="relative">
                   <UserRound className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
+                  <L.input
                     id="username"
                     type="text"
                     autoComplete="username"
@@ -286,21 +287,21 @@ export default function LoginPage() {
                     aria-invalid={Boolean(error)}
                     className={inputClass}
                   />
-                </div>
-              </div>
+                </L.div>
+              </L.div>
 
-              <div>
-                <label
+              <L.div>
+                <L.label
                   htmlFor="password"
                   className={`mb-2 block text-xs font-medium ${
                     isDark ? 'text-slate-300' : 'text-slate-700'
                   }`}
                 >
                   {t('login.password')}
-                </label>
-                <div className="relative">
+                </L.label>
+                <L.div className="relative">
                   <LockKeyhole className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
+                  <L.input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
@@ -310,44 +311,44 @@ export default function LoginPage() {
                     aria-invalid={Boolean(error)}
                     className={`${inputClass} pr-11`}
                   />
-                  <button
+                  <L.button
                     type="button"
                     onClick={() => setShowPassword((visible) => !visible)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-200"
                     aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
+                  </L.button>
+                </L.div>
+              </L.div>
 
               {error && (
-                <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+                <L.p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
                   {error}
-                </p>
+                </L.p>
               )}
 
-              <button
+              <L.button
                 type="submit"
                 disabled={loading}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#0c1d32] px-4 text-sm font-semibold text-white transition hover:bg-[#173657] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-sky-700 dark:hover:bg-sky-600"
               >
                 {loading ? `${t('login.submit')}...` : t('login.submit')}
                 {!loading && <ArrowRight className="h-4 w-4" />}
-              </button>
-            </form>
+              </L.button>
+            </L.form>
 
-            <details className={`mt-6 border-t pt-4 ${
+            <L.details className={`mt-6 border-t pt-4 ${
               isDark ? 'border-slate-800' : 'border-slate-100'
             }`}>
-              <summary className={`cursor-pointer list-none text-center text-xs ${
+              <L.summary className={`cursor-pointer list-none text-center text-xs ${
                 isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
               }`}>
                 {t('login.demo')}
-              </summary>
-              <div className="mt-3 space-y-2">
+              </L.summary>
+              <L.div className="mt-3 space-y-2">
                 {MOCK_USERS.map((user) => (
-                  <button
+                  <L.button
                     key={user.id}
                     type="button"
                     onClick={() => fillCredentials(user)}
@@ -357,26 +358,26 @@ export default function LoginPage() {
                         : 'border-slate-200 text-slate-700 hover:border-sky-300 hover:bg-sky-50/60'
                     }`}
                   >
-                    <span>
-                      <span className="block font-medium">{user.name}</span>
-                      <span className="mt-0.5 block text-slate-500">
+                    <L.span>
+                      <L.span className="block font-medium">{user.name}</L.span>
+                      <L.span className="mt-0.5 block text-slate-500">
                         @{user.username} · {user.roleName}
-                      </span>
-                    </span>
-                    <span className="font-medium text-primary">{t('login.submit')}</span>
-                  </button>
+                      </L.span>
+                    </L.span>
+                    <L.span className="font-medium text-primary">{t('login.submit')}</L.span>
+                  </L.button>
                 ))}
-              </div>
-            </details>
-          </div>
+              </L.div>
+            </L.details>
+          </L.div>
 
-          <p className={`mt-6 text-center text-xs ${
+          <L.p className={`mt-6 text-center text-xs ${
             isDark ? 'text-slate-600' : 'text-slate-400'
           }`}>
             © 2026 Origin Hotel
-          </p>
-        </div>
-      </section>
-    </main>
+          </L.p>
+        </L.div>
+      </L.section>
+    </L.main>
   );
 }

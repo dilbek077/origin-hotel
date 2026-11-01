@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import React, { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useTheme } from "@/theme";
@@ -87,14 +88,14 @@ export default function Modal({
   if (!isRendered) return null;
 
   return (
-    <div
+    <L.div
       data-state={isOpen ? "open" : "closed"}
       className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div
+      <L.div
         data-state={isOpen ? "open" : "closed"}
         className={`rounded-[26px] shadow-[0_20px_60px_rgba(0,0,0,0.55)] w-full ${maxWidth} overflow-hidden flex flex-col max-h-[90vh] ${
           isDarkMode
@@ -104,13 +105,13 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div
+        <L.div
           className={`flex items-center justify-between px-6 py-5 ${
             isDarkMode ? "border-b border-slate-800/80" : "border-b border-gray-100"
           }`}
         >
-          <h3 className={`text-lg font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>{title}</h3>
-          <button
+          <L.h3 className={`text-lg font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>{title}</L.h3>
+          <L.button
             onClick={onClose}
             className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
               isDarkMode
@@ -119,12 +120,12 @@ export default function Modal({
             }`}
           >
             <X size={18} />
-          </button>
-        </div>
+          </L.button>
+        </L.div>
 
         {/* Body */}
-        <div className="p-0 overflow-y-auto overscroll-contain">{children}</div>
-      </div>
-    </div>
+        <L.div className="p-0 overflow-y-auto overscroll-contain">{children}</L.div>
+      </L.div>
+    </L.div>
   );
 }

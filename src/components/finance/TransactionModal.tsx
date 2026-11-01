@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Transaction, IncomeCategory, ExpenseCategory } from "@/types/finance";
@@ -96,16 +97,16 @@ export default function TransactionModal({
       onClose={onClose}
       title={type === "income" ? t('finance.modalIncomeTitle') : t('finance.modalExpenseTitle')}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <L.form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
+          <L.div className="p-3 bg-red-500/10 text-red-500 rounded-xl text-xs font-medium border border-red-500/30">
             {error}
-          </div>
+          </L.div>
         )}
 
         {/* Type toggle */}
-        <div className={isDark ? "flex bg-slate-800 p-1 rounded-xl" : "flex bg-gray-100 p-1 rounded-xl"}>
-          <button
+        <L.div className={isDark ? "flex bg-slate-800 p-1 rounded-xl" : "flex bg-gray-100 p-1 rounded-xl"}>
+          <L.button
             type="button"
             onClick={() => handleTypeChange("income")}
             className={`flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer ${
@@ -117,8 +118,8 @@ export default function TransactionModal({
             }`}
           >
             + {t('status.income')}
-          </button>
-          <button
+          </L.button>
+          <L.button
             type="button"
             onClick={() => handleTypeChange("expense")}
             className={`flex-1 py-2 text-xs font-bold rounded-lg transition cursor-pointer ${
@@ -130,32 +131,32 @@ export default function TransactionModal({
             }`}
           >
             - {t('status.expense')}
-          </button>
-        </div>
+          </L.button>
+        </L.div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>
+        <L.div className="grid grid-cols-2 gap-4">
+          <L.div>
+            <L.label className={labelClass}>
               {t('common.category')} *
-            </label>
-            <select
+            </L.label>
+            <L.select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className={inputClass}
             >
               {(type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => (
-                <option key={c} value={c} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
+                <L.option key={c} value={c} className={isDark ? "bg-slate-800 text-white" : "bg-white text-slate-900"}>
                   {translateCategory(c)}
-                </option>
+                </L.option>
               ))}
-            </select>
-          </div>
+            </L.select>
+          </L.div>
 
-          <div>
-            <label className={labelClass}>
+          <L.div>
+            <L.label className={labelClass}>
               {t('common.amount')} ({t('common.currency')}) *
-            </label>
-            <input
+            </L.label>
+            <L.input
               type="number"
               min={100}
               step={1000}
@@ -165,27 +166,27 @@ export default function TransactionModal({
               placeholder="100000"
               className={inputClass}
             />
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
-        <div>
-          <label className={labelClass}>
+        <L.div>
+          <L.label className={labelClass}>
             {t('common.date')} *
-          </label>
-          <input
+          </L.label>
+          <L.input
             type="date"
             required
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className={inputClass}
           />
-        </div>
+        </L.div>
 
-        <div>
-          <label className={labelClass}>
+        <L.div>
+          <L.label className={labelClass}>
             {t('common.description')} *
-          </label>
-          <input
+          </L.label>
+          <L.input
             type="text"
             required
             value={description}
@@ -193,10 +194,10 @@ export default function TransactionModal({
             placeholder="..."
             className={inputClass}
           />
-        </div>
+        </L.div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
-          <button
+        <L.div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+          <L.button
             type="button"
             onClick={onClose}
             className={
@@ -206,15 +207,15 @@ export default function TransactionModal({
             }
           >
             {t('common.cancel')}
-          </button>
-          <button
+          </L.button>
+          <L.button
             type="submit"
             className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
             {t('common.save')}
-          </button>
-        </div>
-      </form>
+          </L.button>
+        </L.div>
+      </L.form>
     </Modal>
   );
 }

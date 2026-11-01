@@ -1,3 +1,6 @@
+import { useTranslation } from '@/i18n';
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useState } from "react";
 import {
   Bar,
@@ -21,11 +24,13 @@ interface OverviewChartProps {
 export function OverviewChart({ transactions }: OverviewChartProps) {
   const [chartType, setChartType] = useState<"bar" | "area">("bar");
 
-  const months = [
+  const { locale } = useTranslation();
+  const uzMonths = [
     "Yan", "Fev", "Mar", "Apr", "May", "Iyun",
     "Iyul", "Avg", "Sen", "Okt", "Noy", "Dek"
   ];
 
+  const months = locale === 'uz' ? uzMonths : Array.from({ length: 12 }, (_, month) => new Intl.DateTimeFormat(locale, { month: 'short' }).format(new Date(2024, month, 1)));
   const currentYear = new Date().getFullYear();
   const sampleIncome = [18500, 24200, 21800, 29400, 34100, 38900, 42500, 46000, 39800, 48200, 44000, 51200];
   const sampleExpense = [9200, 11400, 10200, 13800, 15100, 16900, 18200, 19400, 17500, 21000, 19800, 22400];
@@ -57,41 +62,41 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-            <span className="h-2.5 w-2.5 rounded-xs bg-foreground" />
+    <L.div className="space-y-4">
+      <L.div className="flex flex-wrap items-center justify-between gap-2">
+        <L.div className="flex items-center gap-3">
+          <L.span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+            <L.span className="h-2.5 w-2.5 rounded-xs bg-foreground" />
             Tushum
-          </span>
-          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            <span className="h-2.5 w-2.5 rounded-xs bg-zinc-300 dark:bg-zinc-700" />
+          </L.span>
+          <L.span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <L.span className="h-2.5 w-2.5 rounded-xs bg-zinc-300 dark:bg-zinc-700" />
             Xarajat
-          </span>
-        </div>
-        <div className="flex items-center gap-1 rounded-lg border border-border p-0.5 bg-muted/40">
+          </L.span>
+        </L.div>
+        <L.div className="flex items-center gap-1 rounded-lg border border-border p-0.5 bg-muted/40">
           <Button
             variant={chartType === "bar" ? "secondary" : "ghost"}
             size="sm"
             onClick={() => setChartType("bar")}
             className="h-7 px-2.5 text-xs font-medium"
           >
-            <BarChart3 className="mr-1 h-3.5 w-3.5" />
+            <BarChart3 className="mr-1 h-3.5 w-3.5" /><LocalizedText>
             Ustunli
-          </Button>
+          </LocalizedText></Button>
           <Button
             variant={chartType === "area" ? "secondary" : "ghost"}
             size="sm"
             onClick={() => setChartType("area")}
             className="h-7 px-2.5 text-xs font-medium"
           >
-            <TrendingUp className="mr-1 h-3.5 w-3.5" />
+            <TrendingUp className="mr-1 h-3.5 w-3.5" /><LocalizedText>
             Chiziqli
-          </Button>
-        </div>
-      </div>
+          </LocalizedText></Button>
+        </L.div>
+      </L.div>
 
-      <div className="h-[290px] w-full">
+      <L.div className="h-[290px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           {chartType === "bar" ? (
             <BarChart
@@ -121,33 +126,33 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
                   if (!active || !payload?.length) return null;
                   const data = payload[0].payload;
                   return (
-                    <div className="rounded-lg border border-border bg-popover p-3 shadow-md text-popover-foreground">
-                      <p className="mb-2 text-xs font-semibold text-muted-foreground">{label} {currentYear}</p>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-xs bg-foreground" />
+                    <L.div className="rounded-lg border border-border bg-popover p-3 shadow-md text-popover-foreground">
+                      <L.p className="mb-2 text-xs font-semibold text-muted-foreground">{label} {currentYear}</L.p>
+                      <L.div className="space-y-1 text-xs">
+                        <L.div className="flex items-center justify-between gap-4">
+                          <L.span className="flex items-center gap-1.5">
+                            <L.span className="h-2 w-2 rounded-xs bg-foreground" />
                             Tushum:
-                          </span>
-                          <span className="font-semibold">
+                          </L.span>
+                          <L.span className="font-semibold">
                             {(data.tushum * 1000).toLocaleString("uz-UZ")} so'm
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="flex items-center gap-1.5 text-muted-foreground">
-                            <span className="h-2 w-2 rounded-xs bg-zinc-400" />
+                          </L.span>
+                        </L.div>
+                        <L.div className="flex items-center justify-between gap-4">
+                          <L.span className="flex items-center gap-1.5 text-muted-foreground">
+                            <L.span className="h-2 w-2 rounded-xs bg-zinc-400" />
                             Xarajat:
-                          </span>
-                          <span className="font-semibold text-muted-foreground">
+                          </L.span>
+                          <L.span className="font-semibold text-muted-foreground">
                             {(data.xarajat * 1000).toLocaleString("uz-UZ")} so'm
-                          </span>
-                        </div>
-                        <div className="mt-1.5 border-t border-border pt-1.5 flex items-center justify-between gap-4 font-medium text-emerald-600 dark:text-emerald-400">
-                          <span>Sof foyda:</span>
-                          <span>{(data.sof * 1000).toLocaleString("uz-UZ")} so'm</span>
-                        </div>
-                      </div>
-                    </div>
+                          </L.span>
+                        </L.div>
+                        <L.div className="mt-1.5 border-t border-border pt-1.5 flex items-center justify-between gap-4 font-medium text-emerald-600 dark:text-emerald-400">
+                          <L.span>Sof foyda:</L.span>
+                          <L.span>{(data.sof * 1000).toLocaleString("uz-UZ")} so'm</L.span>
+                        </L.div>
+                      </L.div>
+                    </L.div>
                   );
                 }}
               />
@@ -197,29 +202,29 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
                   if (!active || !payload?.length) return null;
                   const data = payload[0].payload;
                   return (
-                    <div className="rounded-lg border border-border bg-popover p-3 shadow-md text-popover-foreground">
-                      <p className="mb-2 text-xs font-semibold text-muted-foreground">{label} {currentYear}</p>
-                      <div className="space-y-1 text-xs">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="flex items-center gap-1.5">
-                            <span className="h-2 w-2 rounded-xs bg-foreground" />
+                    <L.div className="rounded-lg border border-border bg-popover p-3 shadow-md text-popover-foreground">
+                      <L.p className="mb-2 text-xs font-semibold text-muted-foreground">{label} {currentYear}</L.p>
+                      <L.div className="space-y-1 text-xs">
+                        <L.div className="flex items-center justify-between gap-4">
+                          <L.span className="flex items-center gap-1.5">
+                            <L.span className="h-2 w-2 rounded-xs bg-foreground" />
                             Tushum:
-                          </span>
-                          <span className="font-semibold">
+                          </L.span>
+                          <L.span className="font-semibold">
                             {(data.tushum * 1000).toLocaleString("uz-UZ")} so'm
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="flex items-center gap-1.5 text-muted-foreground">
-                            <span className="h-2 w-2 rounded-xs bg-zinc-400" />
+                          </L.span>
+                        </L.div>
+                        <L.div className="flex items-center justify-between gap-4">
+                          <L.span className="flex items-center gap-1.5 text-muted-foreground">
+                            <L.span className="h-2 w-2 rounded-xs bg-zinc-400" />
                             Xarajat:
-                          </span>
-                          <span className="font-semibold text-muted-foreground">
+                          </L.span>
+                          <L.span className="font-semibold text-muted-foreground">
                             {(data.xarajat * 1000).toLocaleString("uz-UZ")} so'm
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                          </L.span>
+                        </L.div>
+                      </L.div>
+                    </L.div>
                   );
                 }}
               />
@@ -234,7 +239,7 @@ export function OverviewChart({ transactions }: OverviewChartProps) {
             </AreaChart>
           )}
         </ResponsiveContainer>
-      </div>
-    </div>
+      </L.div>
+    </L.div>
   );
 }

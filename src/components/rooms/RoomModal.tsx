@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import type { Room, RoomStatus, RoomType } from "@/types/room";
@@ -100,18 +101,18 @@ export default function RoomModal({
       maxWidth="max-w-[620px]"
       variant="dark"
     >
-      <div className="bg-[#11181d] px-5 pb-5 pt-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <L.div className="bg-[#11181d] px-5 pb-5 pt-4">
+        <L.form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300">
+            <L.div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300">
               {error}
-            </div>
+            </L.div>
           )}
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t('rooms.number')}</label>
-              <input
+          <L.div className="grid gap-4 md:grid-cols-2">
+            <L.div>
+              <L.label className={labelClass}>{t('rooms.number')}</L.label>
+              <L.input
                 type="text"
                 required
                 value={number}
@@ -119,11 +120,11 @@ export default function RoomModal({
                 placeholder="101"
                 className={inputClass}
               />
-            </div>
+            </L.div>
 
-            <div>
-              <label className={labelClass}>{t('rooms.floor')}</label>
-              <input
+            <L.div>
+              <L.label className={labelClass}>{t('rooms.floor')}</L.label>
+              <L.input
                 type="number"
                 min={1}
                 max={20}
@@ -131,56 +132,56 @@ export default function RoomModal({
                 onChange={(e) => setFloor(Number(e.target.value))}
                 className={inputClass}
               />
-            </div>
-          </div>
+            </L.div>
+          </L.div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t('rooms.type')}</label>
-              <select
+          <L.div className="grid gap-4 md:grid-cols-2">
+            <L.div>
+              <L.label className={labelClass}>{t('rooms.type')}</L.label>
+              <L.select
                 value={type}
                 onChange={(e) => setType(e.target.value as RoomType)}
                 className={inputClass}
               >
                 {ROOM_TYPES.map((tItem) => (
-                  <option key={tItem} value={tItem} className="bg-[#111315] text-white">
+                  <L.option key={tItem} value={tItem} className="bg-[#111315] text-white">
                     {translateRoomType(tItem)}
-                  </option>
+                  </L.option>
                 ))}
-              </select>
-            </div>
+              </L.select>
+            </L.div>
 
-            <div>
-              <label className={labelClass}>{t('common.status')}</label>
-              <select
+            <L.div>
+              <L.label className={labelClass}>{t('common.status')}</L.label>
+              <L.select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as RoomStatus)}
                 className={inputClass}
               >
                 {ROOM_STATUSES.map((s) => (
-                  <option key={s} value={s} className="bg-[#111315] text-white">
+                  <L.option key={s} value={s} className="bg-[#111315] text-white">
                     {translateStatus(s)}
-                  </option>
+                  </L.option>
                 ))}
-              </select>
-            </div>
-          </div>
+              </L.select>
+            </L.div>
+          </L.div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelClass}>{t('rooms.capacity')}</label>
-              <input
+          <L.div className="grid gap-4 md:grid-cols-2">
+            <L.div>
+              <L.label className={labelClass}>{t('rooms.capacity')}</L.label>
+              <L.input
                 type="text"
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
                 placeholder="2 kishilik"
                 className={inputClass}
               />
-            </div>
+            </L.div>
 
-            <div>
-              <label className={labelClass}>{t('rooms.price')}</label>
-              <input
+            <L.div>
+              <L.label className={labelClass}>{t('rooms.price')}</L.label>
+              <L.input
                 type="number"
                 min={1000}
                 step={1}
@@ -188,19 +189,19 @@ export default function RoomModal({
                 onChange={(e) => setPricePerNight(Number(e.target.value))}
                 className={inputClass}
               />
-            </div>
-          </div>
+            </L.div>
+          </L.div>
 
-          <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className={actionButtonClass}>
+          <L.div className="flex justify-end gap-3 pt-2">
+            <L.button type="button" onClick={onClose} className={actionButtonClass}>
               {t('common.cancel')}
-            </button>
-            <button type="submit" className={submitButtonClass}>
+            </L.button>
+            <L.button type="submit" className={submitButtonClass}>
               {t('common.save')}
-            </button>
-          </div>
-        </form>
-      </div>
+            </L.button>
+          </L.div>
+        </L.form>
+      </L.div>
     </Modal>
   );
 }

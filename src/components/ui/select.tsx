@@ -1,3 +1,5 @@
+import { useTranslation } from '@/i18n';
+import { L } from '@/localization/elements';
 import * as React from 'react'
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
@@ -18,7 +20,8 @@ function SelectGroup({
 function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
-  return <SelectPrimitive.Value data-slot='select-value' {...props} />
+  const { text } = useTranslation();
+  return <SelectPrimitive.Value data-slot='select-value' {...props} placeholder={typeof props.placeholder === 'string' ? text(props.placeholder) : props.placeholder} />
 }
 
 function SelectTrigger({
@@ -109,11 +112,11 @@ function SelectItem({
       )}
       {...props}
     >
-      <span className='absolute inset-e-2 flex size-3.5 items-center justify-center'>
+      <L.span className='absolute inset-e-2 flex size-3.5 items-center justify-center'>
         <SelectPrimitive.ItemIndicator>
           <CheckIcon className='size-4' />
         </SelectPrimitive.ItemIndicator>
-      </span>
+      </L.span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
     </SelectPrimitive.Item>
   )

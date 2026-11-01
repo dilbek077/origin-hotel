@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -127,11 +128,11 @@ function DatePicker({ label, value, onChange, isDark, locale }: DatePickerProps)
   };
 
   return (
-    <div ref={pickerRef} className={`relative ${isOpen ? "z-30" : "z-10"}`}>
-      <span className={`block text-xs font-semibold ${isDark ? "text-slate-400" : "text-gray-500"}`}>
+    <L.div ref={pickerRef} className={`relative ${isOpen ? "z-30" : "z-10"}`}>
+      <L.span className={`block text-xs font-semibold ${isDark ? "text-slate-400" : "text-gray-500"}`}>
         {label}:
-      </span>
-      <button
+      </L.span>
+      <L.button
         ref={triggerRef}
         type="button"
         onClick={() => {
@@ -173,16 +174,16 @@ function DatePicker({ label, value, onChange, isDark, locale }: DatePickerProps)
           isDark ? "text-slate-100" : "text-gray-800"
         }`}
       >
-        <span>{new Intl.DateTimeFormat(locale, {
+        <L.span>{new Intl.DateTimeFormat(locale, {
           day: "2-digit",
           month: "short",
           year: "numeric",
-        }).format(selectedDate)}</span>
+        }).format(selectedDate)}</L.span>
         <Calendar size={14} className={`shrink-0 ${isDark ? "text-sky-400" : "text-blue-600"}`} />
-      </button>
+      </L.button>
       {isOpen && (
         createPortal(
-          <div
+          <L.div
             ref={popoverRef}
             role="dialog"
             aria-label={label}
@@ -198,8 +199,8 @@ function DatePicker({ label, value, onChange, isDark, locale }: DatePickerProps)
                 : "date-picker-in 180ms ease-out both",
             }}
           >
-          <div className="mb-4 flex items-center justify-between">
-            <button
+          <L.div className="mb-4 flex items-center justify-between">
+            <L.button
               type="button"
               onClick={() => changeMonth(-1)}
               aria-label={previousMonthLabel}
@@ -208,11 +209,11 @@ function DatePicker({ label, value, onChange, isDark, locale }: DatePickerProps)
               }`}
             >
               <ChevronLeft size={18} />
-            </button>
-            <p className="text-sm font-bold">
+            </L.button>
+            <L.p className="text-sm font-bold">
               {new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(visibleMonth)}
-            </p>
-            <button
+            </L.p>
+            <L.button
               type="button"
               onClick={() => changeMonth(1)}
               aria-label={nextMonthLabel}
@@ -221,25 +222,25 @@ function DatePicker({ label, value, onChange, isDark, locale }: DatePickerProps)
               }`}
             >
               <ChevronRight size={18} />
-            </button>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center">
+            </L.button>
+          </L.div>
+          <L.div className="grid grid-cols-7 gap-1 text-center">
             {weekdays.map((weekday, index) => (
-              <span
+              <L.span
                 key={`${weekday}-${index}`}
                 className={`py-1 text-xs font-semibold uppercase ${
                   isDark ? "text-slate-500" : "text-gray-400"
                 }`}
               >
                 {weekday}
-              </span>
+              </L.span>
             ))}
             {calendarDays.map((date) => {
               const isCurrentMonth = date.getMonth() === visibleMonth.getMonth();
               const isSelected = formatIsoDate(date) === value;
               const isToday = formatIsoDate(date) === formatIsoDate(new Date());
               return (
-                <button
+                <L.button
                   key={formatIsoDate(date)}
                   type="button"
                   onClick={() => {
@@ -265,15 +266,15 @@ function DatePicker({ label, value, onChange, isDark, locale }: DatePickerProps)
                   } ${isToday && !isSelected ? "ring-1 ring-blue-500" : ""}`}
                 >
                   {date.getDate()}
-                </button>
+                </L.button>
               );
             })}
-          </div>
-          </div>,
+          </L.div>
+          </L.div>,
           document.body,
         )
       )}
-    </div>
+    </L.div>
   );
 }
 
@@ -364,19 +365,19 @@ export default function Reports() {
   };
 
   return (
-    <div className={isDark ? "p-6 space-y-6 min-h-screen bg-slate-950 text-slate-100" : "p-6 space-y-6 min-h-screen bg-gray-50 text-gray-900"}>
+    <L.div className={isDark ? "p-6 space-y-6 min-h-screen bg-slate-950 text-slate-100" : "p-6 space-y-6 min-h-screen bg-gray-50 text-gray-900"}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.reports')}</h1>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+      <L.div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <L.div>
+          <L.h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>{t('nav.reports')}</L.h1>
+          <L.p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
             {t('reports.subtitle')}
-          </p>
-        </div>
+          </L.p>
+        </L.div>
 
         {/* Date Filter + Export */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className={`w-[min(10.5rem,calc(50vw_-_1.25rem))] rounded-xl border px-3 py-2 shadow-xs ${
+        <L.div className="flex flex-wrap items-center gap-3">
+          <L.div className={`w-[min(10.5rem,calc(50vw_-_1.25rem))] rounded-xl border px-3 py-2 shadow-xs ${
             isDark ? "border-slate-800 bg-slate-900" : "border-gray-200 bg-white"
           }`}>
             <DatePicker
@@ -386,8 +387,8 @@ export default function Reports() {
               isDark={isDark}
               locale={locale}
             />
-          </div>
-          <div className={`w-[min(10.5rem,calc(50vw_-_1.25rem))] rounded-xl border px-3 py-2 shadow-xs ${
+          </L.div>
+          <L.div className={`w-[min(10.5rem,calc(50vw_-_1.25rem))] rounded-xl border px-3 py-2 shadow-xs ${
             isDark ? "border-slate-800 bg-slate-900" : "border-gray-200 bg-white"
           }`}>
             <DatePicker
@@ -397,93 +398,93 @@ export default function Reports() {
               isDark={isDark}
               locale={locale}
             />
-          </div>
-          <button
+          </L.div>
+          <L.button
             onClick={handleExportCSV}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
           >
             <Download className="w-4 h-4" />
             {t('reports.export')}
-          </button>
-        </div>
-      </div>
+          </L.button>
+        </L.div>
+      </L.div>
 
       {/* 4 Core Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <L.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Jami Kirim */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400 flex items-center justify-center">
+        <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
+          <L.div className="flex items-center justify-between mb-3">
+            <L.div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400 flex items-center justify-center">
               <TrendingUp size={20} className="text-blue-600 dark:text-sky-400" />
-            </div>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300">
+            </L.div>
+            <L.span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300">
               {t('status.income')}
-            </span>
-          </div>
-          <p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.periodIncome')}</p>
-          <p className="text-xl font-black text-blue-600 dark:text-sky-400 mt-1">{formatCurrency(periodIncome)}</p>
-        </div>
+            </L.span>
+          </L.div>
+          <L.p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.periodIncome')}</L.p>
+          <L.p className="text-xl font-black text-blue-600 dark:text-sky-400 mt-1">{formatCurrency(periodIncome)}</L.p>
+        </L.div>
 
         {/* Jami Chiqim */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center">
+        <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
+          <L.div className="flex items-center justify-between mb-3">
+            <L.div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center">
               <TrendingDown size={20} className="text-red-600 dark:text-red-400" />
-            </div>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300">
+            </L.div>
+            <L.span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300">
               {t('status.expense')}
-            </span>
-          </div>
-          <p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.periodExpense')}</p>
-          <p className="text-xl font-black text-red-600 dark:text-red-400 mt-1">{formatCurrency(periodExpense)}</p>
-        </div>
+            </L.span>
+          </L.div>
+          <L.p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.periodExpense')}</L.p>
+          <L.p className="text-xl font-black text-red-600 dark:text-red-400 mt-1">{formatCurrency(periodExpense)}</L.p>
+        </L.div>
 
         {/* Sof Natija */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
-          <div className="flex items-center justify-between mb-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+        <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
+          <L.div className="flex items-center justify-between mb-3">
+            <L.div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
               periodNet >= 0
                 ? "bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400"
                 : "bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400"
             }`}>
               <DollarSign size={20} className={periodNet >= 0 ? "text-blue-600 dark:text-sky-400" : "text-red-600 dark:text-red-400"} />
-            </div>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300">
+            </L.div>
+            <L.span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300">
               {t('finance.netProfit')}
-            </span>
-          </div>
-          <p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.periodNet')}</p>
-          <p className={`text-xl font-black mt-1 ${periodNet >= 0 ? "text-blue-600 dark:text-sky-400" : "text-red-500"}`}>
+            </L.span>
+          </L.div>
+          <L.p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.periodNet')}</L.p>
+          <L.p className={`text-xl font-black mt-1 ${periodNet >= 0 ? "text-blue-600 dark:text-sky-400" : "text-red-500"}`}>
             {formatCurrency(periodNet)}
-          </p>
-        </div>
+          </L.p>
+        </L.div>
 
         {/* Bandlik Ko'rsatkichi */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400 flex items-center justify-center">
+        <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 p-5 shadow-sm" : "bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"}>
+          <L.div className="flex items-center justify-between mb-3">
+            <L.div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-sky-400 flex items-center justify-center">
               <Percent size={20} className="text-blue-600 dark:text-sky-400" />
-            </div>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300">
+            </L.div>
+            <L.span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300">
               {t('reports.occupancy')}
-            </span>
-          </div>
-          <p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.occupancy')}</p>
-          <p className="text-xl font-black text-blue-700 dark:text-sky-400 mt-1">
+            </L.span>
+          </L.div>
+          <L.p className="text-xs font-medium text-gray-400 dark:text-slate-400">{t('reports.occupancy')}</L.p>
+          <L.p className="text-xl font-black text-blue-700 dark:text-sky-400 mt-1">
             {occupancyRate}% ({occupiedRoomsCount}/{totalRoomsCount})
-          </p>
-        </div>
-      </div>
+          </L.p>
+        </L.div>
+      </L.div>
 
       {/* Categories Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <L.div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Kirim Kategoriyalari */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-6" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-6"}>
-          <h3 className={isDark ? "text-sm font-bold text-white mb-4 flex items-center gap-2" : "text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"}>
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+        <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-6" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-6"}>
+          <L.h3 className={isDark ? "text-sm font-bold text-white mb-4 flex items-center gap-2" : "text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"}>
+            <L.span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
             {t('reports.incomeStructure')}
-          </h3>
-          <div className="space-y-3">
+          </L.h3>
+          <L.div className="space-y-3">
             {[
               "Xona haqi",
               "Ovqatlanish",
@@ -494,32 +495,32 @@ export default function Reports() {
               const amount = incomeByCategory[cat] || 0;
               const percent = periodIncome > 0 ? Math.round((amount / periodIncome) * 100) : 0;
               return (
-                <div key={cat} className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className={isDark ? "font-semibold text-slate-300" : "font-semibold text-gray-700"}>{translateCategory(cat)}</span>
-                    <span className={isDark ? "font-bold text-white" : "font-bold text-gray-900"}>
+                <L.div key={cat} className="space-y-1">
+                  <L.div className="flex justify-between text-xs">
+                    <L.span className={isDark ? "font-semibold text-slate-300" : "font-semibold text-gray-700"}>{translateCategory(cat)}</L.span>
+                    <L.span className={isDark ? "font-bold text-white" : "font-bold text-gray-900"}>
                       {formatCurrency(amount)} ({percent}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2">
-                    <div
+                    </L.span>
+                  </L.div>
+                  <L.div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2">
+                    <L.div
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${percent}%` }}
                     />
-                  </div>
-                </div>
+                  </L.div>
+                </L.div>
               );
             })}
-          </div>
-        </div>
+          </L.div>
+        </L.div>
 
         {/* Chiqim Kategoriyalari */}
-        <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-6" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-6"}>
-          <h3 className={isDark ? "text-sm font-bold text-white mb-4 flex items-center gap-2" : "text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"}>
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+        <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm p-6" : "bg-white rounded-2xl border border-gray-100 shadow-sm p-6"}>
+          <L.h3 className={isDark ? "text-sm font-bold text-white mb-4 flex items-center gap-2" : "text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"}>
+            <L.span className="w-2.5 h-2.5 rounded-full bg-red-500" />
             {t('reports.expenseStructure')}
-          </h3>
-          <div className="space-y-3">
+          </L.h3>
+          <L.div className="space-y-3">
             {[
               "Ish haqi",
               "Kommunal to‘lovlar",
@@ -530,65 +531,65 @@ export default function Reports() {
               const amount = expenseByCategory[cat] || 0;
               const percent = periodExpense > 0 ? Math.round((amount / periodExpense) * 100) : 0;
               return (
-                <div key={cat} className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className={isDark ? "font-semibold text-slate-300" : "font-semibold text-gray-700"}>{translateCategory(cat)}</span>
-                    <span className={isDark ? "font-bold text-white" : "font-bold text-gray-900"}>
+                <L.div key={cat} className="space-y-1">
+                  <L.div className="flex justify-between text-xs">
+                    <L.span className={isDark ? "font-semibold text-slate-300" : "font-semibold text-gray-700"}>{translateCategory(cat)}</L.span>
+                    <L.span className={isDark ? "font-bold text-white" : "font-bold text-gray-900"}>
                       {formatCurrency(amount)} ({percent}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2">
-                    <div
+                    </L.span>
+                  </L.div>
+                  <L.div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2">
+                    <L.div
                       className="bg-red-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${percent}%` }}
                     />
-                  </div>
-                </div>
+                  </L.div>
+                </L.div>
               );
             })}
-          </div>
-        </div>
-      </div>
+          </L.div>
+        </L.div>
+      </L.div>
 
       {/* Transactions Details Table for this period */}
-      <div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm overflow-hidden" : "bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"}>
-        <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-800" : "border-gray-100"}`}>
-          <h3 className={isDark ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-900"}>
+      <L.div className={isDark ? "bg-slate-900 rounded-2xl border border-slate-800 shadow-sm overflow-hidden" : "bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"}>
+        <L.div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-800" : "border-gray-100"}`}>
+          <L.h3 className={isDark ? "text-sm font-bold text-white" : "text-sm font-bold text-gray-900"}>
             {t('reports.allOperations')} ({filteredTransactions.length})
-          </h3>
-          <span className="text-xs text-gray-400 dark:text-slate-400">
+          </L.h3>
+          <L.span className="text-xs text-gray-400 dark:text-slate-400">
             {fromDate} — {toDate}
-          </span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className={isDark ? "bg-slate-800/80 text-slate-300 text-left text-xs uppercase font-semibold" : "bg-gray-50/70 text-gray-500 text-left text-xs uppercase font-semibold"}>
-                <th className="px-6 py-3.5">{t('common.date')}</th>
-                <th className="px-6 py-3.5">{t('common.type')}</th>
-                <th className="px-6 py-3.5">{t('common.category')}</th>
-                <th className="px-6 py-3.5">{t('common.description')}</th>
-                <th className="px-6 py-3.5 text-right">{t('common.amount')}</th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-100"}`}>
+          </L.span>
+        </L.div>
+        <L.div className="overflow-x-auto">
+          <L.table className="w-full text-sm">
+            <L.thead>
+              <L.tr className={isDark ? "bg-slate-800/80 text-slate-300 text-left text-xs uppercase font-semibold" : "bg-gray-50/70 text-gray-500 text-left text-xs uppercase font-semibold"}>
+                <L.th className="px-6 py-3.5">{t('common.date')}</L.th>
+                <L.th className="px-6 py-3.5">{t('common.type')}</L.th>
+                <L.th className="px-6 py-3.5">{t('common.category')}</L.th>
+                <L.th className="px-6 py-3.5">{t('common.description')}</L.th>
+                <L.th className="px-6 py-3.5 text-right">{t('common.amount')}</L.th>
+              </L.tr>
+            </L.thead>
+            <L.tbody className={`divide-y ${isDark ? "divide-slate-800" : "divide-gray-100"}`}>
               {filteredTransactions.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-10 text-gray-400 dark:text-slate-500">
+                <L.tr>
+                  <L.td colSpan={5} className="text-center py-10 text-gray-400 dark:text-slate-500">
                     {t('rooms.notFound')}
-                  </td>
-                </tr>
+                  </L.td>
+                </L.tr>
               ) : (
                 filteredTransactions.map((tx) => (
-                  <tr key={tx.id} className={isDark ? "hover:bg-slate-800/50 transition" : "hover:bg-blue-50/30 transition"}>
-                    <td className="px-6 py-3.5 text-xs text-gray-500 dark:text-slate-400 font-mono">
-                      <span className="inline-flex items-center gap-1.5">
+                  <L.tr key={tx.id} className={isDark ? "hover:bg-slate-800/50 transition" : "hover:bg-blue-50/30 transition"}>
+                    <L.td className="px-6 py-3.5 text-xs text-gray-500 dark:text-slate-400 font-mono">
+                      <L.span className="inline-flex items-center gap-1.5">
                         <Calendar size={13} className="text-gray-400" />
                         {tx.date}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3.5">
-                      <span
+                      </L.span>
+                    </L.td>
+                    <L.td className="px-6 py-3.5">
+                      <L.span
                         className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                           tx.type === "income"
                             ? "bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300 border-blue-200 dark:border-blue-800/40"
@@ -596,34 +597,34 @@ export default function Reports() {
                         }`}
                       >
                         {tx.type === "income" ? `+ ${t('status.income')}` : `- ${t('status.expense')}`}
-                      </span>
-                    </td>
-                    <td className={isDark ? "px-6 py-3.5 font-semibold text-slate-200" : "px-6 py-3.5 font-semibold text-gray-800"}>
+                      </L.span>
+                    </L.td>
+                    <L.td className={isDark ? "px-6 py-3.5 font-semibold text-slate-200" : "px-6 py-3.5 font-semibold text-gray-800"}>
                       {translateCategory(tx.category)}
-                    </td>
-                    <td className="px-6 py-3.5 text-xs text-gray-500 dark:text-slate-400">{tx.description}</td>
-                    <td className="px-6 py-3.5 text-right font-black">
-                      <span className={tx.type === "income" ? "text-blue-600 dark:text-sky-400" : "text-red-600 dark:text-red-400"}>
+                    </L.td>
+                    <L.td className="px-6 py-3.5 text-xs text-gray-500 dark:text-slate-400">{tx.description}</L.td>
+                    <L.td className="px-6 py-3.5 text-right font-black">
+                      <L.span className={tx.type === "income" ? "text-blue-600 dark:text-sky-400" : "text-red-600 dark:text-red-400"}>
                         {tx.type === "income" ? "+" : "-"} {formatCurrency(tx.amount)}
-                      </span>
-                    </td>
-                  </tr>
+                      </L.span>
+                    </L.td>
+                  </L.tr>
                 ))
               )}
-            </tbody>
-            <tfoot>
-              <tr className={isDark ? "bg-slate-800 border-t-2 border-slate-700 text-xs font-bold" : "bg-gray-50 border-t-2 border-gray-200 text-xs font-bold"}>
-                <td colSpan={4} className={isDark ? "px-6 py-3.5 text-slate-200" : "px-6 py-3.5 text-gray-700"}>
+            </L.tbody>
+            <L.tfoot>
+              <L.tr className={isDark ? "bg-slate-800 border-t-2 border-slate-700 text-xs font-bold" : "bg-gray-50 border-t-2 border-gray-200 text-xs font-bold"}>
+                <L.td colSpan={4} className={isDark ? "px-6 py-3.5 text-slate-200" : "px-6 py-3.5 text-gray-700"}>
                   {t('reports.periodNet')}
-                </td>
-                <td className={`px-6 py-3.5 text-right text-sm ${periodNet >= 0 ? "text-blue-600 dark:text-sky-400" : "text-red-500"}`}>
+                </L.td>
+                <L.td className={`px-6 py-3.5 text-right text-sm ${periodNet >= 0 ? "text-blue-600 dark:text-sky-400" : "text-red-500"}`}>
                   {formatCurrency(periodNet)}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
+                </L.td>
+              </L.tr>
+            </L.tfoot>
+          </L.table>
+        </L.div>
+      </L.div>
+    </L.div>
   );
 }

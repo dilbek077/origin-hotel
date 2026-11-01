@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Minus, Plus, Search, UsersRound, X } from 'lucide-react';
 import ReservationDatePicker from './ReservationDatePicker';
@@ -74,7 +75,7 @@ export default function ReservationBar({ onSearch }: { onSearch: (summary: strin
   }
 
   return (
-    <form id="reservation" className={`shilla-reservation ${mobileExpanded ? 'is-mobile-expanded' : ''}`} onSubmit={(event) => {
+    <L.form id="reservation" className={`shilla-reservation ${mobileExpanded ? 'is-mobile-expanded' : ''}`} onSubmit={(event) => {
       event.preventDefault();
       setGuestsOpen(false);
       if (checkIn < hotelToday() || checkOut <= checkIn) { setDatesOpen(true); return; }
@@ -86,37 +87,37 @@ export default function ReservationBar({ onSearch }: { onSearch: (summary: strin
       // The focused panel is removed on submit; move focus to the results.
       requestAnimationFrame(() => [...document.querySelectorAll<HTMLElement>('#rooms h2')].find((heading) => heading.offsetParent !== null)?.focus({ preventScroll: true }));
     }}>
-      <button type="button" className="shilla-mobile-hotel-search" aria-expanded={mobileExpanded} aria-label="Bron sanalari va mehmonlarni tanlash" onClick={() => { setMobileExpanded(!mobileExpanded); setDatesOpen(false); setGuestsOpen(false); }}><span>Origin Hotel · Qarshi — bron qilish</span>{mobileExpanded ? <X size={23} strokeWidth={1.2} /> : <Search size={23} strokeWidth={1.2} />}</button>
-      <div className="shilla-booking-mode" aria-label="Bron turi">
-        <button type="button" className={mode === 'room' ? 'active' : ''} aria-pressed={mode === 'room'} onClick={() => setMode('room')}>Xona</button>
-        <button type="button" className={mode === 'dining' ? 'active' : ''} aria-pressed={mode === 'dining'} onClick={() => setMode('dining')}>Restoran</button>
-      </div>
-      <div className="shilla-hotel-field"><span>Origin Hotel · Toshkent</span><MapPin size={23} strokeWidth={1.3} /></div>
+      <L.button type="button" className="shilla-mobile-hotel-search" aria-expanded={mobileExpanded} aria-label="Bron sanalari va mehmonlarni tanlash" onClick={() => { setMobileExpanded(!mobileExpanded); setDatesOpen(false); setGuestsOpen(false); }}><L.span>Origin Hotel · Qarshi — bron qilish</L.span>{mobileExpanded ? <X size={23} strokeWidth={1.2} /> : <Search size={23} strokeWidth={1.2} />}</L.button>
+      <L.div className="shilla-booking-mode" aria-label="Bron turi">
+        <L.button type="button" className={mode === 'room' ? 'active' : ''} aria-pressed={mode === 'room'} onClick={() => setMode('room')}>Xona</L.button>
+        <L.button type="button" className={mode === 'dining' ? 'active' : ''} aria-pressed={mode === 'dining'} onClick={() => setMode('dining')}>Restoran</L.button>
+      </L.div>
+      <L.div className="shilla-hotel-field"><L.span>Origin Hotel · Toshkent</L.span><MapPin size={23} strokeWidth={1.3} /></L.div>
       <ReservationDatePicker checkIn={checkIn} checkOut={checkOut} open={datesOpen} onOpenChange={(open) => { setDatesOpen(open); if (open) setGuestsOpen(false); }} onChange={(arrival, departure) => { setCheckIn(arrival); setCheckOut(departure); }} />
-      <div className="shilla-guest-field">
-        <button ref={triggerRef} type="button" aria-label="Xonalar va mehmonlarni tanlash" aria-haspopup="dialog" aria-expanded={guestsOpen} aria-controls="reservation-guests" onClick={() => { setDatesOpen(false); setGuestsOpen(!guestsOpen); }}><span>Xona {rooms.length} · Katta {totals.adults} <span className="shilla-guest-extra">Bola {totals.children} Chaqaloq {totals.infants}</span></span><UsersRound size={23} strokeWidth={1.2} /></button>
-      </div>
-      <button className="shilla-reservation-submit" type="submit">{mode === 'room' ? 'Bron qilish' : 'Bog‘lanish'}</button>
-      {guestsOpen && <div ref={panelRef} id="reservation-guests" className="shilla-guest-panel" role="dialog" aria-labelledby="reservation-guests-title" aria-describedby="reservation-guests-note" tabIndex={-1}>
-        <h2 id="reservation-guests-title" className="sr-only">Xonalar va mehmonlar</h2>
-        <button type="button" className="shilla-guest-close" aria-label="Mehmonlar panelini yopish" onClick={closeGuests}><X size={21} strokeWidth={1} /></button>
-        <div className="shilla-guest-rows">
-          {rooms.map((room, index) => <div className="shilla-guest-room" key={room.id}>
-            <div className="shilla-guest-room-heading"><h3 id={`guest-room-${room.id}`} tabIndex={-1}>Xona {index + 1}</h3>{rooms.length > 1 && <button type="button" className="shilla-guest-remove" aria-label={`${index + 1}-xonani olib tashlash`} onClick={() => { setRooms((current) => current.filter((item) => item.id !== room.id)); addRef.current?.focus(); }}><X size={15} />Olib tashlash</button>}</div>
-            {GUEST_TYPES.map((kind) => <div className="shilla-guest-counter" role="group" aria-label={`${index + 1}-xona: ${kind.label}`} key={kind.key}>
-              <span>{kind.label}</span>
-              <button type="button" aria-label={`${index + 1}-xona: ${kind.label} sonini kamaytirish`} disabled={room[kind.key] <= kind.min} onClick={() => updateGuest(room.id, kind.key, -1)}><Minus size={18} strokeWidth={1} /></button>
-              <output aria-live="polite" aria-label={`${index + 1}-xona: ${kind.label} soni`}>{room[kind.key]}</output>
-              <button type="button" aria-label={`${index + 1}-xona: ${kind.label} sonini oshirish`} disabled={room[kind.key] >= kind.max} onClick={() => updateGuest(room.id, kind.key, 1)}><Plus size={18} strokeWidth={1} /></button>
-            </div>)}
-          </div>)}
-        </div>
-        <div className="shilla-guest-panel-note">
-          <p id="reservation-guests-note">※ Bolalar: 37 oylikdan 12 yoshgacha. Chaqaloqlar: 36 oylikkacha.<small>Har xonada: 1–4 katta, 0–3 bola, 0–2 chaqaloq. Ko‘pi bilan {MAX_ROOMS} xona.</small></p>
-          <button ref={addRef} type="button" className="shilla-guest-add" disabled={rooms.length >= MAX_ROOMS} onClick={addRoom}>Xona qo‘shish<Plus size={20} strokeWidth={1} /></button>
-        </div>
-        <div className="shilla-guest-actions"><button type="button" onClick={closeGuests}>Orqaga</button><button type="submit">{mode === 'room' ? 'Qidirish' : 'Bog‘lanish'}</button></div>
-      </div>}
-    </form>
+      <L.div className="shilla-guest-field">
+        <L.button ref={triggerRef} type="button" aria-label="Xonalar va mehmonlarni tanlash" aria-haspopup="dialog" aria-expanded={guestsOpen} aria-controls="reservation-guests" onClick={() => { setDatesOpen(false); setGuestsOpen(!guestsOpen); }}><L.span>Xona {rooms.length} · Katta {totals.adults} <L.span className="shilla-guest-extra">Bola {totals.children} Chaqaloq {totals.infants}</L.span></L.span><UsersRound size={23} strokeWidth={1.2} /></L.button>
+      </L.div>
+      <L.button className="shilla-reservation-submit" type="submit">{mode === 'room' ? 'Bron qilish' : 'Bog‘lanish'}</L.button>
+      {guestsOpen && <L.div ref={panelRef} id="reservation-guests" className="shilla-guest-panel" role="dialog" aria-labelledby="reservation-guests-title" aria-describedby="reservation-guests-note" tabIndex={-1}>
+        <L.h2 id="reservation-guests-title" className="sr-only">Xonalar va mehmonlar</L.h2>
+        <L.button type="button" className="shilla-guest-close" aria-label="Mehmonlar panelini yopish" onClick={closeGuests}><X size={21} strokeWidth={1} /></L.button>
+        <L.div className="shilla-guest-rows">
+          {rooms.map((room, index) => <L.div className="shilla-guest-room" key={room.id}>
+            <L.div className="shilla-guest-room-heading"><L.h3 id={`guest-room-${room.id}`} tabIndex={-1}>Xona {index + 1}</L.h3>{rooms.length > 1 && <L.button type="button" className="shilla-guest-remove" aria-label={`${index + 1}-xonani olib tashlash`} onClick={() => { setRooms((current) => current.filter((item) => item.id !== room.id)); addRef.current?.focus(); }}><X size={15} />Olib tashlash</L.button>}</L.div>
+            {GUEST_TYPES.map((kind) => <L.div className="shilla-guest-counter" role="group" aria-label={`${index + 1}-xona: ${kind.label}`} key={kind.key}>
+              <L.span>{kind.label}</L.span>
+              <L.button type="button" aria-label={`${index + 1}-xona: ${kind.label} sonini kamaytirish`} disabled={room[kind.key] <= kind.min} onClick={() => updateGuest(room.id, kind.key, -1)}><Minus size={18} strokeWidth={1} /></L.button>
+              <L.output aria-live="polite" aria-label={`${index + 1}-xona: ${kind.label} soni`}>{room[kind.key]}</L.output>
+              <L.button type="button" aria-label={`${index + 1}-xona: ${kind.label} sonini oshirish`} disabled={room[kind.key] >= kind.max} onClick={() => updateGuest(room.id, kind.key, 1)}><Plus size={18} strokeWidth={1} /></L.button>
+            </L.div>)}
+          </L.div>)}
+        </L.div>
+        <L.div className="shilla-guest-panel-note">
+          <L.p id="reservation-guests-note">※ Bolalar: 37 oylikdan 12 yoshgacha. Chaqaloqlar: 36 oylikkacha.<L.small>Har xonada: 1–4 katta, 0–3 bola, 0–2 chaqaloq. Ko‘pi bilan {MAX_ROOMS} xona.</L.small></L.p>
+          <L.button ref={addRef} type="button" className="shilla-guest-add" disabled={rooms.length >= MAX_ROOMS} onClick={addRoom}>Xona qo‘shish<Plus size={20} strokeWidth={1} /></L.button>
+        </L.div>
+        <L.div className="shilla-guest-actions"><L.button type="button" onClick={closeGuests}>Orqaga</L.button><L.button type="submit">{mode === 'room' ? 'Qidirish' : 'Bog‘lanish'}</L.button></L.div>
+      </L.div>}
+    </L.form>
   );
 }

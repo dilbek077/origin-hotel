@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Navbar from '@/components/layout/HotelNavbar';
 import ReservationBar from '@/components/layout/ReservationBar';
@@ -124,53 +126,53 @@ function Hero() {
   const nextSlide = (direction: number) => setSlide((previous) => (previous + direction + HERO_SLIDES.length) % HERO_SLIDES.length);
 
   return (
-    <section className="shilla-hero" aria-label="Origin Hotel va Qarshi manzaralari" aria-roledescription="slayder">
-      {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
-      <h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</h1>
-      <div className="shilla-mobile-hero-copy"><h2>Qarshida unutilmas hordiq</h2><p>Origin Hotel’da shinam xonalar va samimiy xizmatdan bahramand bo‘ling.</p></div>
-      <div className="shilla-mobile-hero-dots">{HERO_SLIDES.map((photo, index) => <button type="button" key={photo.src} aria-label={`${index + 1}-hero suratini ko‘rsatish`} aria-pressed={index === slide} onClick={() => setSlide(index)} />)}</div>
-      <div className="shilla-slider-controls">
-        <div className="shilla-slide-progress" aria-label={`${slide + 1} / ${HERO_SLIDES.length}`}><span style={{ width: `${((slide + 1) / HERO_SLIDES.length) * 100}%` }} /></div>
-        <button type="button" aria-label={paused ? 'Slayderni davom ettirish' : 'Slayderni to‘xtatish'} onClick={() => setPaused(!paused)}>{paused ? <Play size={16} /> : <Pause size={16} />}</button>
-        <button type="button" aria-label="Oldingi surat" onClick={() => nextSlide(-1)}><ChevronLeft size={25} strokeWidth={1} /></button>
-        <button type="button" aria-label="Keyingi surat" onClick={() => nextSlide(1)}><ChevronRight size={25} strokeWidth={1} /></button>
-      </div>
-    </section>
+    <L.section className="shilla-hero" aria-label="Origin Hotel va Qarshi manzaralari" aria-roledescription="slayder">
+      {HERO_SLIDES.map((photo, index) => <L.img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
+      <L.h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</L.h1>
+      <L.div className="shilla-mobile-hero-copy"><L.h2>Qarshida unutilmas hordiq</L.h2><L.p>Origin Hotel’da shinam xonalar va samimiy xizmatdan bahramand bo‘ling.</L.p></L.div>
+      <L.div className="shilla-mobile-hero-dots">{HERO_SLIDES.map((photo, index) => <L.button type="button" key={photo.src} aria-label={`${index + 1}-hero suratini ko‘rsatish`} aria-pressed={index === slide} onClick={() => setSlide(index)} />)}</L.div>
+      <L.div className="shilla-slider-controls">
+        <L.div className="shilla-slide-progress" aria-label={`${slide + 1} / ${HERO_SLIDES.length}`}><L.span style={{ width: `${((slide + 1) / HERO_SLIDES.length) * 100}%` }} /></L.div>
+        <L.button type="button" aria-label={paused ? 'Slayderni davom ettirish' : 'Slayderni to‘xtatish'} onClick={() => setPaused(!paused)}>{paused ? <Play size={16} /> : <Pause size={16} />}</L.button>
+        <L.button type="button" aria-label="Oldingi surat" onClick={() => nextSlide(-1)}><ChevronLeft size={25} strokeWidth={1} /></L.button>
+        <L.button type="button" aria-label="Keyingi surat" onClick={() => nextSlide(1)}><ChevronRight size={25} strokeWidth={1} /></L.button>
+      </L.div>
+    </L.section>
   );
 }
 
 /* ─── Ticker ─────────────────────────────────────────────── */
 function Ticker() {
   return (
-    <div className="hotel-ticker" role="region" aria-label="Origin Hotel — Toshkent. Qulaylik va nafosat. Unutilmas hordiq.">
-      <div className="hotel-ticker-track" aria-hidden="true">
+    <L.div className="hotel-ticker" role="region" aria-label="Origin Hotel — Toshkent. Qulaylik va nafosat. Unutilmas hordiq.">
+      <L.div className="hotel-ticker-track" aria-hidden="true">
         {[0, 1].map((group) => (
-          <div className="hotel-ticker-group" key={group}>
+          <L.div className="hotel-ticker-group" key={group}>
             {[0, 1].map((copy) => (
-              <span key={copy}>
-                ORIGIN HOTEL <i>✦</i> TOSHKENT <i>✦</i> QULAYLIK VA NAFOSAT{' '}
-                <i>✦</i> UNUTILMAS HORDIQ <i>✦</i>
-              </span>
+              <L.span key={copy}>
+                ORIGIN HOTEL <L.i>✦</L.i> TOSHKENT <L.i>✦</L.i> QULAYLIK VA NAFOSAT{' '}
+                <L.i>✦</L.i> UNUTILMAS HORDIQ <L.i>✦</L.i>
+              </L.span>
             ))}
-          </div>
+          </L.div>
         ))}
-      </div>
-    </div>
+      </L.div>
+    </L.div>
   );
 }
 
 /* ─── Rooms ──────────────────────────────────────────────── */
 function RoomCard({ room, onBook }: { room: typeof ROOM_DATA[0]; onBook: (room: typeof ROOM_DATA[0]) => void }) {
   return (
-    <article className="shilla-package-card">
-      <button type="button" className="shilla-package-image" onClick={() => onBook(room)} aria-label={`${room.label} xonani ko‘rish`}>
-        <img src={room.image} alt={`${room.label} xona`} loading="lazy" decoding="async" />
-      </button>
-      <h3><button type="button" onClick={() => onBook(room)}>{room.label} Xona</button></h3>
-      <p>{room.description}</p>
-      <p className="shilla-package-features">{room.features.slice(0, 2).join(' · ')}</p>
-      <p className="shilla-package-price">{formatPrice(room.price)} / tun · {room.size} · {room.capacity} kishi</p>
-    </article>
+    <L.article className="shilla-package-card">
+      <L.button type="button" className="shilla-package-image" onClick={() => onBook(room)} aria-label={`${room.label} xonani ko‘rish`}>
+        <L.img src={room.image} alt={`${room.label} xona`} loading="lazy" decoding="async" />
+      </L.button>
+      <L.h3><L.button type="button" onClick={() => onBook(room)}>{room.label} Xona</L.button></L.h3>
+      <L.p>{room.description}</L.p>
+      <L.p className="shilla-package-features">{room.features.slice(0, 2).join(' · ')}</L.p>
+      <L.p className="shilla-package-price">{formatPrice(room.price)} / tun · {room.size} · {room.capacity} kishi</L.p>
+    </L.article>
   );
 }
 
@@ -210,14 +212,14 @@ function RoomDetailModal({
   }, [onClose]);
 
   return (
-    <div
+    <L.div
       className="gallery-overlay"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="hotel-room-detail relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
-        <img src={activePhoto} alt="Origin Hotel surati" className="hotel-room-main-photo h-52 w-full object-cover" />
-        <div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxonaning boshqa suratlari">{photos.filter((photo) => photo !== activePhoto).map((photo) => <button type="button" key={photo} aria-label={`${photos.indexOf(photo) + 1}-xona suratini ko‘rsatish`} onClick={() => setActivePhoto(photo)}><img src={photo} alt="" loading="lazy" /></button>)}</div>
-        <button
+      <L.div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="hotel-room-detail relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
+        <L.img src={activePhoto} alt="Origin Hotel surati" className="hotel-room-main-photo h-52 w-full object-cover" />
+        <L.div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxonaning boshqa suratlari">{photos.filter((photo) => photo !== activePhoto).map((photo) => <L.button type="button" key={photo} aria-label={`${photos.indexOf(photo) + 1}-xona suratini ko‘rsatish`} onClick={() => setActivePhoto(photo)}><L.img src={photo} alt="" loading="lazy" /></L.button>)}</L.div>
+        <L.button
           ref={closeRef}
           type="button"
           aria-label="Xona tafsilotlarini yopish"
@@ -225,37 +227,37 @@ function RoomDetailModal({
           className="absolute right-4 top-4 rounded-full bg-[--ink]/60 p-2 text-white hover:bg-[--ink] transition"
         >
           <X size={16} />
-        </button>
-        <div className="p-6">
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">{room.label}</p>
-          <h3 id="room-detail-title" className="font-display mt-1 text-2xl">{room.label} Xona</h3>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">{room.description}</p>
+        </L.button>
+        <L.div className="p-6">
+          <L.p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">{room.label}</L.p>
+          <L.h3 id="room-detail-title" className="font-display mt-1 text-2xl">{room.label} Xona</L.h3>
+          <L.p className="mt-3 text-sm leading-6 text-muted-foreground">{room.description}</L.p>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <L.div className="mt-4 grid grid-cols-2 gap-2">
             {room.features.map((f) => (
-              <div key={f} className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-[--champagne]" />
+              <L.div key={f} className="flex items-center gap-2 text-xs text-muted-foreground">
+                <L.span className="h-1.5 w-1.5 rounded-full bg-[--champagne]" />
                 {f}
-              </div>
+              </L.div>
             ))}
-          </div>
+          </L.div>
 
-          <div className="mt-5 flex items-center justify-between border-t border-[--line] pt-4">
-            <div>
-              <p className="text-[10px] text-muted-foreground">Tunlik narx</p>
-              <p className="text-lg font-bold text-[--champagne]">{formatPrice(room.price)}</p>
-            </div>
-            <a
+          <L.div className="mt-5 flex items-center justify-between border-t border-[--line] pt-4">
+            <L.div>
+              <L.p className="text-[10px] text-muted-foreground">Tunlik narx</L.p>
+              <L.p className="text-lg font-bold text-[--champagne]">{formatPrice(room.price)}</L.p>
+            </L.div>
+            <L.a
               href="#contact"
               onClick={(e) => { e.preventDefault(); onClose(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); }}
               className="rounded-full bg-[--champagne] px-5 py-2.5 text-xs font-bold text-[--ink] hover:bg-white transition"
             >
               Bog'lanish
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+            </L.a>
+          </L.div>
+        </L.div>
+      </L.div>
+    </L.div>
   );
 }
 
@@ -272,27 +274,27 @@ function Rooms({ searchSummary, selected, onSelect, onInfo }: {
     { key: 'fitness', title: 'Fitnes zali', image: IMAGES.gym, imageAlt: 'Origin Hotel ichki yo‘lagi' },
   ];
   return (
-    <section id="rooms" className="shilla-packages">
-      <div className="shilla-packages-heading">
-        <h2 tabIndex={-1}>XONALAR</h2>
-        <p>Har bir sayohatga mos xona.</p>
-        <a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
-      </div>
-      {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
-      <div className="shilla-mobile-offers">
-        <div className="shilla-mobile-section-heading"><h2 tabIndex={-1}>TAKLIFLAR</h2><a href="#experiences" aria-label="Barcha suratlarni ko‘rish"><ChevronRight size={24} strokeWidth={1} /></a></div>
-        <div className="shilla-mobile-offer-tabs" role="group" aria-label="Taklif turi"><button type="button" aria-pressed={mobileTab === 'rooms'} onClick={() => setMobileTab('rooms')}>XONALAR</button><button type="button" aria-pressed={mobileTab === 'services'} onClick={() => setMobileTab('services')}>XIZMATLAR</button></div>
+    <L.section id="rooms" className="shilla-packages">
+      <L.div className="shilla-packages-heading">
+        <L.h2 tabIndex={-1}>XONALAR</L.h2>
+        <L.p>Har bir sayohatga mos xona.</L.p>
+        <L.a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></L.a>
+      </L.div>
+      {searchSummary && <L.p role="status" className="shilla-search-summary">{searchSummary}</L.p>}
+      <L.div className="shilla-mobile-offers">
+        <L.div className="shilla-mobile-section-heading"><L.h2 tabIndex={-1}>TAKLIFLAR</L.h2><L.a href="#experiences" aria-label="Barcha suratlarni ko‘rish"><ChevronRight size={24} strokeWidth={1} /></L.a></L.div>
+        <L.div className="shilla-mobile-offer-tabs" role="group" aria-label="Taklif turi"><L.button type="button" aria-pressed={mobileTab === 'rooms'} onClick={() => setMobileTab('rooms')}>XONALAR</L.button><L.button type="button" aria-pressed={mobileTab === 'services'} onClick={() => setMobileTab('services')}>XIZMATLAR</L.button></L.div>
         {mobileTab === 'rooms' ? <>
-          <article className="shilla-mobile-featured-offer"><button type="button" onClick={() => onSelect(ROOM_DATA[0])} aria-label="Standart xonani ko‘rish"><img src={ROOM_DATA[0].image} alt="Standart xona" loading="lazy" /><h3>Standart xona va nonushta</h3></button><p>{formatPrice(ROOM_DATA[0].price)} / tun <span>Origin Hotel</span></p></article>
-          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <article key={room.type}><button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><img src={room.image} alt={`${room.label} xona`} loading="lazy" /><h3>{room.label} Xona</h3></button><p>{formatPrice(room.price)} / tun</p></article>)}</div>
+          <L.article className="shilla-mobile-featured-offer"><L.button type="button" onClick={() => onSelect(ROOM_DATA[0])} aria-label="Standart xonani ko‘rish"><L.img src={ROOM_DATA[0].image} alt="Standart xona" loading="lazy" /><L.h3>Standart xona va nonushta</L.h3></L.button><L.p>{formatPrice(ROOM_DATA[0].price)} / tun <L.span>Origin Hotel</L.span></L.p></L.article>
+          <L.div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <L.article key={room.type}><L.button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><L.img src={room.image} alt={`${room.label} xona`} loading="lazy" /><L.h3>{room.label} Xona</L.h3></L.button><L.p>{formatPrice(room.price)} / tun</L.p></L.article>)}</L.div>
         </> : <>
-          <article className="shilla-mobile-featured-offer"><button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><img src={IMAGES.pool} alt="Origin Hotel tashqi ko‘rinishi" loading="lazy" /><h3>Basseyn va hordiq</h3></button><p>Mehmonxona qulayliklari <span>Origin Hotel</span></p></article>
-          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <article key={service.key}><button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><img src={service.image} alt={service.imageAlt} loading="lazy" /><h3>{service.title}</h3></button><p>Origin Hotel</p></article>)}</div>
+          <L.article className="shilla-mobile-featured-offer"><L.button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><L.img src={IMAGES.pool} alt="Origin Hotel tashqi ko‘rinishi" loading="lazy" /><L.h3>Basseyn va hordiq</L.h3></L.button><L.p>Mehmonxona qulayliklari <L.span>Origin Hotel</L.span></L.p></L.article>
+          <L.div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <L.article key={service.key}><L.button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><L.img src={service.image} alt={service.imageAlt} loading="lazy" /><L.h3>{service.title}</L.h3></L.button><L.p>Origin Hotel</L.p></L.article>)}</L.div>
         </>}
-      </div>
-      <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</div>
+      </L.div>
+      <L.div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</L.div>
       {selected && <RoomDetailModal room={selected} onClose={() => onSelect(null)} />}
-    </section>
+    </L.section>
   );
 }
 
@@ -349,20 +351,20 @@ function Dining({ selection }: { selection: { index: number; request: number } |
   };
 
   return (
-    <section id="dining" className="shilla-dining" aria-labelledby="dining-title">
-      <div className="shilla-dining-intro">
-        <h2 id="dining-title">RESTORAN</h2>
-        <p>Origin Hotel restorani, nonushta va shved stoli bilan yoqimli dam oling.</p>
-        <img
+    <L.section id="dining" className="shilla-dining" aria-labelledby="dining-title">
+      <L.div className="shilla-dining-intro">
+        <L.h2 id="dining-title">RESTORAN</L.h2>
+        <L.p>Origin Hotel restorani, nonushta va shved stoli bilan yoqimli dam oling.</L.p>
+        <L.img
           className="shilla-dining-main-image"
           src={IMAGES.restaurant}
           alt="Origin Hotel restoran zali"
           loading="lazy"
           decoding="async"
         />
-      </div>
-      <div className="shilla-dining-gallery">
-        <div
+      </L.div>
+      <L.div className="shilla-dining-gallery">
+        <L.div
           ref={trackRef}
           className="shilla-dining-track"
           tabIndex={0}
@@ -385,26 +387,26 @@ function Dining({ selection }: { selection: { index: number; request: number } |
           }}
         >
           {DINING_CARDS.map((card, index) => (
-            <article id={`dining-card-${index}`} key={card.title} className="shilla-dining-card">
-              <a href="#contact" className="shilla-dining-image-link" aria-label={`${card.title}: bog‘lanish`}>
-                <img src={card.image} alt={card.alt} loading="lazy" decoding="async" />
-              </a>
-              <div className="shilla-dining-caption">
-                <h3><a href="#contact">{card.title}</a></h3>
-                <p>{card.description}</p>
-              </div>
-            </article>
+            <L.article id={`dining-card-${index}`} key={card.title} className="shilla-dining-card">
+              <L.a href="#contact" className="shilla-dining-image-link" aria-label={`${card.title}: bog‘lanish`}>
+                <L.img src={card.image} alt={card.alt} loading="lazy" decoding="async" />
+              </L.a>
+              <L.div className="shilla-dining-caption">
+                <L.h3><L.a href="#contact">{card.title}</L.a></L.h3>
+                <L.p>{card.description}</L.p>
+              </L.div>
+            </L.article>
           ))}
-        </div>
-        <div className="shilla-dining-controls">
-          <span aria-live="polite">{String(activeCard + 1).padStart(2, '0')} / {String(DINING_CARDS.length).padStart(2, '0')}</span>
-          <div>
-            <button type="button" aria-label="Oldingi restoran kartochkasi" disabled={activeCard === 0} onClick={() => moveTo(activeCard - 1)}><ChevronLeft size={23} strokeWidth={1} /></button>
-            <button type="button" aria-label="Keyingi restoran kartochkasi" disabled={activeCard === DINING_CARDS.length - 1} onClick={() => moveTo(activeCard + 1)}><ChevronRight size={23} strokeWidth={1} /></button>
-          </div>
-        </div>
-      </div>
-    </section>
+        </L.div>
+        <L.div className="shilla-dining-controls">
+          <L.span aria-live="polite">{String(activeCard + 1).padStart(2, '0')} / {String(DINING_CARDS.length).padStart(2, '0')}</L.span>
+          <L.div>
+            <L.button type="button" aria-label="Oldingi restoran kartochkasi" disabled={activeCard === 0} onClick={() => moveTo(activeCard - 1)}><ChevronLeft size={23} strokeWidth={1} /></L.button>
+            <L.button type="button" aria-label="Keyingi restoran kartochkasi" disabled={activeCard === DINING_CARDS.length - 1} onClick={() => moveTo(activeCard + 1)}><ChevronRight size={23} strokeWidth={1} /></L.button>
+          </L.div>
+        </L.div>
+      </L.div>
+    </L.section>
   );
 }
 
@@ -434,12 +436,12 @@ function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSl
   const move = (direction: number) => onSlideChange((activeSlide + direction + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length);
 
   return (
-    <section id="experiences" className="shilla-experiences" aria-labelledby="experiences-title">
-      <div className="shilla-experiences-heading">
-        <h2 id="experiences-title">TAASSUROTLAR</h2>
-        <p>Origin Hotel’da har bir sayohatingizni unutilmas lahzalarga boyiting.</p>
-      </div>
-      <div
+    <L.section id="experiences" className="shilla-experiences" aria-labelledby="experiences-title">
+      <L.div className="shilla-experiences-heading">
+        <L.h2 id="experiences-title">TAASSUROTLAR</L.h2>
+        <L.p>Origin Hotel’da har bir sayohatingizni unutilmas lahzalarga boyiting.</L.p>
+      </L.div>
+      <L.div
         className="shilla-experiences-stage"
         role="region"
         aria-roledescription="slayder"
@@ -472,26 +474,26 @@ function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSl
           const offset = (index - activeSlide + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length;
           const position = offset === 0 ? 'active' : offset === 1 ? 'next' : 'previous';
           return (
-            <article key={slide.title} className={`shilla-experience-slide is-${position}`} aria-hidden={position !== 'active'}>
-              <img src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
-              <div className="shilla-mobile-experience-copy"><h3>{slide.title}</h3><p>{slide.description}</p></div>
-            </article>
+            <L.article key={slide.title} className={`shilla-experience-slide is-${position}`} aria-hidden={position !== 'active'}>
+              <L.img src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
+              <L.div className="shilla-mobile-experience-copy"><L.h3>{slide.title}</L.h3><L.p>{slide.description}</L.p></L.div>
+            </L.article>
           );
         })}
-        <div className="shilla-experience-caption">
-          <div className="shilla-experience-copy">
-            <h2>{EXPERIENCE_SLIDES[activeSlide].title}</h2>
-            <p>{EXPERIENCE_SLIDES[activeSlide].description}</p>
-          </div>
-          <div className="shilla-experience-arrows">
-            <button type="button" aria-label="Oldingi taassurot" onClick={() => move(-1)}><ChevronLeft size={26} strokeWidth={1} /></button>
-            <button type="button" aria-label="Keyingi taassurot" onClick={() => move(1)}><ChevronRight size={26} strokeWidth={1} /></button>
-          </div>
-        </div>
-        <span className="sr-only" aria-live="polite">{activeSlide + 1} / {EXPERIENCE_SLIDES.length}: {EXPERIENCE_SLIDES[activeSlide].title}</span>
-      </div>
-      <div className="shilla-mobile-experience-progress">{EXPERIENCE_SLIDES.map((item, index) => <button type="button" key={item.title} aria-label={`${index + 1}-taassurotni ko‘rsatish`} aria-pressed={activeSlide === index} onClick={() => onSlideChange(index)} />)}</div>
-    </section>
+        <L.div className="shilla-experience-caption">
+          <L.div className="shilla-experience-copy">
+            <L.h2>{EXPERIENCE_SLIDES[activeSlide].title}</L.h2>
+            <L.p>{EXPERIENCE_SLIDES[activeSlide].description}</L.p>
+          </L.div>
+          <L.div className="shilla-experience-arrows">
+            <L.button type="button" aria-label="Oldingi taassurot" onClick={() => move(-1)}><ChevronLeft size={26} strokeWidth={1} /></L.button>
+            <L.button type="button" aria-label="Keyingi taassurot" onClick={() => move(1)}><ChevronRight size={26} strokeWidth={1} /></L.button>
+          </L.div>
+        </L.div>
+        <L.span className="sr-only" aria-live="polite">{activeSlide + 1} / {EXPERIENCE_SLIDES.length}: {EXPERIENCE_SLIDES[activeSlide].title}</L.span>
+      </L.div>
+      <L.div className="shilla-mobile-experience-progress">{EXPERIENCE_SLIDES.map((item, index) => <L.button type="button" key={item.title} aria-label={`${index + 1}-taassurotni ko‘rsatish`} aria-pressed={activeSlide === index} onClick={() => onSlideChange(index)} />)}</L.div>
+    </L.section>
   );
 }
 
@@ -503,38 +505,38 @@ function Contact() {
   const openStreetMap = 'https://www.openstreetmap.org/?mlat=41.3111&mlon=69.2797#map=15/41.3111/69.2797';
 
   return (
-    <section id="contact" className="shilla-location" aria-labelledby="location-title">
-      <h2 id="location-title">JOYLASHUV</h2>
-      <div className="shilla-location-info">
-        <p><strong>Manzil</strong><a href={googleMap} target="_blank" rel="noreferrer">{address}</a></p>
-        <p><strong>Tel.</strong><a href="tel:+998712002020">+998 71 200 20 20</a></p>
-        <nav className="shilla-map-links" aria-label="Xarita xizmatlari">
-          <a href={googleMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-google" aria-hidden="true" />Google Maps</a>
-          <a href={`https://yandex.com/maps/?text=${mapQuery}`} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-yandex" aria-hidden="true" />Yandex Maps</a>
-          <a href={openStreetMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-osm" aria-hidden="true" />OpenStreetMap</a>
-        </nav>
-      </div>
-      <details id="transport-details" className="shilla-location-directions">
-        <summary>Yo‘l va transport ma’lumotlari<ChevronRight size={18} strokeWidth={1} /></summary>
-        <div className="shilla-location-directions-content">
-          <p>Amir Temur shoh ko‘chasi bo‘yida — aeroportga 20 daqiqa, metro va biznes markazlariga piyoda masofada.</p>
-          <p>Qabulxona 24 soat, haftasiga 7 kun ishlaydi. Yo‘l bo‘yicha yordam uchun <a href="tel:+998712002020">+998 71 200 20 20</a> raqamiga murojaat qiling.</p>
-          <a className="shilla-directions-link" href={`https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`} target="_blank" rel="noreferrer">Yo‘nalishni xaritada ochish<ArrowUpRight size={17} /></a>
-        </div>
-      </details>
-      <div className="shilla-location-map">
-        <iframe
+    <L.section id="contact" className="shilla-location" aria-labelledby="location-title">
+      <L.h2 id="location-title">JOYLASHUV</L.h2>
+      <L.div className="shilla-location-info">
+        <L.p><L.strong>Manzil</L.strong><L.a href={googleMap} target="_blank" rel="noreferrer">{address}</L.a></L.p>
+        <L.p><L.strong>Tel.</L.strong><L.a href="tel:+998712002020">+998 71 200 20 20</L.a></L.p>
+        <L.nav className="shilla-map-links" aria-label="Xarita xizmatlari">
+          <L.a href={googleMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-google" aria-hidden="true" />Google Maps</L.a>
+          <L.a href={`https://yandex.com/maps/?text=${mapQuery}`} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-yandex" aria-hidden="true" />Yandex Maps</L.a>
+          <L.a href={openStreetMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-osm" aria-hidden="true" />OpenStreetMap</L.a>
+        </L.nav>
+      </L.div>
+      <L.details id="transport-details" className="shilla-location-directions">
+        <L.summary>Yo‘l va transport ma’lumotlari<ChevronRight size={18} strokeWidth={1} /></L.summary>
+        <L.div className="shilla-location-directions-content">
+          <L.p>Amir Temur shoh ko‘chasi bo‘yida — aeroportga 20 daqiqa, metro va biznes markazlariga piyoda masofada.</L.p>
+          <L.p>Qabulxona 24 soat, haftasiga 7 kun ishlaydi. Yo‘l bo‘yicha yordam uchun <L.a href="tel:+998712002020">+998 71 200 20 20</L.a> raqamiga murojaat qiling.</L.p>
+          <L.a className="shilla-directions-link" href={`https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`} target="_blank" rel="noreferrer">Yo‘nalishni xaritada ochish<ArrowUpRight size={17} /></L.a>
+        </L.div>
+      </L.details>
+      <L.div className="shilla-location-map">
+        <L.iframe
           title="Origin Hotel xaritasi"
           src="https://www.openstreetmap.org/export/embed.html?bbox=69.26%2C41.29%2C69.30%2C41.33&layer=mapnik&marker=41.3111%2C69.2797"
           loading="lazy"
         />
-        <a href={openStreetMap} target="_blank" rel="noreferrer" className="shilla-location-map-open">Xaritani kattalashtirish<ArrowUpRight size={17} /></a>
-      </div>
-      <div className="shilla-location-contact">
-        <a href="mailto:reservations@originhotel.uz"><Mail size={16} />reservations@originhotel.uz</a>
-        <span><Clock size={16} />Qabulxona: 24/7</span>
-      </div>
-    </section>
+        <L.a href={openStreetMap} target="_blank" rel="noreferrer" className="shilla-location-map-open">Xaritani kattalashtirish<ArrowUpRight size={17} /></L.a>
+      </L.div>
+      <L.div className="shilla-location-contact">
+        <L.a href="mailto:reservations@originhotel.uz"><Mail size={16} />reservations@originhotel.uz</L.a>
+        <L.span><Clock size={16} />Qabulxona: 24/7</L.span>
+      </L.div>
+    </L.section>
   );
 }
 
@@ -547,25 +549,25 @@ function CTA() {
   ];
 
   return (
-    <section id="benefits" className="shilla-benefits" aria-labelledby="benefits-title">
-      <div className="shilla-benefits-intro">
-        <h2 id="benefits-title">Origin Hotel</h2>
-        <p>Keyingi tashrifingizni bugun rejalashtiring. Shinam xonalar, samimiy xizmat va barcha qulayliklar sizni kutmoqda.</p>
-        <div className="shilla-benefits-actions">
-          <a href="#rooms">Batafsil</a>
-          <Link to="/login">Kirish</Link>
-        </div>
-      </div>
-      <div className="shilla-benefits-grid">
+    <L.section id="benefits" className="shilla-benefits" aria-labelledby="benefits-title">
+      <L.div className="shilla-benefits-intro">
+        <L.h2 id="benefits-title">Origin Hotel</L.h2>
+        <L.p>Keyingi tashrifingizni bugun rejalashtiring. Shinam xonalar, samimiy xizmat va barcha qulayliklar sizni kutmoqda.</L.p>
+        <L.div className="shilla-benefits-actions">
+          <L.a href="#rooms">Batafsil</L.a>
+          <Link to="/login"><LocalizedText>Kirish</LocalizedText></Link>
+        </L.div>
+      </L.div>
+      <L.div className="shilla-benefits-grid">
         {benefits.map(({ icon: Icon, title, description }) => (
-          <article key={title} className="shilla-benefit-card">
-            <div className="shilla-benefit-icon" aria-hidden="true"><Icon size={66} strokeWidth={.9} /></div>
-            <h3>{title}</h3>
-            <p>{description}</p>
-          </article>
+          <L.article key={title} className="shilla-benefit-card">
+            <L.div className="shilla-benefit-icon" aria-hidden="true"><Icon size={66} strokeWidth={.9} /></L.div>
+            <L.h3>{title}</L.h3>
+            <L.p>{description}</L.p>
+          </L.article>
         ))}
-      </div>
-    </section>
+      </L.div>
+    </L.section>
   );
 }
 
@@ -580,45 +582,45 @@ function Footer() {
   ];
 
   return (
-    <footer className="shilla-footer">
-      <nav className="shilla-footer-brands" aria-label="Origin Hotel xizmatlari">
-        <Link to="/">ORIGIN HOTEL</Link>
-        <a href="#dining">RESTORAN & HORDIQ</a>
-        <a href="#contact">24/7 QABULXONA</a>
-      </nav>
-      <div className="shilla-footer-main">
-        <Link to="/" className="shilla-footer-wordmark" aria-label="Origin Hotel — bosh sahifa"><span>ORIGIN HOTEL</span><small>TOSHKENT</small></Link>
-        <div className="shilla-footer-address">
-          <p><strong>Origin Hotel</strong><span className="shilla-footer-divider" aria-hidden="true" /><span>Amir Temur shoh ko‘chasi 15, Toshkent 100000, O‘zbekiston</span></p>
-          <p><a href="tel:+998712002020">TEL. +998 71 200 20 20</a><a href="mailto:reservations@originhotel.uz">reservations@originhotel.uz</a></p>
-        </div>
-        <nav className="shilla-footer-links" aria-label="Sayt bo‘limlari">
-          <div className="shilla-footer-link-row">
-            {links.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}
-            <Link to="/login">Kirish</Link>
-          </div>
-          <div className="shilla-footer-link-row shilla-footer-secondary">
-            <Link to="/admin">Boshqaruv tizimi</Link>
-            <span className="shilla-footer-policy">Maxfiylik siyosati</span>
-            <span>Foydalanish shartlari</span>
-          </div>
-        </nav>
-        <div className="shilla-footer-bottom">
-          <div className="shilla-footer-legal">
-            <p>Origin Hotel · Amir Temur shoh ko‘chasi 15, Toshkent 100000 · Qabulxona: 24/7</p>
-            <div className="shilla-footer-social-icons">
-              <span role="img" aria-label="Instagram"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none" /></svg></span>
-              <span role="img" aria-label="Facebook" className="shilla-footer-facebook"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 22v-9h3l.5-3H14V8c0-1 .3-1.5 1.5-1.5H18V3h-3c-3 0-5 1.8-5 5v2H7v3h3v9z" /></svg></span>
-            </div>
-          </div>
-          <div className="shilla-footer-feature">
-            <span aria-hidden="true"><Hotel size={28} strokeWidth={1.2} /></span>
-            <div><p>Origin Hotel — Toshkent</p><p>Shinam xonalar, restoran va dam olish qulayliklari.</p></div>
-          </div>
-          <p className="shilla-footer-copyright">© {year} Origin Hotel. Barcha huquqlar himoyalangan.</p>
-        </div>
-      </div>
-    </footer>
+    <L.footer className="shilla-footer">
+      <L.nav className="shilla-footer-brands" aria-label="Origin Hotel xizmatlari">
+        <Link to="/"><LocalizedText>ORIGIN HOTEL</LocalizedText></Link>
+        <L.a href="#dining">RESTORAN & HORDIQ</L.a>
+        <L.a href="#contact">24/7 QABULXONA</L.a>
+      </L.nav>
+      <L.div className="shilla-footer-main">
+        <Link to="/" className="shilla-footer-wordmark" aria-label="Origin Hotel — bosh sahifa"><L.span>ORIGIN HOTEL</L.span><L.small>TOSHKENT</L.small></Link>
+        <L.div className="shilla-footer-address">
+          <L.p><L.strong>Origin Hotel</L.strong><L.span className="shilla-footer-divider" aria-hidden="true" /><L.span>Amir Temur shoh ko‘chasi 15, Toshkent 100000, O‘zbekiston</L.span></L.p>
+          <L.p><L.a href="tel:+998712002020">TEL. +998 71 200 20 20</L.a><L.a href="mailto:reservations@originhotel.uz">reservations@originhotel.uz</L.a></L.p>
+        </L.div>
+        <L.nav className="shilla-footer-links" aria-label="Sayt bo‘limlari">
+          <L.div className="shilla-footer-link-row">
+            {links.map((link) => <L.a key={link.href} href={link.href}>{link.label}</L.a>)}
+            <Link to="/login"><LocalizedText>Kirish</LocalizedText></Link>
+          </L.div>
+          <L.div className="shilla-footer-link-row shilla-footer-secondary">
+            <Link to="/admin"><LocalizedText>Boshqaruv tizimi</LocalizedText></Link>
+            <L.span className="shilla-footer-policy">Maxfiylik siyosati</L.span>
+            <L.span>Foydalanish shartlari</L.span>
+          </L.div>
+        </L.nav>
+        <L.div className="shilla-footer-bottom">
+          <L.div className="shilla-footer-legal">
+            <L.p>Origin Hotel · Amir Temur shoh ko‘chasi 15, Toshkent 100000 · Qabulxona: 24/7</L.p>
+            <L.div className="shilla-footer-social-icons">
+              <L.span role="img" aria-label="Instagram"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none" /></svg></L.span>
+              <L.span role="img" aria-label="Facebook" className="shilla-footer-facebook"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 22v-9h3l.5-3H14V8c0-1 .3-1.5 1.5-1.5H18V3h-3c-3 0-5 1.8-5 5v2H7v3h3v9z" /></svg></L.span>
+            </L.div>
+          </L.div>
+          <L.div className="shilla-footer-feature">
+            <L.span aria-hidden="true"><Hotel size={28} strokeWidth={1.2} /></L.span>
+            <L.div><L.p>Origin Hotel — Toshkent</L.p><L.p>Shinam xonalar, restoran va dam olish qulayliklari.</L.p></L.div>
+          </L.div>
+          <L.p className="shilla-footer-copyright">© {year} Origin Hotel. Barcha huquqlar himoyalangan.</L.p>
+        </L.div>
+      </L.div>
+    </L.footer>
   );
 }
 
@@ -628,15 +630,15 @@ function QuickDock() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
-    <nav aria-label="Tezkor amallar" className="hotel-quick-dock">
+    <L.nav aria-label="Tezkor amallar" className="hotel-quick-dock">
       <Link to="/admin" className="hotel-dock-account">
         <BedDouble size={15} />
-        <span>Boshqaruv</span>
+        <L.span>Boshqaruv</L.span>
       </Link>
-      <button type="button" onClick={scrollToTop} aria-label="Sahifa boshiga" title="Yuqoriga">
+      <L.button type="button" onClick={scrollToTop} aria-label="Sahifa boshiga" title="Yuqoriga">
         <ChevronUp size={16} />
-      </button>
-    </nav>
+      </L.button>
+    </L.nav>
   );
 }
 
@@ -678,13 +680,13 @@ export default function LandingPage() {
   useScrollProgress();
 
   return (
-    <div ref={pageRef} className="marketing-page hotel-marketing shilla-site">
+    <L.div ref={pageRef} className="marketing-page hotel-marketing shilla-site">
       {/* Scroll progress bar */}
-      <div className="marketing-progress" aria-hidden />
+      <L.div className="marketing-progress" aria-hidden />
 
       <Navbar onRoomSelect={(type) => setSelectedRoom(ROOM_DATA.find((room) => room.type === type) ?? null)} onInfoSelect={(key, triggerId) => setSelectedInfo({ key, triggerId })} onExperienceSelect={setExperienceSlide} onDiningSelect={(index) => setDiningSelection((previous) => ({ index, request: (previous?.request ?? 0) + 1 }))} />
 
-      <main>
+      <L.main>
         <ReservationBar onSearch={setSearchSummary} />
         <Hero />
         <Ticker />
@@ -694,11 +696,11 @@ export default function LandingPage() {
         <Experiences activeSlide={experienceSlide} onSlideChange={setExperienceSlide} />
         <Contact />
         <CTA />
-      </main>
+      </L.main>
 
       <Footer />
       <QuickDock />
       {selectedInfo && <HotelInformationDialog selection={selectedInfo} onClose={() => setSelectedInfo(null)} />}
-    </div>
+    </L.div>
   );
 }

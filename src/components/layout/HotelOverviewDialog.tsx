@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { X } from 'lucide-react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -44,8 +46,8 @@ export default function HotelOverviewDialog({ open, onOpenChange, onSelect, onRe
   const { locale } = useTranslation();
   const text = (caption: string) => hotelNavigationText(caption, locale);
   const link = (action: HotelOverviewAction) => action.infoKey || action.roomType
-    ? <button type="button" aria-haspopup="dialog" onClick={() => onSelect(action)}>{text(action.label)}</button>
-    : <a href={action.href} onClick={() => onSelect(action)}>{text(action.label)}</a>;
+    ? <L.button type="button" aria-haspopup="dialog" onClick={() => onSelect(action)}>{text(action.label)}</L.button>
+    : <L.a href={action.href} onClick={() => onSelect(action)}>{text(action.label)}</L.a>;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -55,41 +57,41 @@ export default function HotelOverviewDialog({ open, onOpenChange, onSelect, onRe
         showCloseButton={false}
         onCloseAutoFocus={(event) => { event.preventDefault(); onRestoreFocus(); }}
       >
-        <DialogTitle className="sr-only">{text('Mehmonxona haqida')}</DialogTitle>
-        <DialogDescription className="sr-only">Origin Hotel · Toshkent</DialogDescription>
+        <DialogTitle className="sr-only"><LocalizedText>{text('Mehmonxona haqida')}</LocalizedText></DialogTitle>
+        <DialogDescription className="sr-only"><LocalizedText>Origin Hotel · Toshkent</LocalizedText></DialogDescription>
         <Tabs defaultValue="brand" orientation="vertical" className="hotel-overview-tabs">
           <TabsList className="hotel-overview-tab-list" aria-label={text('Mehmonxona haqida')}>
-            <TabsTrigger value="brand" className="hotel-overview-tab">{text('Brend')}</TabsTrigger>
-            <TabsTrigger value="region" className="hotel-overview-tab">{text('Hudud')}</TabsTrigger>
+            <TabsTrigger value="brand" className="hotel-overview-tab"><LocalizedText>{text('Brend')}</LocalizedText></TabsTrigger>
+            <TabsTrigger value="region" className="hotel-overview-tab"><LocalizedText>{text('Hudud')}</LocalizedText></TabsTrigger>
           </TabsList>
           <TabsContent value="brand" className="hotel-overview-content">
-            {BRAND_ROWS.map((row) => (
-              <div className="hotel-overview-row" key={row.title}>
-                <h3>{text(row.title)}</h3>
-                <div className="hotel-overview-links">{row.links.map((action) => <span key={action.label}>{link(action)}</span>)}</div>
-              </div>
-            ))}
+            <LocalizedText>{BRAND_ROWS.map((row) => (
+              <L.div className="hotel-overview-row" key={row.title}>
+                <L.h3>{text(row.title)}</L.h3>
+                <L.div className="hotel-overview-links">{row.links.map((action) => <L.span key={action.label}>{link(action)}</L.span>)}</L.div>
+              </L.div>
+            ))}</LocalizedText>
           </TabsContent>
           <TabsContent value="region" className="hotel-overview-content">
-            <div className="hotel-overview-row">
-              <h3>Toshkent</h3>
-              <div className="hotel-overview-links">
-                <span>{link({ label: 'Origin Hotel', href: '#contact' })}</span>
-                <span>{link({ label: 'Manzil va xarita', href: '#contact' })}</span>
-                <span>{link({ label: 'Yo‘l ma’lumotlari', href: '#transport-details', openDirections: true })}</span>
-              </div>
-            </div>
-            <div className="hotel-overview-row">
-              <h3>{text('Aloqa')}</h3>
-              <div className="hotel-overview-links">
-                <span>{link({ label: '+998 71 200 20 20', href: 'tel:+998712002020' })}</span>
-                <span>{link({ label: 'Email yuborish', href: 'mailto:reservations@originhotel.uz' })}</span>
-                <span>{link({ label: 'Qabulxona: 24/7', href: '#benefits', infoKey: 'reception' })}</span>
-              </div>
-            </div>
+            <L.div className="hotel-overview-row">
+              <L.h3>Toshkent</L.h3>
+              <L.div className="hotel-overview-links">
+                <L.span>{link({ label: 'Origin Hotel', href: '#contact' })}</L.span>
+                <L.span>{link({ label: 'Manzil va xarita', href: '#contact' })}</L.span>
+                <L.span>{link({ label: 'Yo‘l ma’lumotlari', href: '#transport-details', openDirections: true })}</L.span>
+              </L.div>
+            </L.div>
+            <L.div className="hotel-overview-row">
+              <L.h3>{text('Aloqa')}</L.h3>
+              <L.div className="hotel-overview-links">
+                <L.span>{link({ label: '+998 71 200 20 20', href: 'tel:+998712002020' })}</L.span>
+                <L.span>{link({ label: 'Email yuborish', href: 'mailto:reservations@originhotel.uz' })}</L.span>
+                <L.span>{link({ label: 'Qabulxona: 24/7', href: '#benefits', infoKey: 'reception' })}</L.span>
+              </L.div>
+            </L.div>
           </TabsContent>
         </Tabs>
-        <DialogClose asChild><button type="button" className="hotel-overview-close" aria-label={text('Oynani yopish')}><X size={29} strokeWidth={1.2} /></button></DialogClose>
+        <DialogClose asChild><L.button type="button" className="hotel-overview-close" aria-label={text('Oynani yopish')}><X size={29} strokeWidth={1.2} /></L.button></DialogClose>
       </DialogContent>
     </Dialog>
   );

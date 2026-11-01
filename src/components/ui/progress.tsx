@@ -1,3 +1,4 @@
+import { L } from '@/localization/elements';
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,7 @@ export function Progress({
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
-    <div
+    <L.div
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={max}
@@ -28,13 +29,13 @@ export function Progress({
       )}
       {...props}
     >
-      <div
+      <L.div
         className={cn(
           "h-full w-full flex-1 bg-primary transition-all duration-300 ease-in-out",
           indicatorClassName
         )}
         style={{ transform: `translateX(-${100 - percentage}%)` }}
       />
-    </div>
+    </L.div>
   );
 }

@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { AlertTriangle } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import { Button } from "@/components/ui/button";
@@ -23,19 +25,19 @@ export function ConfirmActionModal({
 }: ConfirmActionModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-md">
-      <div className="space-y-5">
-        <div className="flex items-start gap-3">
+      <L.div className="space-y-5">
+        <L.div className="flex items-start gap-3">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
-          <p className="text-sm leading-6 text-foreground">{description}</p>
-        </div>
-        <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:justify-end">
+          <L.p className="text-sm leading-6 text-foreground">{description}</L.p>
+        </L.div>
+        <L.div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"
             className="min-w-24"
             onClick={onClose}
           >
-            {cancelLabel}
+            <LocalizedText>{cancelLabel}</LocalizedText>
           </Button>
           <Button
             type="button"
@@ -43,10 +45,10 @@ export function ConfirmActionModal({
             className="min-w-24"
             onClick={onConfirm}
           >
-            {confirmLabel}
+            <LocalizedText>{confirmLabel}</LocalizedText>
           </Button>
-        </div>
-      </div>
+        </L.div>
+      </L.div>
     </Modal>
   );
 }

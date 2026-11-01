@@ -1,3 +1,5 @@
+import { L } from '@/localization/elements';
+import { LocalizedText } from '@/localization/Text';
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -83,12 +85,12 @@ export default function Sidebar() {
   };
 
   const renderNavGroup = (title: string, items: NavItem[]) => (
-    <div className="space-y-1">
-      <div className="px-3 py-1">
-        <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+    <L.div className="space-y-1">
+      <L.div className="px-3 py-1">
+        <L.span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
           {title}
-        </span>
-      </div>
+        </L.span>
+      </L.div>
       {items.map((item) => (
         <NavLink
           key={item.path}
@@ -107,37 +109,37 @@ export default function Sidebar() {
             ].join(' ')
           }
         >
-          {item.icon}
-          <span className="truncate">{t(item.labelKey)}</span>
+          <LocalizedText>{item.icon}</LocalizedText>
+          <L.span className="truncate">{t(item.labelKey)}</L.span>
         </NavLink>
       ))}
-    </div>
+    </L.div>
   );
 
   return (
-    <aside className="flex h-full min-h-0 w-60 shrink-0 flex-col border-r border-border bg-card text-card-foreground select-none transition-colors">
+    <L.aside className="flex h-full min-h-0 w-60 shrink-0 flex-col border-r border-border bg-card text-card-foreground select-none transition-colors">
       {/* Brand Header */}
-      <div className="flex items-center justify-between px-4 h-16 border-b border-border">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-md bg-foreground text-background shrink-0">
+      <L.div className="flex items-center justify-between px-4 h-16 border-b border-border">
+        <L.div className="flex items-center gap-2.5 min-w-0">
+          <L.div className="flex items-center justify-center w-8 h-8 rounded-md bg-foreground text-background shrink-0">
             <Hotel size={18} />
-          </div>
-          <div className="min-w-0">
-            <span className="text-sm font-bold tracking-tight text-foreground block truncate">
+          </L.div>
+          <L.div className="min-w-0">
+            <L.span className="text-sm font-bold tracking-tight text-foreground block truncate">
               Origin Hotel
-            </span>
-            <span className="text-[10px] text-muted-foreground block truncate">
+            </L.span>
+            <L.span className="text-[10px] text-muted-foreground block truncate">
               Admin & PMS
-            </span>
-          </div>
-        </div>
+            </L.span>
+          </L.div>
+        </L.div>
         <Badge variant="outline" className="text-[9px] uppercase font-semibold h-4.5 px-1.5 shrink-0">
-          {role}
+          <LocalizedText>{role}</LocalizedText>
         </Badge>
-      </div>
+      </L.div>
 
       {/* Navigation Sections */}
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-3">
+      <L.div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-3">
         {isAdmin ? (
           <>
             {renderNavGroup('Asosiy', mainNavItems)}
@@ -145,13 +147,13 @@ export default function Sidebar() {
             {renderNavGroup('Moliya & Tahlil', financeNavItems)}
 
             {/* System / Settings */}
-            <div className="space-y-1 pt-1">
-              <div className="px-3 py-1">
-                <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+            <L.div className="space-y-1 pt-1">
+              <L.div className="px-3 py-1">
+                <L.span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                   {t('nav.system')}
-                </span>
-              </div>
-              <button
+                </L.span>
+              </L.div>
+              <L.button
                 type="button"
                 onClick={handleSettingsToggle}
                 className={[
@@ -161,20 +163,20 @@ export default function Sidebar() {
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 ].join(' ')}
               >
-                <div className="flex items-center gap-2.5">
+                <L.div className="flex items-center gap-2.5">
                   <Settings size={17} />
-                  <span>{t('nav.settings')}</span>
-                </div>
+                  <L.span>{t('nav.settings')}</L.span>
+                </L.div>
                 <ChevronDown
                   size={14}
                   className={`transition-transform duration-200 ${
                     isSettingsOpen ? 'rotate-180' : 'rotate-0'
                   } text-muted-foreground`}
                 />
-              </button>
+              </L.button>
 
               {isSettingsOpen && (
-                <div className="relative pl-2.5 ml-3.5 my-1 space-y-1 border-l border-border">
+                <L.div className="relative pl-2.5 ml-3.5 my-1 space-y-1 border-l border-border">
                   {settingsSubItems.map((sub) => {
                     const isSubActive =
                       location.pathname === sub.path ||
@@ -192,29 +194,29 @@ export default function Sidebar() {
                         ].join(' ')}
                       >
                         <sub.icon size={14} />
-                        <span>{t(sub.labelKey)}</span>
+                        <L.span>{t(sub.labelKey)}</L.span>
                       </NavLink>
                     );
                   })}
-                </div>
+                </L.div>
               )}
-            </div>
+            </L.div>
           </>
         ) : (
           renderNavGroup('Xodimlar paneli', staffNavItems)
         )}
-      </div>
+      </L.div>
 
       {/* Footer Logout */}
-      <div className="p-3 border-t border-border">
-        <button
+      <L.div className="p-3 border-t border-border">
+        <L.button
           onClick={handleLogout}
           className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
         >
           <LogOut size={16} />
-          <span>{t('nav.logout')}</span>
-        </button>
-      </div>
-    </aside>
+          <L.span>{t('nav.logout')}</L.span>
+        </L.button>
+      </L.div>
+    </L.aside>
   );
 }
