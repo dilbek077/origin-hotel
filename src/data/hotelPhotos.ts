@@ -33,7 +33,7 @@ export const HOTEL_PHOTOS = {
   roomSeating: photo02,
   exterior: photo07,
   loginExterior: photo06,
-  eventRestaurant: photo12,
+  eventRestaurant: photo15,
   eventRelax: photo21,
   eventFamily: photo26,
   diningMain: photo11,
@@ -53,7 +53,7 @@ export const HOTEL_PHOTOS = {
 // Additional hotel views are exclusive to one room's detail gallery.
 export const HOTEL_ROOM_DETAIL_PHOTOS: Record<string, string[]> = {
   Standart: [photo02],
-  Deluxe: [photo15],
+  Deluxe: [photo12],
   Suite: [photo05],
   Presidential: [],
 };

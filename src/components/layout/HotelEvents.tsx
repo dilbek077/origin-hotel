@@ -10,7 +10,7 @@ const EVENTS = [
     detail: 'Restoran muhiti, nonushta va shved stoli haqida ma’lumot oling. Tashrif va buyurtma tafsilotlarini mehmonxona bilan kelishishingiz mumkin.',
     note: 'Tashrif tafsilotlarini qabulxona bilan kelishing.',
     image: HOTEL_PHOTOS.eventRestaurant,
-    alt: 'Origin Hotel tashqi ko‘rinishi',
+    alt: 'Origin Hotel ichki interyeri va qabul stoli',
     href: '#dining',
     action: 'Restoranni ko‘rish',
   },
