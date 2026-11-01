@@ -35,6 +35,7 @@ const MENUS: NavMenu[] = [
     ] },
   ] },
   { label: 'Takliflar', links: [
+    { label: 'Tadbirlar', href: '#events' },
     { label: 'Xonalar va narxlar', href: '#rooms' },
     { label: 'Bron qilish', href: '#reservation' },
     { label: 'Afzalliklar', href: '#benefits' },

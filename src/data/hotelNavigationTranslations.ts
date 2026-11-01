@@ -2,6 +2,7 @@ import type { LanguageCode } from '@/i18n';
 
 // Menu captions only; hotel names, room names and stored business data stay intact.
 const rows: [string, string, string, string, string][] = [
+  ['Tadbirlar', 'Events', 'Мероприятия', 'Événements', 'Veranstaltungen'],
   ['Mehmonxona haqida', 'About the hotel', 'Об отеле', 'À propos de l’hôtel', 'Über das Hotel'],
   ['Brend', 'Brand', 'Бренд', 'Marque', 'Marke'],
   ['Hudud', 'Region', 'Регион', 'Région', 'Region'],

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Navbar from '@/components/layout/HotelNavbar';
 import ReservationBar from '@/components/layout/ReservationBar';
+import HotelEvents from '@/components/layout/HotelEvents';
 import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
 import type { HotelInfoKey } from '@/data/hotelInformation';
 import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
@@ -682,6 +683,7 @@ export default function LandingPage() {
         <Hero />
         <Ticker />
         <Rooms searchSummary={searchSummary} selected={selectedRoom} onSelect={setSelectedRoom} onInfo={(key, triggerId) => setSelectedInfo({ key, triggerId })} />
+        <HotelEvents />
         <Dining selection={diningSelection} />
         <Experiences activeSlide={experienceSlide} onSlideChange={setExperienceSlide} />
         <Contact />
