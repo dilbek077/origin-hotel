@@ -152,7 +152,16 @@ function ReservationBar({ onSearch }: { onSearch: (summary: string) => void }) {
   );
 }
 
-const HERO_SLIDES = [
+// Keep city photographs isolated from room, restaurant, and service imagery.
+const qarshiHeroImages = import.meta.glob<string>(
+  '/src/assets/qarshi-hero/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}',
+  { eager: true, query: '?url', import: 'default' },
+);
+const qarshiHeroSlides = Object.entries(qarshiHeroImages)
+  .sort(([first], [second]) => first.localeCompare(second, 'en', { numeric: true }))
+  .map(([, src], index) => ({ src, alt: `Qarshi shahri — ${index + 1}-surat` }));
+
+const HERO_SLIDES = qarshiHeroSlides.length > 0 ? qarshiHeroSlides : [
   { src: IMAGES.pool, alt: 'Origin Hotel basseyn va dam olish hududi' },
   { src: IMAGES.exterior, alt: 'Origin Hotel tashqi ko‘rinishi' },
   { src: IMAGES.presidential, alt: 'Origin Hotel Presidential xonasi' },
