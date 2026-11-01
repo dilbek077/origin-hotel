@@ -544,7 +544,11 @@ function Experiences() {
   );
 
   return (
-    <section id="experiences" className="shilla-experiences" aria-label="Origin Hotel taassurotlari">
+    <section id="experiences" className="shilla-experiences" aria-labelledby="experiences-title">
+      <div className="shilla-experiences-heading">
+        <h2 id="experiences-title">TAASSUROTLAR</h2>
+        <p>Origin Hotel’da har bir sayohatingizni unutilmas lahzalarga boyiting.</p>
+      </div>
       <div
         className="shilla-experiences-stage"
         role="region"
