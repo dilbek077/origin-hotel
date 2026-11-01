@@ -8,19 +8,16 @@
     <title>origin-hotel</title>
   </head>
   <body>
-    <div id="root">
-      <div class="startup-skeleton" aria-hidden="true">
-        <div class="startup-header"><span>ORIGIN HOTEL<small>TOSHKENT</small></span></div>
-        <div class="startup-nav"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="startup-booking"><i></i><i></i><i></i><i></i><b></b></div>
-        <div class="startup-hero">
-          <div class="startup-arch"></div>
-          <div class="startup-caption"><i></i><i></i><i></i></div>
-          <div class="startup-progress"><i></i><i></i><i></i></div>
-        </div>
-        <div class="startup-cards"><i></i><i></i><i></i></div>
+    <div id="startup-loader" class="startup-skeleton" role="status" aria-label="Yuklanmoqda" aria-busy="true">
+      <div class="startup-placeholder" aria-hidden="true">
+        <div class="startup-placeholder-top"><i></i><span><i></i><i></i></span></div>
+        <div class="startup-placeholder-cover"></div>
+        <div class="startup-placeholder-lines"><i></i><i></i><i></i></div>
+        <div class="startup-placeholder-tiles"><i></i><i></i><i></i></div>
       </div>
     </div>
+    <script>document.getElementById('startup-loader').dataset.started = String(performance.now());</script>
+    <div id="root" data-loading inert aria-hidden="true"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
