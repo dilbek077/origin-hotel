@@ -757,3 +757,102 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   .shilla-guest-close { right: calc(15 * var(--guest-unit)); top: calc(12 * var(--guest-unit)); width: calc(30 * var(--guest-unit)); height: calc(30 * var(--guest-unit)); }
   .shilla-guest-close svg { width: calc(21 * var(--guest-unit)); height: calc(21 * var(--guest-unit)); }
 }
+
+/* Two-month date range calendar, measured from the supplied desktop reference. */
+.shilla-date-picker { position: static; }
+.shilla-date-triggers { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.shilla-date-triggers > button { display: flex; align-items: center; gap: 18px; white-space: nowrap; padding: 6px 0; font: inherit; }
+.shilla-date-triggers svg { flex-shrink: 0; }
+.shilla-calendar-panel {
+  --calendar-unit: 1px;
+  position: absolute; top: 100%; left: 50px; right: 50px; z-index: 2;
+  background: #fff; color: #222; padding: 40px 0 18px;
+  height: min(720px, calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - 12px));
+  overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 12px 28px #0001;
+  font-size: 18px; animation: guest-panel-enter 180ms ease-out;
+}
+.shilla-calendar-panel:focus { outline: none; }
+.shilla-calendar-months { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100% - 40px); }
+.shilla-calendar-month { min-width: 0; padding: 0 12%; }
+.shilla-calendar-month + .shilla-calendar-month { border-left: 1px solid #e5e5e5; }
+.shilla-calendar-month-title { position: relative; width: max-content; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 30px; margin: 0 auto 20px; line-height: 1.2; }
+.shilla-calendar-month-title select { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; color-scheme: light; }
+.shilla-calendar-month-title:focus-within { outline: 2px solid #8c7550; outline-offset: 6px; }
+.shilla-calendar-weekdays, .shilla-calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.shilla-calendar-weekdays { margin-bottom: 16px; color: #888; }
+.shilla-calendar-days { grid-auto-rows: 90px; }
+.shilla-calendar-day { position: relative; height: 56px; display: grid; place-items: center; isolation: isolate; }
+.shilla-calendar-day > button { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; color: inherit; z-index: 1; font-size: 20px; }
+.shilla-calendar-day > button:hover:not(:disabled) { box-shadow: inset 0 0 0 1px #857661; }
+.shilla-calendar-day > button:focus-visible { outline: 2px solid #857661; outline-offset: 2px; }
+.shilla-calendar-day > button:disabled { color: #c5c5c5; cursor: not-allowed; }
+.shilla-calendar-panel .is-sunday { color: #a23c45; }
+.shilla-calendar-day.is-range-start > button, .shilla-calendar-day.is-range-end > button { background: #857661; color: #fff; }
+.shilla-calendar-day.is-range-start::before, .shilla-calendar-day.is-range-end::before, .shilla-calendar-day.is-in-range::before { content: ''; position: absolute; inset: 0; background: #ece8e1; z-index: -1; }
+.shilla-calendar-day.is-range-start::before { left: calc(50% - 31px); border-radius: 32px 0 0 32px; }
+.shilla-calendar-day.is-range-end::before { right: calc(50% - 31px); border-radius: 0 32px 32px 0; }
+.shilla-calendar-day.is-range-start.is-range-end::before { left: calc(50% - 31px); right: calc(50% - 31px); border-radius: 32px; }
+.shilla-calendar-day small { position: absolute; top: 60px; font-size: 14px; color: #999; }
+.shilla-calendar-prev, .shilla-calendar-next { position: absolute; top: 50%; width: 40px; height: 44px; display: grid; place-items: center; color: #222; }
+.shilla-calendar-prev { left: 35px; }
+.shilla-calendar-next { right: 35px; }
+.shilla-calendar-prev:disabled { color: #bbb; cursor: not-allowed; }
+.shilla-calendar-close { position: absolute; top: 10px; right: 12px; display: grid; place-items: center; width: 30px; height: 30px; color: #888; }
+.shilla-calendar-note { font-size: 14px; color: #888; margin: 18px 50px 0; }
+.shilla-calendar-note > span { margin-left: 10px; }
+@media (min-width: 1101px) {
+  .shilla-calendar-panel { --calendar-unit: min(1px, calc(100vw / 1917)); left: calc(50 * var(--calendar-unit)); right: calc(50 * var(--calendar-unit)); padding-top: calc(40 * var(--calendar-unit)); font-size: calc(18 * var(--calendar-unit)); height: min(calc(720 * var(--calendar-unit)), calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - 12px)); }
+  .shilla-calendar-month:first-child { padding-left: calc(12% + 42 * var(--calendar-unit)); padding-right: calc(12% - 42 * var(--calendar-unit)); }
+  .shilla-calendar-month + .shilla-calendar-month { padding-left: calc(12% - 64 * var(--calendar-unit)); padding-right: calc(12% + 64 * var(--calendar-unit)); }
+  .shilla-calendar-month-title { gap: calc(18 * var(--calendar-unit)); font-size: calc(30 * var(--calendar-unit)); margin-bottom: calc(20 * var(--calendar-unit)); }
+  .shilla-calendar-month-title svg { width: calc(20 * var(--calendar-unit)); height: calc(20 * var(--calendar-unit)); }
+  .shilla-calendar-weekdays { margin-bottom: calc(16 * var(--calendar-unit)); }
+  .shilla-calendar-days { grid-auto-rows: calc(90 * var(--calendar-unit)); }
+  .shilla-calendar-day { height: calc(56 * var(--calendar-unit)); }
+  .shilla-calendar-day > button { width: calc(50 * var(--calendar-unit)); height: calc(50 * var(--calendar-unit)); font-size: calc(20 * var(--calendar-unit)); }
+  .shilla-calendar-day.is-range-start::before { left: calc(50% - 31 * var(--calendar-unit)); border-radius: calc(32 * var(--calendar-unit)) 0 0 calc(32 * var(--calendar-unit)); }
+  .shilla-calendar-day.is-range-end::before { right: calc(50% - 31 * var(--calendar-unit)); border-radius: 0 calc(32 * var(--calendar-unit)) calc(32 * var(--calendar-unit)) 0; }
+  .shilla-calendar-day.is-range-start.is-range-end::before { left: calc(50% - 31 * var(--calendar-unit)); right: calc(50% - 31 * var(--calendar-unit)); border-radius: calc(32 * var(--calendar-unit)); }
+  .shilla-calendar-day small { top: calc(60 * var(--calendar-unit)); font-size: calc(14 * var(--calendar-unit)); }
+  .shilla-calendar-prev { left: calc(35 * var(--calendar-unit)); }
+  .shilla-calendar-next { right: calc(35 * var(--calendar-unit)); }
+  .shilla-calendar-prev svg, .shilla-calendar-next svg { width: calc(32 * var(--calendar-unit)); height: calc(32 * var(--calendar-unit)); }
+  .shilla-calendar-note { font-size: calc(14 * var(--calendar-unit)); margin: calc(18 * var(--calendar-unit)) calc(50 * var(--calendar-unit)) 0; }
+}
+@media (max-width: 1499px) {
+  .shilla-date-triggers { gap: 5px; font-size: 14px; }
+  .shilla-date-triggers > button { gap: 8px; }
+}
+@media (max-width: 1100px) {
+  .shilla-calendar-panel { left: 25px; right: 25px; }
+  .shilla-calendar-month { padding-inline: 9%; }
+  .shilla-calendar-days { grid-auto-rows: 70px; }
+  .shilla-calendar-day > button { width: 40px; height: 40px; }
+  .shilla-calendar-prev { left: 8px; }
+  .shilla-calendar-next { right: 8px; }
+}
+@media (max-width: 767px) {
+  .shilla-date-triggers { justify-content: space-between; gap: 4px; font-size: 13px; }
+  .shilla-date-triggers > button { gap: 6px; }
+  .shilla-date-triggers svg { width: 18px; }
+  .shilla-calendar-panel { left: 12px; right: 12px; padding: 38px 18px 20px; height: auto; max-height: calc(100dvh - var(--intro-header-height, 76px) - var(--intro-booking-height, 180px) - 12px); }
+  .shilla-calendar-months { grid-template-columns: 1fr; gap: 30px; }
+  .shilla-calendar-month { padding: 0; }
+  .shilla-calendar-month + .shilla-calendar-month { border-left: 0; border-top: 1px solid #eee; padding-top: 24px; }
+  .shilla-calendar-month-title { font-size: 24px; margin-bottom: 20px; }
+  .shilla-calendar-weekdays { font-size: 14px; margin-bottom: 10px; }
+  .shilla-calendar-days { grid-auto-rows: 56px; }
+  .shilla-calendar-day { height: 38px; }
+  .shilla-calendar-day > button { width: 34px; height: 34px; font-size: 16px; }
+  .shilla-calendar-day small { top: 39px; font-size: 11px; }
+  .shilla-calendar-day.is-range-start::before { left: calc(50% - 19px); }
+  .shilla-calendar-day.is-range-end::before { right: calc(50% - 19px); }
+  .shilla-calendar-day.is-range-start.is-range-end::before { left: calc(50% - 19px); right: calc(50% - 19px); }
+  .shilla-calendar-prev, .shilla-calendar-next { top: 40px; width: 26px; height: 28px; }
+  .shilla-calendar-prev { left: 20px; }
+  .shilla-calendar-next { right: 20px; }
+  .shilla-calendar-prev svg, .shilla-calendar-next svg { width: 24px; }
+  .shilla-calendar-note { margin: 20px 0 0; font-size: 13px; }
+  .shilla-calendar-note > span { display: block; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .shilla-calendar-panel { animation: none; } }

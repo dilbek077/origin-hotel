@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MapPin, Minus, Plus, UsersRound, X } from 'lucide-react';
+import ReservationDatePicker from './ReservationDatePicker';
+import { hotelToday, nextDate } from '@/data/reservationDates';
 
 type GuestRoom = { id: number; adults: number; children: number; infants: number };
 type GuestKind = 'adults' | 'children' | 'infants';
@@ -10,15 +12,12 @@ const GUEST_TYPES = [
 ] as const;
 const MAX_ROOMS = 8;
 
-function localDate(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
-
 export default function ReservationBar({ onSearch }: { onSearch: (summary: string) => void }) {
   const [mode, setMode] = useState<'room' | 'dining'>('room');
-  const [checkIn, setCheckIn] = useState(() => localDate(new Date()));
-  const [checkOut, setCheckOut] = useState(() => { const day = new Date(); day.setDate(day.getDate() + 1); return localDate(day); });
+  const [checkIn, setCheckIn] = useState(hotelToday);
+  const [checkOut, setCheckOut] = useState(() => nextDate(hotelToday()));
   const [rooms, setRooms] = useState<GuestRoom[]>([{ id: 1, adults: 2, children: 0, infants: 0 }]);
+  const [datesOpen, setDatesOpen] = useState(false);
   const [guestsOpen, setGuestsOpen] = useState(false);
   const nextRoomId = useRef(2);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -72,6 +71,8 @@ export default function ReservationBar({ onSearch }: { onSearch: (summary: strin
     <form id="reservation" className="shilla-reservation" onSubmit={(event) => {
       event.preventDefault();
       setGuestsOpen(false);
+      if (checkIn < hotelToday() || checkOut <= checkIn) { setDatesOpen(true); return; }
+      setDatesOpen(false);
       if (mode === 'dining') { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); return; }
       const breakdown = rooms.map((room, index) => `${index + 1}-xona: ${room.adults} katta, ${room.children} bola, ${room.infants} chaqaloq`).join('; ');
       onSearch(`${checkIn} — ${checkOut} · ${rooms.length} xona · ${totals.adults} katta, ${totals.children} bola, ${totals.infants} chaqaloq. ${breakdown}. Xonani tanlab, bronni tasdiqlash uchun biz bilan bog‘laning.`);
@@ -84,16 +85,9 @@ export default function ReservationBar({ onSearch }: { onSearch: (summary: strin
         <button type="button" className={mode === 'dining' ? 'active' : ''} aria-pressed={mode === 'dining'} onClick={() => setMode('dining')}>Restoran</button>
       </div>
       <div className="shilla-hotel-field"><span>Origin Hotel · Toshkent</span><MapPin size={23} strokeWidth={1.3} /></div>
-      <div className="shilla-date-field">
-        <label><span className="sr-only">Kelish sanasi</span><input aria-label="Kelish sanasi" type="date" required value={checkIn} min={localDate(new Date())} onChange={(event) => {
-          const value = event.target.value; setCheckIn(value);
-          if (value && checkOut <= value) { const next = new Date(`${value}T12:00:00`); next.setDate(next.getDate() + 1); setCheckOut(localDate(next)); }
-        }} /></label>
-        <span aria-hidden>–</span>
-        <label><span className="sr-only">Ketish sanasi</span><input aria-label="Ketish sanasi" type="date" required value={checkOut} min={(() => { const day = new Date(`${checkIn || localDate(new Date())}T12:00:00`); day.setDate(day.getDate() + 1); return localDate(day); })()} onChange={(event) => setCheckOut(event.target.value)} /></label>
-      </div>
+      <ReservationDatePicker checkIn={checkIn} checkOut={checkOut} open={datesOpen} onOpenChange={(open) => { setDatesOpen(open); if (open) setGuestsOpen(false); }} onChange={(arrival, departure) => { setCheckIn(arrival); setCheckOut(departure); }} />
       <div className="shilla-guest-field">
-        <button ref={triggerRef} type="button" aria-label="Xonalar va mehmonlarni tanlash" aria-haspopup="dialog" aria-expanded={guestsOpen} aria-controls="reservation-guests" onClick={() => setGuestsOpen(!guestsOpen)}><span>Xona {rooms.length} · Katta {totals.adults} <span className="shilla-guest-extra">Bola {totals.children} Chaqaloq {totals.infants}</span></span><UsersRound size={23} strokeWidth={1.2} /></button>
+        <button ref={triggerRef} type="button" aria-label="Xonalar va mehmonlarni tanlash" aria-haspopup="dialog" aria-expanded={guestsOpen} aria-controls="reservation-guests" onClick={() => { setDatesOpen(false); setGuestsOpen(!guestsOpen); }}><span>Xona {rooms.length} · Katta {totals.adults} <span className="shilla-guest-extra">Bola {totals.children} Chaqaloq {totals.infants}</span></span><UsersRound size={23} strokeWidth={1.2} /></button>
       </div>
       <button className="shilla-reservation-submit" type="submit">{mode === 'room' ? 'Bron qilish' : 'Bog‘lanish'}</button>
       {guestsOpen && <div ref={panelRef} id="reservation-guests" className="shilla-guest-panel" role="dialog" aria-labelledby="reservation-guests-title" aria-describedby="reservation-guests-note" tabIndex={-1}>
