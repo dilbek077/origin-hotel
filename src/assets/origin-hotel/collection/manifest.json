@@ -1,0 +1,249 @@
+{
+  "sourceArchive": "rasm.rar",
+  "duplicatesExcluded": {
+    "19.jpg": "17.jpg",
+    "20.jpg": "18.jpg"
+  },
+  "photos": [
+    {
+      "id": "01",
+      "original": "1.jpg",
+      "sourceSha256": "e6f7d9cfbb2999bc36e4aa0332271150321b22f235eb9081ecf9e4cd6c435d1a",
+      "file": "photo-01-4k.webp",
+      "sha256": "10bdf15a502972c5f1efc7b7e566876eda40d957e8b9c188e2d1bb202f642832",
+      "width": 2160,
+      "height": 3840,
+      "placement": "rooms.deluxe"
+    },
+    {
+      "id": "02",
+      "original": "2.jpg",
+      "sourceSha256": "83d9c2c84fdbb12b8b531bc32bad282bf6c3bd36b875b7a5bcd48496360883d6",
+      "file": "photo-02-4k.webp",
+      "sha256": "e30e03948563ac018b4891e9ec70b529e6aa03083957adcf69e31cf9e8a56a56",
+      "width": 2160,
+      "height": 3840,
+      "placement": "roomDetails.standart.extra"
+    },
+    {
+      "id": "03",
+      "original": "3.jpg",
+      "sourceSha256": "4529204e56589b04bfb681a86fa322cb0a13d8da6a30cd8d4761957c43a7e876",
+      "file": "photo-03-4k.webp",
+      "sha256": "b788487a3a7cbb527573408c9395419ffa9922f2cfedfc7699db613fc9d5ed1c",
+      "width": 2160,
+      "height": 3840,
+      "placement": "rooms.suite"
+    },
+    {
+      "id": "04",
+      "original": "4.jpg",
+      "sourceSha256": "2eed4869cf12c4935c366d52f5c235f9b99e4625f8ef795c944916f1ca0e7eb3",
+      "file": "photo-04-4k.webp",
+      "sha256": "81502bd78a7e882adb5771354369b0d9deba855f7603b1457aeea0b49082af71",
+      "width": 2160,
+      "height": 3840,
+      "placement": "rooms.standart"
+    },
+    {
+      "id": "05",
+      "original": "5.jpg",
+      "sourceSha256": "6cb74edee81e2cf36707415357f8bee4bd9c8ef9146651dcfbc52eb524d29735",
+      "file": "photo-05-4k.webp",
+      "sha256": "de898c65bbafb7f9b846b354d23e63d8a51417b2a0804866debbf346f0f9fb93",
+      "width": 2160,
+      "height": 3840,
+      "placement": "roomDetails.suite.extra"
+    },
+    {
+      "id": "06",
+      "original": "6.jpg",
+      "sourceSha256": "cdf8f4be5680980fc88f4a2b93de402d3ddb774954fdba6e360e50634774bfc6",
+      "file": "photo-06-4k.webp",
+      "sha256": "3aeb9c3c28d88f44ea18af988c295644750aa718679405fa4d3d5e5aa690de57",
+      "width": 2160,
+      "height": 3840,
+      "placement": "login"
+    },
+    {
+      "id": "07",
+      "original": "7.jpg",
+      "sourceSha256": "c68ec80400d1d10563065e745405a43efad744d3fa7abd4f437bea736173281b",
+      "file": "photo-07-4k.webp",
+      "sha256": "533d87ce822cc7065af7c6009e10347294cfa80bf2841924c82ba8a3203a5d9f",
+      "width": 2160,
+      "height": 3840,
+      "placement": "experiences.exterior"
+    },
+    {
+      "id": "08",
+      "original": "8.jpg",
+      "sourceSha256": "ce88d316cf3d2b018aad03ba7d063c9472b0ada6b0f803ab56ea3540be88b379",
+      "file": "photo-08-4k.webp",
+      "sha256": "ee66e9cf977fbff87a7819c2373d775213f44eaabe105070c34930acd63a37d4",
+      "width": 2160,
+      "height": 3840,
+      "placement": "serviceDialog.pool"
+    },
+    {
+      "id": "09",
+      "original": "9.jpg",
+      "sourceSha256": "ec989bb8b45f3f42789b6339892a7fdd698c265366d29d3d6ba528716bee055c",
+      "file": "photo-09-4k.webp",
+      "sha256": "0a08f9d8bdf489a5eae4c197f3b72f176b9f53567d25a2b850255accf4e087c5",
+      "width": 2160,
+      "height": 3840,
+      "placement": "mobileServiceOffer.pool"
+    },
+    {
+      "id": "10",
+      "original": "10.jpg",
+      "sourceSha256": "c91507d794f2cde19fce85f05b16ee6cc0cb6774bd30e49c2e3f0fba4f500501",
+      "file": "photo-10-4k.webp",
+      "sha256": "f1d10e8ef4def23cc44aa409f3419ff6b483762068307a75377390495ad1cac6",
+      "width": 2160,
+      "height": 3840,
+      "placement": "dining.first"
+    },
+    {
+      "id": "11",
+      "original": "11.jpg",
+      "sourceSha256": "ff399ad04eb7ffa757db0f1af5c3b1befe72fc55d5fa0311090cfac2689790d6",
+      "file": "photo-11-4k.webp",
+      "sha256": "a4e2ca69f4c3b7428477c2f7e5e8b0007746ed343620fe82614764afdb7a502e",
+      "width": 2160,
+      "height": 3840,
+      "placement": "dining.main"
+    },
+    {
+      "id": "12",
+      "original": "12.jpg",
+      "sourceSha256": "36b64fa508069cf98df59e6a0e41deae2e0a3b3dda7107922ef2a77c7cdaab3e",
+      "file": "photo-12-4k.webp",
+      "sha256": "4df88ebd69fe2e36fcaf850ba5a2348a2f8c42901dab3c6a59751050cc1ec0d2",
+      "width": 2160,
+      "height": 3840,
+      "placement": "events.restaurant"
+    },
+    {
+      "id": "13",
+      "original": "13.jpg",
+      "sourceSha256": "d9c5a76616698420bb6d62b52eb165f6e641201b23428114179820276a3d2242",
+      "file": "photo-13-4k.webp",
+      "sha256": "8623287de1701ecfd28c9cd00b88b058abb65413c2dbb6c4ea8e2a5626a0be89",
+      "width": 2160,
+      "height": 3840,
+      "placement": "dining.breakfast"
+    },
+    {
+      "id": "14",
+      "original": "14.jpg",
+      "sourceSha256": "b007f9a23e8d17098750b046dd3f1bc2d29af2715dc0b0b41d6ee129417eedf3",
+      "file": "photo-14-4k.webp",
+      "sha256": "a2cb0d8e1427feb7d6fd9fe29c6956d4736254490cc84892e42fc9c72f32c430",
+      "width": 2160,
+      "height": 3840,
+      "placement": "dining.buffet"
+    },
+    {
+      "id": "15",
+      "original": "15.jpg",
+      "sourceSha256": "6ba7fa843a536c7b1d1896da09cd1aea20787bc59626ed68cd4135955f4698cc",
+      "file": "photo-15-4k.webp",
+      "sha256": "2ef659eac9d3f51b16c65e0c4c09cc2202eff790182e3a12dc2db325b038e150",
+      "width": 2160,
+      "height": 3840,
+      "placement": "roomDetails.deluxe.extra"
+    },
+    {
+      "id": "16",
+      "original": "16.jpg",
+      "sourceSha256": "64edceb2a8553f511c062568b4bd6bdddcec32c776411c50e31c96051b99952a",
+      "file": "photo-16-4k.webp",
+      "sha256": "3b65817d7b6440e9ff2e027751ee5cb9395c43c20f77bf5992131235e3717dce",
+      "width": 2160,
+      "height": 3840,
+      "placement": "experiences.reception"
+    },
+    {
+      "id": "17",
+      "original": "17.jpg",
+      "sourceSha256": "92e988e9bee9b9a759401ae35941ae074e8793bcb914832f26e4bf8bb4a4d6fa",
+      "file": "photo-17-4k.webp",
+      "sha256": "5609997a98d807012a3add222032fb85cd62d536cbb3c42c05060fe103e8eabc",
+      "width": 2160,
+      "height": 3840,
+      "placement": "mobileServiceOffer.spa"
+    },
+    {
+      "id": "18",
+      "original": "18.jpg",
+      "sourceSha256": "b6d3dd895cb5b4d4771bb3f916e534f8969995af91602c4f3e7bd997cdf8e10f",
+      "file": "photo-18-4k.webp",
+      "sha256": "b320bb78cd614959dcc70577ea75bbe91672132ff59afb7ec6655b6904f72866",
+      "width": 2160,
+      "height": 3840,
+      "placement": "experiences.corridor"
+    },
+    {
+      "id": "21",
+      "original": "21.jpg",
+      "sourceSha256": "ed2590bf987e632bd7d7c77ba0d70396bd325eaaacd4e524607c64798942058f",
+      "file": "photo-21-4k.webp",
+      "sha256": "693e1a2f630bc367ea5292636fb6765d732269fb75aa20e9da44702c65abdd6e",
+      "width": 2160,
+      "height": 3840,
+      "placement": "events.relax"
+    },
+    {
+      "id": "22",
+      "original": "22.jpg",
+      "sourceSha256": "1d727ea870be6f1871009ed0f77e8f959321afb8f80b36278b56a20a8788e172",
+      "file": "photo-22-4k.webp",
+      "sha256": "b00c72d685499069df562848b1643db16550101f1ba1311050db00abe811b1be",
+      "width": 2160,
+      "height": 3840,
+      "placement": "serviceDialog.fitness"
+    },
+    {
+      "id": "23",
+      "original": "23.jpg",
+      "sourceSha256": "63e4b26f3d873969f77b68959c40b91e2ef4f743e2042485aa84247b804f0921",
+      "file": "photo-23-4k.webp",
+      "sha256": "f4fc463cae6fc10ba0e5923d0db4c21bd3058608b98cd34f5abab41c35da7ee8",
+      "width": 2160,
+      "height": 3840,
+      "placement": "mobileServiceOffer.fitness"
+    },
+    {
+      "id": "24",
+      "original": "24.jpg",
+      "sourceSha256": "d76ab716e8fbe10ac7bab6799960a7f2fafcf7c1d15fb220371585e3ef2d1091",
+      "file": "photo-24-4k.webp",
+      "sha256": "bd44770e251af4f9147f1ffc6f79a1f8ed9c1a58ed8b03ae99dc32f276a191b0",
+      "width": 2160,
+      "height": 3840,
+      "placement": "serviceDialog.spa"
+    },
+    {
+      "id": "26",
+      "original": "26.jpg",
+      "sourceSha256": "4185f027000137e7db50e5bdf369bb617368bc4b1bd9da0f25a344c6314a736c",
+      "file": "photo-26-4k.webp",
+      "sha256": "b4b39557b1cbc8368c83255bfbd6230feb3dd10e5074e0079586aeec004b67e2",
+      "width": 2160,
+      "height": 3840,
+      "placement": "events.family"
+    },
+    {
+      "id": "27",
+      "original": "27.jpg",
+      "sourceSha256": "bc1b461b1ecff63bfc882d6c73d16ffdd12e706e821cec5330cb2a6b87746deb",
+      "file": "photo-27-4k.webp",
+      "sha256": "5fe5ebdb25e9169deb253d8d23f4fb616d740c575c75e6fcca7038c70e1e484f",
+      "width": 2160,
+      "height": 3840,
+      "placement": "rooms.presidential"
+    }
+  ]
+}

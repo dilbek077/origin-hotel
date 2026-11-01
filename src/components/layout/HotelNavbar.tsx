@@ -73,7 +73,7 @@ const MENUS: NavMenu[] = [
     ] },
   ] },
   { label: 'Qulayliklar', groups: [
-    { heading: { label: 'Basseyn', href: '#experiences', experienceSlide: 1 }, links: [
+    { heading: { label: 'Basseyn', href: '#benefits', infoKey: 'pool' }, links: [
       { label: 'Basseyn haqida', href: '#benefits', infoKey: 'pool' },
       { label: 'Suratlarni ko‘rish', href: '#experiences', experienceSlide: 1 },
     ] },
@@ -96,8 +96,8 @@ const MENUS: NavMenu[] = [
   ] },
   { label: 'Galereya', links: [
     { label: 'Tashqi ko‘rinish', href: '#experiences', experienceSlide: 0 },
-    { label: 'Basseyn', href: '#experiences', experienceSlide: 1 },
-    { label: 'Qabulxona', href: '#experiences', experienceSlide: 2 },
+    { label: 'Qabulxona', href: '#experiences', experienceSlide: 1 },
+    { label: 'Ichki yo‘lak', href: '#experiences', experienceSlide: 2 },
   ] },
   { label: 'Aloqa', links: [
     { label: 'Manzil va xarita', href: '#contact' },

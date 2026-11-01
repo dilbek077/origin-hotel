@@ -1,4 +1,4 @@
-import { HOTEL_PHOTOS } from './hotelPhotos';
+import { HOTEL_PHOTOS, HOTEL_ROOM_DETAIL_PHOTOS } from './hotelPhotos';
 
 export interface RoomSpace {
   id: string;
@@ -60,13 +60,7 @@ export const ROOMS: Room[] = [
     fullDescription: "Standart toifasidagi ushbu xona biznes safari yoki shahar bo'ylab sayohatga kelgan mehmonlar uchun ayni muddao. Ergonomik jihozlangan xona maydoni, qulay ortopedik to'shak va zamonaviy dush xonasi sizga to'laqonli dam olish imkoniyatini beradi. Har bir detal mehmonlarning tinchligi va farovonligi uchun puxta o'ylangan.",
     features: ['Tezkor Wi-Fi', 'Smart TV', 'Konditsioner', 'Bepul nonushta'],
     image: HOTEL_PHOTOS.twinRoom,
-    gallery: [
-      HOTEL_PHOTOS.twinRoom,
-      HOTEL_PHOTOS.singleRoom,
-      HOTEL_PHOTOS.exterior,
-      HOTEL_PHOTOS.singleRoom,
-      HOTEL_PHOTOS.doubleRoom,
-    ],
+    gallery: [HOTEL_PHOTOS.twinRoom, ...HOTEL_ROOM_DETAIL_PHOTOS.Standart],
     spaces: [
       {
         id: 'std-bedroom',
@@ -123,13 +117,7 @@ export const ROOMS: Room[] = [
     features: ['Panoramik oyna', 'Katta balkon', 'Mini-bar', 'Shved stoli nonushtasi'],
     image: HOTEL_PHOTOS.doubleRoom,
     popular: true,
-    gallery: [
-      HOTEL_PHOTOS.doubleRoom,
-      HOTEL_PHOTOS.roomSeating,
-      HOTEL_PHOTOS.singleRoom,
-      HOTEL_PHOTOS.exterior,
-      HOTEL_PHOTOS.singleRoom,
-    ],
+    gallery: [HOTEL_PHOTOS.doubleRoom, ...HOTEL_ROOM_DETAIL_PHOTOS.Deluxe],
     spaces: [
       {
         id: 'dlx-bedroom',
@@ -194,13 +182,7 @@ export const ROOMS: Room[] = [
     fullDescription: "Butun oila a'zolari birgalikda bekamu-ko'st hordiq chiqarishi uchun yaratilgan 3 xonali keng Suite. Asosiy yotoqxona, bolalar/mehmonlar uchun alohida ikkinchi yotoqxona, katta oilaviy yashash zali hamda mini-oshxona to'liq qulaylikni ta'minlaydi. Gidromassajli jakuzi esa kun so'ngida charchoqni chiqarish uchun ajoyib imkoniyat.",
     features: ['2 ta xona', 'Jakuzi vanna', 'Oshxona burchagi', 'VIP xizmat'],
     image: HOTEL_PHOTOS.singleRoom,
-    gallery: [
-      HOTEL_PHOTOS.singleRoom,
-      HOTEL_PHOTOS.roomSeating,
-      HOTEL_PHOTOS.singleRoom,
-      HOTEL_PHOTOS.roomSeating,
-      HOTEL_PHOTOS.singleRoom,
-    ],
+    gallery: [HOTEL_PHOTOS.singleRoom, ...HOTEL_ROOM_DETAIL_PHOTOS.Suite],
     spaces: [
       {
         id: 'ste-living',
@@ -273,15 +255,8 @@ export const ROOMS: Room[] = [
     description: "Eksklyuziv dizayn, yuqori darajadagi xavfsizlik va shaxsiy xizmat ko'rsatuvchi xodim bilan ta'minlangan.",
     fullDescription: "Origin Hotelning eng hashamatli va nufuzli apartamenti. 4 ta alohida xonani o'z ichiga olgan 120 metr kvadratlik bu qasr mehmonlarga mutlaq erkinlik, yuqori darajadagi xavfsizlik, shaxsiy terras va shaxsiy batler xizmatini taqdim etadi. Yuqori martabali mehmonlar, davlat arboblari va lyuks hayot ixlosmandlari uchun ideal tanlov.",
     features: ['Shaxsiy terras', 'Shaxsiy batler', 'Premium spa zonasi', 'Transfer bepul'],
-    image: HOTEL_PHOTOS.doubleRoom,
-    gallery: [
-      HOTEL_PHOTOS.doubleRoom,
-      HOTEL_PHOTOS.roomSeating,
-      HOTEL_PHOTOS.twinRoom,
-      HOTEL_PHOTOS.roomSeating,
-      HOTEL_PHOTOS.exterior,
-      HOTEL_PHOTOS.singleRoom,
-    ],
+    image: HOTEL_PHOTOS.presidentialRoom,
+    gallery: [HOTEL_PHOTOS.presidentialRoom, ...HOTEL_ROOM_DETAIL_PHOTOS.Presidential],
     spaces: [
       {
         id: 'prs-grand-hall',

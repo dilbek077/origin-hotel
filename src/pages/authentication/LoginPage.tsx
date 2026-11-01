@@ -21,7 +21,7 @@ import { LANGUAGES, useTranslation } from '@/i18n';
 import { MOCK_USERS, authenticateMockUser, type MockUser } from '@/services/mockAuth';
 import { useTheme } from '@/theme';
 
-const HERO_IMAGE = HOTEL_PHOTOS.exterior;
+const HERO_IMAGE = HOTEL_PHOTOS.loginExterior;
 
 export default function LoginPage() {
   const navigate = useNavigate();

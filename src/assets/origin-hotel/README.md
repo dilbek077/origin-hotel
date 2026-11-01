@@ -1,31 +1,26 @@
-# Origin Hotel — uploaded photographs
+# Origin Hotel photo collection
 
-These five photographs come from the user's hotel images in the chat:
+The supplied `rasm.rar` contained 26 JPEG files: 24 distinct source photographs
+and two byte-identical duplicates. `19.jpg` duplicates `17.jpg`; `20.jpg`
+duplicates `18.jpg`. Only the 24 distinct sources were processed.
 
-- `exterior-4k.webp`: beige facade, blue glass arch and ORIGIN HOTEL sign.
-- `twin-room-4k.webp`: two single beds.
-- `single-room-4k.webp`: bed beside a bright curtained window.
-- `room-seating-4k.webp`: round table and two armchairs inside a bedroom.
-- `double-room-4k.webp`: double bed with dark and beige upholstered headboard.
+Each source was restored separately with the image tool, preserving its portrait
+frame and camera view, improving clarity/exposure and removing the timestamp.
+The enhanced result is resampled to 2160 × 3840 and stored as WebP in `collection`.
+These are enhanced derivatives of 720 × 1280 originals, not native camera 4K;
+fine details can differ after AI restoration.
 
-All are portrait 2160 × 3840 pixels, preserving the uploaded orientation.
-AI restoration improves exposure/detail and removes camera timestamps before
-resampling and WebP compression. They are enhanced derivatives of small sources,
-not native camera 4K; fine detail can differ from the originals.
+`collection/manifest.json` records each original filename, source/output SHA-256,
+dimensions and its exclusive content placement. `src/data/hotelPhotos.ts` is the
+shared registry. All 24 source hashes and all 24 output hashes are distinct.
 
-The shared source registry is `src/data/hotelPhotos.ts`. Qarshi hero files and
-slideshow references are unchanged. Room category names/prices remain demo data;
-the upload did not establish a category assignment for each photograph.
+Room cards, event cards, the dining intro and cards, experience slides, login,
+service information and mobile service offers each have distinct photo slots.
+Responsive versions of the same room represent the same content. A room/event
+can show its own photo again when opened in detail; other cards never reuse it.
+Room detail thumbnails exclude the currently displayed photo, and supplementary
+views are assigned to only one room. The three Qarshi hero photos are unchanged.
 
-## Website image policy
-
-At the user's request all former stock-photo placements now reuse these five
-available hotel photographs, including events, dining, service dialogs and room
-space galleries. They illustrate the hotel generally; the bedroom seating photo
-is not a photograph of the restaurant, nor are room/exterior photographs proof
-of a pool, spa or gym. Visible image alt text describes the actual photographs.
-Service descriptions and demo business data were not changed by this image task.
-
-No external stock-photo URLs remain in application source. The three Qarshi
-hero photos remain separate and unchanged. Remaining original uploads can be
-restored later if supplied as downloadable file attachments.
+The previous five-photo shared collection and external stock-photo URLs are no
+longer used. Existing demo prices and room/service descriptions are unchanged;
+photo restoration does not verify those business details or room categories.

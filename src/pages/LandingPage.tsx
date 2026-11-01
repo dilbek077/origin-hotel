@@ -4,7 +4,7 @@ import ReservationBar from '@/components/layout/ReservationBar';
 import HotelEvents from '@/components/layout/HotelEvents';
 import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
 import type { HotelInfoKey } from '@/data/hotelInformation';
-import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
+import { HOTEL_PHOTOS, HOTEL_ROOM_DETAIL_PHOTOS } from '@/data/hotelPhotos';
 import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
 import qarshiMosque from '@/assets/qarshi-hero/02-qarshi-masjid.webp';
 import qarshiCenter from '@/assets/qarshi-hero/03-qarshi-markaz.webp';
@@ -32,16 +32,16 @@ import '../shilla-layout.css';
 /* ─── constants ──────────────────────────────────────────── */
 const IMAGES = {
   exterior:   HOTEL_PHOTOS.exterior,
-  lobby:      HOTEL_PHOTOS.roomSeating,
+  lobby:      HOTEL_PHOTOS.galleryCorridor,
   standard:   HOTEL_PHOTOS.twinRoom,
   deluxe:     HOTEL_PHOTOS.doubleRoom,
   suite:      HOTEL_PHOTOS.singleRoom,
   family:     HOTEL_PHOTOS.twinRoom,
-  presidential: HOTEL_PHOTOS.doubleRoom,
-  pool:       HOTEL_PHOTOS.exterior,
-  spa:        HOTEL_PHOTOS.singleRoom,
-  restaurant: HOTEL_PHOTOS.roomSeating,
-  gym:        HOTEL_PHOTOS.twinRoom,
+  presidential: HOTEL_PHOTOS.presidentialRoom,
+  pool:       HOTEL_PHOTOS.mobilePool,
+  spa:        HOTEL_PHOTOS.mobileSpa,
+  restaurant: HOTEL_PHOTOS.diningMain,
+  gym:        HOTEL_PHOTOS.mobileFitness,
 };
 
 const ROOM_DATA = [
@@ -180,7 +180,7 @@ function RoomDetailModal({
   onClose: () => void;
 }) {
   const [activePhoto, setActivePhoto] = useState(room.image);
-  const photos = [...new Set([room.image, HOTEL_PHOTOS.twinRoom, HOTEL_PHOTOS.singleRoom, HOTEL_PHOTOS.doubleRoom, HOTEL_PHOTOS.roomSeating])];
+  const photos = [room.image, ...(HOTEL_ROOM_DETAIL_PHOTOS[room.type] ?? [])];
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -213,8 +213,8 @@ function RoomDetailModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="hotel-room-detail relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
-        <img src={activePhoto} alt="Origin Hotel xonasining surati" className="hotel-room-main-photo h-52 w-full object-cover" />
-        <div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxona xonalarining boshqa suratlari">{photos.map((photo, index) => <button type="button" key={photo} aria-label={`${index + 1}-xona suratini ko‘rsatish`} aria-pressed={activePhoto === photo} onClick={() => setActivePhoto(photo)}><img src={photo} alt="" loading="lazy" /></button>)}</div>
+        <img src={activePhoto} alt="Origin Hotel surati" className="hotel-room-main-photo h-52 w-full object-cover" />
+        <div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxonaning boshqa suratlari">{photos.filter((photo) => photo !== activePhoto).map((photo) => <button type="button" key={photo} aria-label={`${photos.indexOf(photo) + 1}-xona suratini ko‘rsatish`} onClick={() => setActivePhoto(photo)}><img src={photo} alt="" loading="lazy" /></button>)}</div>
         <button
           ref={closeRef}
           type="button"
@@ -264,10 +264,10 @@ function Rooms({ searchSummary, selected, onSelect, onInfo }: {
   onInfo: (key: HotelInfoKey, triggerId: string) => void;
 }) {
   const [mobileTab, setMobileTab] = useState<'rooms' | 'services'>('rooms');
-  const services: { key: HotelInfoKey; title: string; image: string }[] = [
-    { key: 'pool', title: 'Basseyn va hordiq', image: IMAGES.pool },
-    { key: 'spa', title: 'SPA', image: IMAGES.spa },
-    { key: 'fitness', title: 'Fitnes zali', image: IMAGES.gym },
+  const services: { key: HotelInfoKey; title: string; image: string; imageAlt: string }[] = [
+    { key: 'pool', title: 'Basseyn va hordiq', image: IMAGES.pool, imageAlt: 'Origin Hotel tashqi ko‘rinishi' },
+    { key: 'spa', title: 'SPA', image: IMAGES.spa, imageAlt: 'Origin Hotel interyeridagi yoritgich' },
+    { key: 'fitness', title: 'Fitnes zali', image: IMAGES.gym, imageAlt: 'Origin Hotel ichki yo‘lagi' },
   ];
   return (
     <section id="rooms" className="shilla-packages">
@@ -285,7 +285,7 @@ function Rooms({ searchSummary, selected, onSelect, onInfo }: {
           <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <article key={room.type}><button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><img src={room.image} alt={`${room.label} xona`} loading="lazy" /><h3>{room.label} Xona</h3></button><p>{formatPrice(room.price)} / tun</p></article>)}</div>
         </> : <>
           <article className="shilla-mobile-featured-offer"><button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><img src={IMAGES.pool} alt="Origin Hotel tashqi ko‘rinishi" loading="lazy" /><h3>Basseyn va hordiq</h3></button><p>Mehmonxona qulayliklari <span>Origin Hotel</span></p></article>
-          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <article key={service.key}><button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><img src={service.image} alt="Origin Hotel xonasi" loading="lazy" /><h3>{service.title}</h3></button><p>Origin Hotel</p></article>)}</div>
+          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <article key={service.key}><button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><img src={service.image} alt={service.imageAlt} loading="lazy" /><h3>{service.title}</h3></button><p>Origin Hotel</p></article>)}</div>
         </>}
       </div>
       <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</div>
@@ -298,20 +298,20 @@ const DINING_CARDS = [
   {
     title: 'Restoran',
     description: 'Origin Hotel restorani va shinam muhit.',
-    image: IMAGES.restaurant,
-    alt: 'Origin Hotel xonasidagi stol va kreslolar',
+    image: HOTEL_PHOTOS.diningFirst,
+    alt: 'Origin Hotel restoran zali',
   },
   {
     title: 'Bepul nonushta',
     description: 'Standart xona qulayliklari qatorida bepul nonushta.',
-    image: HOTEL_PHOTOS.roomSeating,
-    alt: 'Origin Hotel dam olish burchagi',
+    image: HOTEL_PHOTOS.diningBreakfast,
+    alt: 'Origin Hotel restoranidagi stol va o‘rindiqlar',
   },
   {
     title: 'Shved stoli',
     description: 'Deluxe xona mehmonlari uchun shved stoli.',
-    image: HOTEL_PHOTOS.roomSeating,
-    alt: 'Origin Hotel xona interyeri',
+    image: HOTEL_PHOTOS.diningBuffet,
+    alt: 'Origin Hotel restoranining boshqa ko‘rinishi',
   },
 ];
 
@@ -354,7 +354,7 @@ function Dining({ selection }: { selection: { index: number; request: number } |
         <img
           className="shilla-dining-main-image"
           src={IMAGES.restaurant}
-          alt="Origin Hotel interyeri"
+          alt="Origin Hotel restoran zali"
           loading="lazy"
           decoding="async"
         />
@@ -414,16 +414,16 @@ const EXPERIENCE_SLIDES = [
     description: 'Shinam xonalar, samimiy xizmat va o‘zingizni uyda his qiladigan muhitdan bahramand bo‘ling.',
   },
   {
-    image: IMAGES.pool,
-    alt: 'Origin Hotel tashqi ko‘rinishi',
-    title: 'Basseyn va SPA — xotirjam hordiq',
-    description: 'Basseyn, SPA va fitnes zali — bir tom ostida barcha qulayliklar.',
+    image: HOTEL_PHOTOS.galleryReception,
+    alt: 'Origin Hotel qabulxonasi',
+    title: 'Origin Hotel — samimiy kutib olish',
+    description: 'Qabulxona kechayu kunduz ishlaydi. Tashrifingizni qulay rejalashtiring.',
   },
   {
     image: IMAGES.lobby,
-    alt: 'Origin Hotel xonasidagi dam olish burchagi',
+    alt: 'Origin Hotel ichki yo‘lagi',
     title: 'Origin muhitini his qiling',
-    description: 'Qabulxona kechayu kunduz ishlaydi. Amir Temur shoh ko‘chasi 15, Toshkent.',
+    description: 'Mehmonxonaning ichki muhiti va shinam yo‘laklari bilan tanishing.',
   },
 ];
 
