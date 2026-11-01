@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Navbar from '@/components/layout/HotelNavbar';
+import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
+import type { HotelInfoKey } from '@/data/hotelInformation';
 import {
   MapPin,
   Hotel,
@@ -663,6 +665,7 @@ export default function LandingPage() {
   const [searchSummary, setSearchSummary] = useState('');
   const [selectedRoom, setSelectedRoom] = useState<typeof ROOM_DATA[0] | null>(null);
   const [experienceSlide, setExperienceSlide] = useState(0);
+  const [selectedInfo, setSelectedInfo] = useState<{ key: HotelInfoKey; triggerId: string } | null>(null);
   const [diningSelection, setDiningSelection] = useState<{ index: number; request: number } | null>(null);
 
   useScrollProgress();
@@ -672,7 +675,7 @@ export default function LandingPage() {
       {/* Scroll progress bar */}
       <div className="marketing-progress" aria-hidden />
 
-      <Navbar onRoomSelect={(type) => setSelectedRoom(ROOM_DATA.find((room) => room.type === type) ?? null)} onExperienceSelect={setExperienceSlide} onDiningSelect={(index) => setDiningSelection((previous) => ({ index, request: (previous?.request ?? 0) + 1 }))} />
+      <Navbar onRoomSelect={(type) => setSelectedRoom(ROOM_DATA.find((room) => room.type === type) ?? null)} onInfoSelect={(key, triggerId) => setSelectedInfo({ key, triggerId })} onExperienceSelect={setExperienceSlide} onDiningSelect={(index) => setDiningSelection((previous) => ({ index, request: (previous?.request ?? 0) + 1 }))} />
 
       <main>
         <ReservationBar onSearch={setSearchSummary} />
@@ -687,6 +690,7 @@ export default function LandingPage() {
 
       <Footer />
       <QuickDock />
+      {selectedInfo && <HotelInformationDialog selection={selectedInfo} onClose={() => setSelectedInfo(null)} />}
     </div>
   );
 }

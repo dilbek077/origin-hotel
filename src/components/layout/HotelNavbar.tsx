@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, Globe, Home, Menu, X } from 'lucide-react';
 import { LANGUAGES, useTranslation } from '@/i18n';
+import type { HotelInfoKey } from '@/data/hotelInformation';
 
 type SubLink = {
   label: string;
@@ -10,35 +11,85 @@ type SubLink = {
   diningSlide?: number;
   experienceSlide?: number;
   openDirections?: boolean;
+  infoKey?: HotelInfoKey;
 };
 
-const MENUS: { label: string; links: SubLink[] }[] = [
-  { label: 'Biz haqimizda', links: [
-    { label: 'Origin Hotel', href: '#benefits' },
-    { label: 'Joylashuv', href: '#contact' },
-    { label: 'Qabulxona: 24/7', href: 'tel:+998712002020' },
+type NavGroup = { heading: SubLink; links: SubLink[] };
+type NavMenu = { label: string; links?: SubLink[]; groups?: NavGroup[] };
+
+const MENUS: NavMenu[] = [
+  { label: 'Biz haqimizda', groups: [
+    { heading: { label: 'Origin Hotel', href: '#benefits' }, links: [
+      { label: 'Mehmonxona afzalliklari', href: '#benefits' },
+      { label: 'Xonalar va narxlar', href: '#rooms' },
+    ] },
+    { heading: { label: 'Joylashuv', href: '#contact' }, links: [
+      { label: 'Manzil va xarita', href: '#contact' },
+      { label: 'Yo‘l ma’lumotlari', href: '#transport-details', openDirections: true },
+    ] },
+    { heading: { label: 'Qabulxona', href: '#benefits', infoKey: 'reception' }, links: [
+      { label: 'Qabulxona: 24/7', href: '#benefits', infoKey: 'reception' },
+      { label: 'Email yuborish', href: 'mailto:reservations@originhotel.uz' },
+    ] },
   ] },
   { label: 'Takliflar', links: [
     { label: 'Xonalar va narxlar', href: '#rooms' },
     { label: 'Bron qilish', href: '#reservation' },
     { label: 'Afzalliklar', href: '#benefits' },
   ] },
-  { label: 'Xonalar', links: [
-    { label: 'Standart', href: '#rooms', roomType: 'Standart' },
-    { label: 'Deluxe', href: '#rooms', roomType: 'Deluxe' },
-    { label: 'Suite', href: '#rooms', roomType: 'Suite' },
-    { label: 'Presidential', href: '#rooms', roomType: 'Presidential' },
+  { label: 'Xonalar', groups: [
+    { heading: { label: 'Standart', href: '#rooms', roomType: 'Standart' }, links: [
+      { label: '28 m² · 2 kishi', href: '#rooms', roomType: 'Standart' },
+      { label: 'Bepul nonushta', href: '#rooms', roomType: 'Standart' },
+    ] },
+    { heading: { label: 'Deluxe', href: '#rooms', roomType: 'Deluxe' }, links: [
+      { label: '42 m² · 2 kishi', href: '#rooms', roomType: 'Deluxe' },
+      { label: 'Balkon va mini-bar', href: '#rooms', roomType: 'Deluxe' },
+    ] },
+    { heading: { label: 'Suite', href: '#rooms', roomType: 'Suite' }, links: [
+      { label: '68 m² · 4 kishi', href: '#rooms', roomType: 'Suite' },
+      { label: 'Jakuzi va VIP xizmat', href: '#rooms', roomType: 'Suite' },
+    ] },
+    { heading: { label: 'Presidential', href: '#rooms', roomType: 'Presidential' }, links: [
+      { label: '120 m² · 4 kishi', href: '#rooms', roomType: 'Presidential' },
+      { label: 'Shaxsiy terras va batler', href: '#rooms', roomType: 'Presidential' },
+    ] },
   ] },
-  { label: 'Restoran', links: [
-    { label: 'Restoran haqida', href: '#dining' },
-    { label: 'Nonushta', href: '#dining', diningSlide: 1 },
-    { label: 'Shved stoli', href: '#dining', diningSlide: 2 },
-    { label: 'Bog‘lanish', href: '#contact' },
+  { label: 'Restoran', groups: [
+    { heading: { label: 'Restoran haqida', href: '#dining', diningSlide: 0 }, links: [
+      { label: 'Restoran muhiti', href: '#dining', diningSlide: 0 },
+      { label: 'Bog‘lanish', href: '#contact' },
+    ] },
+    { heading: { label: 'Nonushta', href: '#dining', diningSlide: 1 }, links: [
+      { label: 'Standart xona nonushtasi', href: '#dining', diningSlide: 1 },
+      { label: 'Xona tafsilotlari', href: '#rooms', roomType: 'Standart' },
+    ] },
+    { heading: { label: 'Shved stoli', href: '#dining', diningSlide: 2 }, links: [
+      { label: 'Deluxe xona qulayliklari', href: '#rooms', roomType: 'Deluxe' },
+      { label: 'Restoran bilan bog‘lanish', href: '#contact' },
+    ] },
   ] },
-  { label: 'Qulayliklar', links: [
-    { label: 'Basseyn va SPA', href: '#experiences', experienceSlide: 1 },
-    { label: 'Mehmonxona muhiti', href: '#experiences', experienceSlide: 2 },
-    { label: 'Xizmatlar', href: '#benefits' },
+  { label: 'Qulayliklar', groups: [
+    { heading: { label: 'Basseyn', href: '#experiences', experienceSlide: 1 }, links: [
+      { label: 'Basseyn haqida', href: '#benefits', infoKey: 'pool' },
+      { label: 'Suratlarni ko‘rish', href: '#experiences', experienceSlide: 1 },
+    ] },
+    { heading: { label: 'Fitnes', href: '#benefits', infoKey: 'fitness' }, links: [
+      { label: 'Fitnes zali', href: '#benefits', infoKey: 'fitness' },
+    ] },
+    { heading: { label: 'SPA', href: '#benefits', infoKey: 'spa' }, links: [
+      { label: 'SPA haqida', href: '#benefits', infoKey: 'spa' },
+    ] },
+    { heading: { label: 'Mehmonxona xizmatlari', href: '#benefits' }, links: [
+      { label: 'Bepul Wi-Fi', href: '#benefits', infoKey: 'wifi' },
+      { label: 'Bepul parking', href: '#benefits', infoKey: 'parking' },
+      { label: 'Aeroport transferi', href: '#benefits', infoKey: 'transfer' },
+      { label: 'Qabulxona: 24/7', href: '#benefits', infoKey: 'reception' },
+    ] },
+    { heading: { label: 'Restoran', href: '#dining' }, links: [
+      { label: 'Nonushta', href: '#dining', diningSlide: 1 },
+      { label: 'Shved stoli', href: '#dining', diningSlide: 2 },
+    ] },
   ] },
   { label: 'Galereya', links: [
     { label: 'Tashqi ko‘rinish', href: '#experiences', experienceSlide: 0 },
@@ -55,11 +106,12 @@ const MENUS: { label: string; links: SubLink[] }[] = [
 
 type Props = {
   onRoomSelect: (type: string) => void;
+  onInfoSelect: (key: HotelInfoKey, triggerId: string) => void;
   onDiningSelect: (index: number) => void;
   onExperienceSelect: (index: number) => void;
 };
 
-export default function HotelNavbar({ onRoomSelect, onDiningSelect, onExperienceSelect }: Props) {
+export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect, onExperienceSelect }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [languageOpen, setLanguageOpen] = useState(false);
@@ -109,11 +161,12 @@ export default function HotelNavbar({ onRoomSelect, onDiningSelect, onExperience
   const focusSubLink = (index: number, last = false) => {
     showMenu(index);
     requestAnimationFrame(() => {
-      const links = headerRef.current?.querySelectorAll<HTMLAnchorElement>(`#hotel-submenu-${index} a`);
+      const links = headerRef.current?.querySelectorAll<HTMLElement>(`#hotel-submenu-${index} a, #hotel-submenu-${index} button`);
       if (links?.length) links[last ? links.length - 1 : 0].focus();
     });
   };
   const activate = (link: SubLink) => {
+    if (link.infoKey) onInfoSelect(link.infoKey, `hotel-nav-trigger-${activeMenu ?? 4}`);
     if (link.roomType) onRoomSelect(link.roomType);
     if (link.diningSlide !== undefined) onDiningSelect(link.diningSlide);
     if (link.experienceSlide !== undefined) onExperienceSelect(link.experienceSlide);
@@ -123,6 +176,10 @@ export default function HotelNavbar({ onRoomSelect, onDiningSelect, onExperience
     }
     closeAll();
   };
+
+  const renderLink = (link: SubLink) => link.infoKey
+    ? <button type="button" aria-haspopup="dialog" onClick={() => activate(link)}>{link.label}</button>
+    : <a href={link.href} onClick={() => activate(link)}>{link.label}</a>;
 
   return (
     <header
@@ -193,10 +250,21 @@ export default function HotelNavbar({ onRoomSelect, onDiningSelect, onExperience
               }}
             >{menu.label}<ChevronDown size={14} className="shilla-nav-chevron" aria-hidden="true" /></button>
             {activeMenu === index && (
-              <div id={`hotel-submenu-${index}`} className="shilla-nav-panel" aria-labelledby={`hotel-nav-trigger-${index}`}>
-                <div className="shilla-nav-panel-links">
-                  {menu.links.map((link) => <a key={link.label} href={link.href} onClick={() => activate(link)}>{link.label}</a>)}
-                </div>
+              <div id={`hotel-submenu-${index}`} className={`shilla-nav-panel ${menu.groups ? 'is-grouped' : ''}`} aria-labelledby={`hotel-nav-trigger-${index}`}>
+                {menu.groups ? (
+                  <div className="shilla-nav-groups" style={{ gridTemplateColumns: `repeat(${menu.groups.length}, minmax(0, 1fr))` }}>
+                    {menu.groups.map((group) => (
+                      <div className="shilla-nav-group" key={group.heading.label}>
+                        <h3>{renderLink(group.heading)}</h3>
+                        <ul>{group.links.map((link) => <li key={link.label}>{renderLink(link)}</li>)}</ul>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="shilla-nav-panel-links">
+                    {menu.links?.map((link) => <span key={link.label}>{renderLink(link)}</span>)}
+                  </div>
+                )}
               </div>
             )}
           </div>

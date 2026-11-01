@@ -509,3 +509,39 @@
 @media (prefers-reduced-motion: reduce) {
   .shilla-nav-trigger::after, .shilla-nav-chevron { transition: none; }
 }
+/* Information-rich menus use headings and bulleted links in broad columns. */
+.shilla-nav-panel.is-grouped { padding: 34px 30px 38px; max-height: calc(100svh - 125px); overflow-y: auto; }
+.shilla-nav-groups { display: grid; max-width: 1540px; margin: 0 auto; gap: 36px; }
+.shilla-nav-group { min-width: 0; }
+.shilla-nav-group h3 { margin: 0 0 12px; font-size: 17px; line-height: 1.5; font-weight: 500; }
+.shilla-nav-group h3 > a, .shilla-nav-group h3 > button { font: inherit; color: #222; text-align: left; }
+.shilla-nav-group ul { margin: 0; padding: 0; list-style: none; }
+.shilla-nav-group li { position: relative; padding-left: 12px; font-size: 17px; line-height: 1.6; color: #686868; }
+.shilla-nav-group li::before { content: '·'; position: absolute; left: 0; top: 4px; }
+.shilla-nav-group li > a, .shilla-nav-group li > button { display: inline-block; padding: 4px 0; font: inherit; color: inherit; text-align: left; background: transparent; border: 0; }
+.shilla-nav-group a:hover, .shilla-nav-group button:hover { color: #8b704a; text-decoration: underline; text-underline-offset: 4px; }
+.shilla-nav-panel-links > span > a { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 4px 8px; color: #222; font-size: 17px; line-height: 1.5; font-weight: 500; text-transform: uppercase; }
+.shilla-nav-panel-links > span > a:hover { color: #8b704a; text-decoration: underline; text-underline-offset: 5px; }
+body:has(.hotel-information-dialog) [data-slot='dialog-overlay'] { z-index: 100; }
+.hotel-information-dialog { z-index: 101; max-height: calc(100svh - 40px); overflow-y: auto; border-radius: 0; background: #fff; color: #29231e; font-family: 'Roboto Condensed', Arial, sans-serif; }
+.hotel-information-close { position: absolute; right: 12px; top: 12px; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px; background: #fff; color: #302525; border: 1px solid #ddd5c9; }
+.hotel-information-image { display: block; width: 100%; aspect-ratio: 16 / 8; object-fit: cover; background: #eee9df; }
+.hotel-information-dialog .hotel-information-title { font-family: Georgia, serif; font-size: 28px; line-height: 1.3; font-weight: 400; }
+.hotel-information-dialog .hotel-information-description { color: #73675d; font-size: 17px; line-height: 1.6; }
+.hotel-information-list { padding-left: 18px; list-style: disc; color: #73675d; font-size: 16px; line-height: 1.7; }
+.hotel-information-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.hotel-information-actions > a { padding: 11px 16px; background: #302525; color: #fff; font-size: 16px; }
+.hotel-information-actions > a + a { border: 1px solid #cfc3b3; background: #fff; color: #5b4834; }
+@media (min-width: 768px) and (max-width: 1100px) {
+  .shilla-nav-groups { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 24px 30px; }
+}
+@media (max-width: 767px) {
+  .shilla-nav-panel.is-grouped { max-height: none; overflow: visible; padding: 16px 14px; }
+  .shilla-nav-groups { grid-template-columns: minmax(0, 1fr) !important; gap: 20px; }
+  .shilla-nav-group h3 { margin-bottom: 5px; font-size: 17px; }
+  .shilla-nav-group li { font-size: 16px; }
+  .shilla-nav-group li::before { top: 8px; }
+  .shilla-nav-group li > a, .shilla-nav-group li > button { padding-block: 8px; }
+  .shilla-nav-panel-links > span > a { justify-content: flex-start; width: 100%; min-height: 44px; padding: 11px 6px; font-size: 16px; font-weight: 400; text-transform: none; }
+  .hotel-information-dialog .hotel-information-title { font-size: 25px; }
+}
