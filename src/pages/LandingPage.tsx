@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { StorageService } from '@/services/storage';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import {
   Hotel,
@@ -34,7 +33,6 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { Room as StorageRoom } from '@/types/room';
 import '../landing.css';
 import '../shilla-layout.css';
 
@@ -307,66 +305,21 @@ function Hero() {
 
 /* ─── Ticker ─────────────────────────────────────────────── */
 function Ticker() {
-  const items = [0, 1, 2, 3];
   return (
-    <div className="hotel-ticker" aria-label="Mehmonxona qulayliklari" aria-hidden>
-      <div className="hotel-ticker-track">
-        {items.map((i) => (
-          <span key={i}>
-            ORIGIN HOTEL <i>✦</i> TOSHKENT <i>✦</i> QULAYLIK VA NAFOSAT{' '}
-            <i>✦</i> UNUTILMAS HORDIQ <i>✦</i>
-          </span>
+    <div className="hotel-ticker" role="region" aria-label="Origin Hotel — Toshkent. Qulaylik va nafosat. Unutilmas hordiq.">
+      <div className="hotel-ticker-track" aria-hidden="true">
+        {[0, 1].map((group) => (
+          <div className="hotel-ticker-group" key={group}>
+            {[0, 1].map((copy) => (
+              <span key={copy}>
+                ORIGIN HOTEL <i>✦</i> TOSHKENT <i>✦</i> QULAYLIK VA NAFOSAT{' '}
+                <i>✦</i> UNUTILMAS HORDIQ <i>✦</i>
+              </span>
+            ))}
+          </div>
         ))}
       </div>
     </div>
-  );
-}
-
-/* ─── Stats ──────────────────────────────────────────────── */
-function StatCard({ value, label, suffix = '' }: { value: number | string; label: string; suffix?: string }) {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const numVal = typeof value === 'number' ? value : parseFloat(String(value));
-
-  useEffect(() => {
-    if (!ref.current || isNaN(numVal)) return;
-    const duration = 1200;
-    const step = (timestamp: number, startTime: number) => {
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const cur = +(progress * numVal).toFixed(1);
-      if (ref.current) ref.current.textContent = cur + suffix;
-      if (progress < 1) requestAnimationFrame((t) => step(t, startTime));
-    };
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        requestAnimationFrame((t) => step(t, t));
-        io.disconnect();
-      }
-    }, { threshold: 0.5 });
-    if (ref.current) io.observe(ref.current);
-    return () => io.disconnect();
-  }, [numVal, suffix]);
-
-  return (
-    <div className="flex flex-col gap-1 p-4">
-      <p ref={ref} className="font-display text-3xl font-semibold text-foreground">
-        {numVal}{suffix}
-      </p>
-      <p className="text-[11px] uppercase tracking-[.14em] text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function Stats({ rooms }: { rooms: StorageRoom[] }) {
-  const floors = rooms.reduce((m, r) => Math.max(m, r.floor ?? 0), 0) || 5;
-  return (
-    <section className="border-b border-[--line] bg-[--surface]">
-      <div className="mx-auto grid max-w-[1440px] gap-2 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-10 lg:py-12 divide-y sm:divide-y-0 sm:divide-x divide-[--line]">
-        <StatCard value={rooms.length || 40} label="Xonalar soni" />
-        <StatCard value={floors} label="Qavatlar" />
-        <StatCard value={4.9} label="Mehmon reytingi" suffix="/5" />
-        <StatCard value={98} label="Mamnun mehmonlar" suffix="%" />
-      </div>
-    </section>
   );
 }
 
@@ -1002,7 +955,6 @@ function QuickDock() {
 
 /* ─── LandingPage (root) ─────────────────────────────────── */
 export default function LandingPage() {
-  const rooms = StorageService.getRooms();
   const [searchSummary, setSearchSummary] = useState('');
 
   useScrollProgress();
@@ -1017,11 +969,10 @@ export default function LandingPage() {
 
       <main>
         <ReservationBar onSearch={setSearchSummary} />
+        <Ticker />
         <Hero />
         <Rooms searchSummary={searchSummary} />
         <Dining />
-        <Stats rooms={rooms} />
-        <Ticker />
         <About />
         <Gallery />
         <Reviews />

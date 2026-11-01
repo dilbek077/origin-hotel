@@ -138,9 +138,8 @@ button:not(:disabled), summary { cursor: pointer; }
 .hotel-marketing .hotel-hero .backdrop-blur-sm p.font-semibold { color: #544632; }
 .hotel-marketing .hotel-hero .backdrop-blur-sm > button { margin: 0; background: #766044; color: white; border-radius: 0; padding: 15px; }
 .hotel-marketing .hotel-ticker { background: #eee7da; color: #8b7655; border: 0; padding: 15px 0; }
-.hotel-marketing .hotel-ticker-track { animation: none; width: 100%; justify-content: center; }
+.hotel-marketing .hotel-ticker-track { animation: 36s linear infinite hotel-ticker-scroll; width: max-content; justify-content: flex-start; }
 .hotel-marketing .hotel-ticker-track span { font-size: 10px; font-weight: 400; letter-spacing: .2em; }
-.hotel-marketing .hotel-ticker-track span:not(:first-child) { display: none; }
 .hotel-marketing main > section:not(.hotel-hero) { scroll-margin-top: 30px; }
 .hotel-marketing section h2 { font-size: clamp(28px, 3vw, 38px); font-weight: 400; letter-spacing: -.02em; }
 .hotel-marketing .room-showcase-card { border: 0; border-radius: 0; background: transparent; box-shadow: none; }

@@ -262,3 +262,17 @@
 @media (max-width: 767px) {
   .shilla-dining-track::after { flex-basis: calc(22% - 18px); }
 }
+/* Two equal groups form a continuous right-to-left strip above the hero. */
+.shilla-site .hotel-ticker-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 48px;
+  min-width: 100vw;
+  flex-shrink: 0;
+  padding-inline: 24px;
+}
+.shilla-site .hotel-ticker-group > span { flex-shrink: 0; padding: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .marketing-page.shilla-site .hotel-ticker-track { animation: none; }
+}
