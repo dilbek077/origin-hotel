@@ -728,3 +728,32 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   .shilla-guest-panel { animation: none; }
   .shilla-guest-counter > button { transition: none; }
 }
+
+/* Match the guest reference at desktop display scales, as for the hotel modal. */
+@media (min-width: 1101px) {
+  .shilla-guest-panel {
+    --guest-unit: min(1px, calc(100vw / 1917));
+    left: calc(50 * var(--guest-unit));
+    right: calc(50 * var(--guest-unit));
+    min-height: calc(352 * var(--guest-unit));
+    padding: calc(56 * var(--guest-unit)) calc(50 * var(--guest-unit)) calc(38 * var(--guest-unit));
+    font-size: calc(18 * var(--guest-unit));
+  }
+  .shilla-guest-room { grid-template-columns: minmax(calc(120 * var(--guest-unit)), 1fr) repeat(3, minmax(calc(200 * var(--guest-unit)), calc(240 * var(--guest-unit)))); gap: calc(60 * var(--guest-unit)); padding: calc(14 * var(--guest-unit)) 0 calc(30 * var(--guest-unit)); }
+  .shilla-guest-room + .shilla-guest-room { padding-top: calc(20 * var(--guest-unit)); }
+  .shilla-guest-room-heading h3 { font-size: calc(20 * var(--guest-unit)); }
+  .shilla-guest-remove { font-size: calc(14 * var(--guest-unit)); gap: calc(4 * var(--guest-unit)); margin-top: calc(8 * var(--guest-unit)); }
+  .shilla-guest-counter { grid-template-columns: minmax(calc(65 * var(--guest-unit)), 1fr) calc(40 * var(--guest-unit)) calc(32 * var(--guest-unit)) calc(40 * var(--guest-unit)); gap: calc(12 * var(--guest-unit)); }
+  .shilla-guest-counter > button { width: calc(40 * var(--guest-unit)); height: calc(40 * var(--guest-unit)); }
+  .shilla-guest-counter > button svg { width: calc(18 * var(--guest-unit)); height: calc(18 * var(--guest-unit)); }
+  .shilla-guest-counter > output { font-size: calc(23 * var(--guest-unit)); }
+  .shilla-guest-panel-note { gap: calc(25 * var(--guest-unit)); padding-top: calc(22 * var(--guest-unit)); }
+  .shilla-guest-panel-note p { font-size: calc(16 * var(--guest-unit)); }
+  .shilla-guest-panel-note small { margin-left: calc(10 * var(--guest-unit)); font-size: calc(14 * var(--guest-unit)); }
+  .shilla-guest-add { gap: calc(8 * var(--guest-unit)); padding: calc(3 * var(--guest-unit)) 0; }
+  .shilla-guest-add svg { width: calc(20 * var(--guest-unit)); height: calc(20 * var(--guest-unit)); }
+  .shilla-guest-actions { gap: calc(10 * var(--guest-unit)); padding-top: calc(48 * var(--guest-unit)); }
+  .shilla-guest-actions > button { min-height: calc(70 * var(--guest-unit)); width: calc(225 * var(--guest-unit)); font-size: calc(20 * var(--guest-unit)); }
+  .shilla-guest-close { right: calc(15 * var(--guest-unit)); top: calc(12 * var(--guest-unit)); width: calc(30 * var(--guest-unit)); height: calc(30 * var(--guest-unit)); }
+  .shilla-guest-close svg { width: calc(21 * var(--guest-unit)); height: calc(21 * var(--guest-unit)); }
+}
