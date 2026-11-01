@@ -4,6 +4,7 @@ import { ChevronDown, Globe, Home, Menu, X } from 'lucide-react';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import type { HotelInfoKey } from '@/data/hotelInformation';
 import { hotelNavigationText } from '@/data/hotelNavigationTranslations';
+import HotelOverviewDialog, { type HotelOverviewAction } from './HotelOverviewDialog';
 
 type SubLink = {
   label: string;
@@ -114,6 +115,9 @@ type Props = {
 
 export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect, onExperienceSelect }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [overviewOpen, setOverviewOpen] = useState(false);
+  const overviewRef = useRef<HTMLButtonElement>(null);
+  const skipOverviewRestore = useRef(false);
   const [menuState, setMenuState] = useState<{ index: number | null; closing: boolean }>({ index: null, closing: false });
   const activeMenu = menuState.closing ? null : menuState.index;
   const [languageOpen, setLanguageOpen] = useState(false);
@@ -188,8 +192,8 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
       if (links?.length) links[last ? links.length - 1 : 0].focus();
     });
   };
-  const activate = (link: SubLink) => {
-    if (link.infoKey) onInfoSelect(link.infoKey, `hotel-nav-trigger-${activeMenu ?? 4}`);
+  const activate = (link: SubLink, triggerId = `hotel-nav-trigger-${activeMenu ?? 4}`) => {
+    if (link.infoKey) onInfoSelect(link.infoKey, triggerId);
     if (link.roomType) onRoomSelect(link.roomType);
     if (link.diningSlide !== undefined) onDiningSelect(link.diningSlide);
     if (link.experienceSlide !== undefined) onExperienceSelect(link.experienceSlide);
@@ -208,7 +212,19 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
     ? <button type="button" aria-haspopup="dialog" onClick={() => activate(link)}>{text(link.label)}</button>
     : <a href={link.href} onClick={() => activate(link)}>{text(link.label)}</a>;
 
+  const openOverview = () => {
+    closeAll();
+    skipOverviewRestore.current = false;
+    setOverviewOpen(true);
+  };
+  const selectOverview = (action: HotelOverviewAction) => {
+    skipOverviewRestore.current = Boolean(action.infoKey || action.roomType);
+    setOverviewOpen(false);
+    activate(action, 'hotel-overview-trigger');
+  };
+
   return (
+    <>
     <header
       ref={headerRef}
       className={`shilla-header ${scrolled ? 'is-scrolled' : ''}`}
@@ -240,7 +256,7 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
       <div className="shilla-header-top" onPointerEnter={() => setActiveMenu(null)}>
         <div className="shilla-hotel-link">
           <Link to="/" onClick={goHome} aria-label={text('Bosh sahifaga qaytish')}><Home size={21} strokeWidth={1.2} /></Link>
-          <button type="button" aria-expanded={activeMenu === 0} aria-controls="hotel-submenu-0" onClick={() => { setLanguageOpen(false); setActiveMenu(activeMenu === 0 ? null : 0); }} onKeyDown={(event) => { if (event.key === 'ArrowDown') { event.preventDefault(); focusSubLink(0); } }}>{text('Mehmonxona haqida +')}</button>
+          <button ref={overviewRef} id="hotel-overview-trigger" type="button" aria-haspopup="dialog" aria-expanded={overviewOpen} aria-controls="hotel-overview-panel" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
         </div>
         <Link to="/" className="shilla-wordmark" aria-label={`Origin Hotel — ${text('Bosh sahifaga qaytish')}`} onClick={goHome}><span>ORIGIN HOTEL</span><small>TOSHKENT</small></Link>
         <div className="shilla-account-links">
@@ -305,6 +321,7 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
           </div>
         ))}
         <div className="shilla-mobile-accounts">
+          <button type="button" className="shilla-mobile-overview" aria-haspopup="dialog" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
           <Link to={accountPath} onClick={closeAll}>{text(accountLabel)}</Link>
           <Link to={`${dashboard}/bronlar`} onClick={closeAll}>{text('Bronlarim')}</Link>
           <Link to={dashboard} onClick={closeAll}>{text('Boshqaruv')}</Link>
@@ -316,5 +333,15 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
         <a href="#reservation" className="shilla-nav-reserve" onPointerEnter={() => setActiveMenu(null)} onClick={closeAll}>{text('Bron qilish')}</a>
       </nav>
     </header>
+    <HotelOverviewDialog
+      open={overviewOpen}
+      onOpenChange={setOverviewOpen}
+      onSelect={selectOverview}
+      onRestoreFocus={() => {
+        if (skipOverviewRestore.current) return;
+        (window.matchMedia('(max-width: 767px)').matches ? mobileRef.current : overviewRef.current)?.focus({ preventScroll: true });
+      }}
+    />
+    </>
   );
 }
