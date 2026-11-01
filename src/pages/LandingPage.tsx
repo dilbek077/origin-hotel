@@ -142,7 +142,7 @@ const NAV_LINKS = [
   { href: '#rooms', label: 'Takliflar' },
   { href: '#rooms', label: 'Xonalar' },
   { href: '#dining', label: 'Restoran' },
-  { href: '#about', label: 'Qulayliklar' },
+  { href: '#experiences', label: 'Qulayliklar' },
   { href: '#gallery', label: 'Galereya' },
   { href: '#reviews', label: 'Fikrlar' },
   { href: '#contact', label: 'Aloqa' },
@@ -510,6 +510,90 @@ function Dining() {
             <button type="button" aria-label="Keyingi restoran kartochkasi" disabled={activeCard === DINING_CARDS.length - 1} onClick={() => moveTo(activeCard + 1)}><ChevronRight size={23} strokeWidth={1} /></button>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+const EXPERIENCE_SLIDES = [
+  {
+    image: IMAGES.exterior,
+    alt: 'Origin Hotel tashqi ko‘rinishi',
+    title: 'Origin Hotel — unutilmas taassurotlar',
+    description: 'Shinam xonalar, samimiy xizmat va o‘zingizni uyda his qiladigan muhitdan bahramand bo‘ling.',
+  },
+  {
+    image: IMAGES.pool,
+    alt: 'Basseyn va dam olish hududi',
+    title: 'Basseyn va SPA — xotirjam hordiq',
+    description: 'Basseyn, SPA va fitnes zali — bir tom ostida barcha qulayliklar.',
+  },
+  {
+    image: IMAGES.lobby,
+    alt: 'Origin Hotel qabulxonasi',
+    title: 'Origin muhitini his qiling',
+    description: 'Qabulxona kechayu kunduz ishlaydi. Amir Temur shoh ko‘chasi 15, Toshkent.',
+  },
+];
+
+function Experiences() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const move = (direction: number) => setActiveSlide((previous) =>
+    (previous + direction + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length
+  );
+
+  return (
+    <section id="experiences" className="shilla-experiences" aria-label="Origin Hotel taassurotlari">
+      <div
+        className="shilla-experiences-stage"
+        role="region"
+        aria-roledescription="slayder"
+        aria-label="Mehmonxona suratlari va taassurotlar"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
+            move(event.key === 'ArrowRight' ? 1 : -1);
+          }
+        }}
+        onTouchStart={(event) => {
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          touchStart.current = { x: touch.clientX, y: touch.clientY };
+        }}
+        onTouchEnd={(event) => {
+          const start = touchStart.current;
+          touchStart.current = null;
+          if (!start) return;
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          const distanceX = touch.clientX - start.x;
+          const distanceY = touch.clientY - start.y;
+          if (Math.abs(distanceX) > 50 && Math.abs(distanceX) > Math.abs(distanceY)) move(distanceX < 0 ? 1 : -1);
+        }}
+        onTouchCancel={() => { touchStart.current = null; }}
+      >
+        {EXPERIENCE_SLIDES.map((slide, index) => {
+          const offset = (index - activeSlide + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length;
+          const position = offset === 0 ? 'active' : offset === 1 ? 'next' : 'previous';
+          return (
+            <article key={slide.title} className={`shilla-experience-slide is-${position}`} aria-hidden={position !== 'active'}>
+              <img src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
+            </article>
+          );
+        })}
+        <div className="shilla-experience-caption">
+          <div className="shilla-experience-copy">
+            <h2>{EXPERIENCE_SLIDES[activeSlide].title}</h2>
+            <p>{EXPERIENCE_SLIDES[activeSlide].description}</p>
+          </div>
+          <div className="shilla-experience-arrows">
+            <button type="button" aria-label="Oldingi taassurot" onClick={() => move(-1)}><ChevronLeft size={26} strokeWidth={1} /></button>
+            <button type="button" aria-label="Keyingi taassurot" onClick={() => move(1)}><ChevronRight size={26} strokeWidth={1} /></button>
+          </div>
+        </div>
+        <span className="sr-only" aria-live="polite">{activeSlide + 1} / {EXPERIENCE_SLIDES.length}: {EXPERIENCE_SLIDES[activeSlide].title}</span>
       </div>
     </section>
   );
@@ -973,6 +1057,7 @@ export default function LandingPage() {
         <Ticker />
         <Rooms searchSummary={searchSummary} />
         <Dining />
+        <Experiences />
         <About />
         <Gallery />
         <Reviews />

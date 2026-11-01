@@ -276,3 +276,56 @@
 @media (prefers-reduced-motion: reduce) {
   .marketing-page.shilla-site .hotel-ticker-track { animation: none; }
 }
+/* Centered experience gallery with lower, partially visible adjacent slides. */
+.marketing-page.shilla-site .shilla-experiences {
+  --experience-width: min(56.6vw, 1100px);
+  --experience-gap: 4.2vw;
+  --experience-offset: min(5vw, 96px);
+  padding: 40px 0;
+  overflow: hidden;
+  background: #fff;
+}
+.shilla-experiences-stage {
+  position: relative;
+  min-height: calc(var(--experience-width) * .6 + var(--experience-offset));
+  padding-top: calc(var(--experience-width) * .6);
+  outline-offset: -3px;
+}
+.shilla-experience-slide {
+  position: absolute;
+  width: var(--experience-width);
+  left: 50%;
+  top: var(--experience-offset);
+  transform: translateX(-50%);
+  transition: transform 600ms ease, top 600ms ease;
+  z-index: 1;
+}
+.shilla-experience-slide.is-active { top: 0; z-index: 2; }
+.shilla-experience-slide.is-previous { transform: translateX(calc(-150% - var(--experience-gap))); }
+.shilla-experience-slide.is-next { transform: translateX(calc(50% + var(--experience-gap))); }
+.shilla-experience-slide > img { display: block; width: 100%; aspect-ratio: 5 / 3; object-fit: cover; background: #eee9df; }
+.shilla-experience-caption { position: relative; width: var(--experience-width); margin-inline: auto; z-index: 3; display: flex; align-items: flex-start; gap: 24px; padding-top: 24px; }
+.shilla-experience-copy { flex: 1; min-width: 0; }
+.shilla-site .shilla-experience-copy h2 { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 23px; font-weight: 400; line-height: 1.4; letter-spacing: 0; }
+.shilla-experience-copy p { margin-top: 6px; color: #808080; font-size: 17px; line-height: 1.5; }
+.shilla-experience-arrows { display: flex; flex-shrink: 0; gap: 12px; padding-top: 1px; }
+.shilla-experience-arrows button { display: grid; place-items: center; width: 30px; height: 35px; background: transparent; color: #5b5853; }
+.shilla-experience-arrows button:hover { color: #a58a60; }
+@media (max-width: 1100px) {
+  .marketing-page.shilla-site .shilla-experiences { --experience-width: 70vw; --experience-gap: 4vw; padding: 32px 0; }
+  .shilla-experience-caption { gap: 12px; padding-top: 20px; }
+  .shilla-site .shilla-experience-copy h2 { font-size: 21px; }
+}
+@media (max-width: 767px) {
+  .marketing-page.shilla-site .shilla-experiences { --experience-width: 82vw; --experience-gap: 18px; --experience-offset: 30px; padding: 28px 0 20px; }
+  .shilla-experiences-stage { min-height: calc(var(--experience-width) * .75 + var(--experience-offset)); padding-top: calc(var(--experience-width) * .75); }
+  .shilla-experience-slide > img { aspect-ratio: 4 / 3; }
+  .shilla-experience-caption { flex-wrap: wrap; gap: 12px; padding-top: 18px; }
+  .shilla-experience-copy { flex-basis: 100%; }
+  .shilla-site .shilla-experience-copy h2 { font-size: 20px; }
+  .shilla-experience-copy p { font-size: 16px; }
+  .shilla-experience-arrows { margin-left: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shilla-experience-slide { transition: none; }
+}
