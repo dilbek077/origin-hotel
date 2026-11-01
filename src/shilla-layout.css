@@ -337,3 +337,56 @@
   .shilla-site .shilla-experiences-heading h2 { font-size: clamp(26px, 7vw, 34px); }
   .shilla-experiences-heading p { margin-top: 14px; font-size: 17px; }
 }
+/* Location section: centered address row above a full-width interactive map. */
+.marketing-page.shilla-site .shilla-location { padding: 40px 40px 48px; background: #fff; color: #222; }
+.shilla-site .shilla-location > h2 { margin: 0; text-align: center; font-family: Georgia, 'Times New Roman', serif; font-size: 46px; line-height: 1.2; font-weight: 400; letter-spacing: 0; }
+.shilla-location-info { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 32px; margin-top: 32px; font-size: 18px; line-height: 1.6; }
+.shilla-location-info > p { display: flex; align-items: baseline; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 0; }
+.shilla-location-info strong { font-weight: 500; color: #111; }
+.shilla-location-info a { color: #5d5149; }
+.shilla-location-info a:hover { color: #927b58; text-decoration: underline; text-underline-offset: 4px; }
+.shilla-map-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 24px; }
+.shilla-map-links > a { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.shilla-map-links svg { flex-shrink: 0; padding: 2px; border: 1px solid #eee; border-radius: 3px; background: #fff; }
+.shilla-map-google { color: #4285f4; }
+.shilla-map-yandex { color: #e85143; }
+.shilla-map-osm { color: #579866; }
+.shilla-location-directions { margin: 30px auto 0; max-width: 880px; text-align: center; font-size: 18px; }
+.shilla-location-directions > summary { display: inline-flex; align-items: center; gap: 8px; list-style: none; cursor: pointer; padding: 6px 0; color: #222; }
+.shilla-location-directions > summary::-webkit-details-marker { display: none; }
+.shilla-location-directions > summary svg { transition: transform 180ms ease; }
+.shilla-location-directions[open] > summary svg { transform: rotate(90deg); }
+.shilla-location-directions-content { margin-top: 18px; padding: 22px 28px; background: #f7f7f7; text-align: left; color: #6b6258; font-size: 17px; line-height: 1.7; }
+.shilla-location-directions-content p + p { margin-top: 10px; }
+.shilla-location-directions-content a { color: #544632; text-underline-offset: 4px; }
+.shilla-location-directions-content a:hover { text-decoration: underline; }
+.shilla-directions-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; }
+.shilla-location-map { position: relative; margin-top: 64px; width: 100%; background: #f1f1ee; }
+.shilla-location-map > iframe { display: block; width: 100%; height: clamp(320px, 34vw, 560px); border: 0; }
+.shilla-location-map-open { display: inline-flex; align-items: center; gap: 8px; position: absolute; bottom: 20px; right: 20px; padding: 12px 18px; background: #302525; color: #fff; font-size: 16px; box-shadow: 0 2px 8px #0001; }
+.shilla-location-map-open:hover { background: #514035; }
+.shilla-location-contact { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 32px; padding-top: 20px; font-size: 16px; color: #80766c; }
+.shilla-location-contact > a, .shilla-location-contact > span { display: inline-flex; align-items: center; gap: 8px; }
+.shilla-location-contact > a:hover { color: #544632; text-decoration: underline; }
+@media (max-width: 1100px) {
+  .marketing-page.shilla-site .shilla-location { padding-inline: 25px; }
+  .shilla-location-info { gap: 16px 24px; }
+  .shilla-map-links { flex-basis: 100%; }
+}
+@media (max-width: 767px) {
+  .marketing-page.shilla-site .shilla-location { padding: 32px 20px; }
+  .shilla-site .shilla-location > h2 { font-size: 34px; }
+  .shilla-location-info { margin-top: 24px; font-size: 17px; gap: 14px; }
+  .shilla-location-info > p { width: 100%; gap: 7px; text-align: center; }
+  .shilla-map-links { gap: 16px; font-size: 16px; }
+  .shilla-map-links > a { gap: 5px; }
+  .shilla-location-directions { margin-top: 24px; font-size: 17px; }
+  .shilla-location-directions-content { padding: 18px; font-size: 16px; }
+  .shilla-location-map { margin-top: 32px; }
+  .shilla-location-map > iframe { height: 340px; }
+  .shilla-location-map-open { bottom: 14px; right: 14px; padding: 10px 12px; font-size: 15px; }
+  .shilla-location-contact { gap: 12px; font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shilla-location-directions > summary svg { transition: none; }
+}

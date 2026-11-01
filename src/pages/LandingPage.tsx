@@ -3,7 +3,6 @@ import { LANGUAGES, useTranslation } from '@/i18n';
 import {
   Hotel,
   MapPin,
-  Phone,
   Mail,
   Star,
   Wifi,
@@ -28,9 +27,6 @@ import {
   Play,
   UsersRound,
   Shield,
-  Camera,
-  Send,
-  ExternalLink,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../landing.css';
@@ -788,94 +784,42 @@ function Reviews() {
 
 /* ─── Contact ────────────────────────────────────────────── */
 function Contact() {
-  const contactItems = [
-    { icon: MapPin, label: 'Manzil', value: 'Amir Temur shoh ko\'chasi 15, Toshkent 100000', href: 'https://maps.google.com/?q=Origin+Hotel+Tashkent' },
-    { icon: Phone, label: 'Telefon', value: '+998 71 200 20 20', href: 'tel:+998712002020' },
-    { icon: Mail, label: 'Email', value: 'reservations@originhotel.uz', href: 'mailto:reservations@originhotel.uz' },
-    { icon: Clock, label: 'Qabulxona', value: '24 soat, 7 kun', href: undefined },
-  ];
+  const address = 'Amir Temur shoh ko‘chasi 15, Toshkent 100000';
+  const mapQuery = encodeURIComponent('Origin Hotel, Amir Temur shoh ko‘chasi 15, Toshkent');
+  const googleMap = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+  const openStreetMap = 'https://www.openstreetmap.org/?mlat=41.3111&mlon=69.2797#map=15/41.3111/69.2797';
 
   return (
-    <section id="contact" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-      <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16">
-
-        {/* Left */}
-        <div className="anim-fade-up">
-          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">Aloqa</p>
-          <h2 className="font-display mt-3 text-4xl lg:text-5xl">
-            Toshkent markazida, hamma joyga yaqin
-          </h2>
-          <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            Amir Temur shoh ko'chasi bo'yida — aeroportga 20 daqiqa, metro va
-            biznes markazlariga piyoda masofada.
-          </p>
-
-          <ul className="mt-9 space-y-4 text-sm">
-            {contactItems.map(({ icon: Icon, label, value, href }) => (
-              <li key={label} className="flex gap-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[--champagne]/15 text-[--champagne]">
-                  <Icon size={18} />
-                </span>
-                <span>
-                  <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-muted-foreground">
-                    {label}
-                  </span>
-                  {href ? (
-                    <a
-                      href={href}
-                      target={href.startsWith('http') ? '_blank' : undefined}
-                      rel="noreferrer"
-                      className="mt-0.5 block font-medium hover:text-[--champagne] transition-colors"
-                    >
-                      {value}
-                    </a>
-                  ) : (
-                    <span className="mt-0.5 block font-medium">{value}</span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          {/* Social */}
-          <div className="mt-8 flex gap-3">
-            {[
-              { icon: Send,         href: '#', label: 'Telegram' },
-              { icon: Camera,       href: '#', label: 'Instagram' },
-              { icon: ExternalLink, href: '#', label: 'Facebook' },
-            ].map(({ icon: Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={label}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[--line] text-muted-foreground hover:border-[--champagne] hover:text-[--champagne] transition-colors"
-              >
-                <Icon size={16} />
-              </a>
-            ))}
-          </div>
+    <section id="contact" className="shilla-location" aria-labelledby="location-title">
+      <h2 id="location-title">JOYLASHUV</h2>
+      <div className="shilla-location-info">
+        <p><strong>Manzil</strong><a href={googleMap} target="_blank" rel="noreferrer">{address}</a></p>
+        <p><strong>Tel.</strong><a href="tel:+998712002020">+998 71 200 20 20</a></p>
+        <nav className="shilla-map-links" aria-label="Xarita xizmatlari">
+          <a href={googleMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-google" aria-hidden="true" />Google Maps</a>
+          <a href={`https://yandex.com/maps/?text=${mapQuery}`} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-yandex" aria-hidden="true" />Yandex Maps</a>
+          <a href={openStreetMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-osm" aria-hidden="true" />OpenStreetMap</a>
+        </nav>
+      </div>
+      <details className="shilla-location-directions">
+        <summary>Yo‘l va transport ma’lumotlari<ChevronRight size={18} strokeWidth={1} /></summary>
+        <div className="shilla-location-directions-content">
+          <p>Amir Temur shoh ko‘chasi bo‘yida — aeroportga 20 daqiqa, metro va biznes markazlariga piyoda masofada.</p>
+          <p>Qabulxona 24 soat, haftasiga 7 kun ishlaydi. Yo‘l bo‘yicha yordam uchun <a href="tel:+998712002020">+998 71 200 20 20</a> raqamiga murojaat qiling.</p>
+          <a className="shilla-directions-link" href={`https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`} target="_blank" rel="noreferrer">Yo‘nalishni xaritada ochish<ArrowUpRight size={17} /></a>
         </div>
-
-        {/* Right – map placeholder */}
-        <div className="anim-fade-up relative overflow-hidden rounded-3xl border border-[--line] aspect-[4/3] bg-[--surface]">
-          <iframe
-            title="Origin Hotel xarita"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=69.26%2C41.29%2C69.30%2C41.33&layer=mapnik&marker=41.3111%2C69.2797"
-            className="h-full w-full border-0"
-            loading="lazy"
-          />
-          <a
-            href="https://www.openstreetmap.org/?mlat=41.3111&mlon=69.2797#map=15/41.3111/69.2797"
-            target="_blank"
-            rel="noreferrer"
-            className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-[--ink] px-4 py-2 text-xs font-semibold text-white hover:bg-[--ink-soft] transition"
-          >
-            Xaritani ochish
-            <ArrowUpRight size={12} />
-          </a>
-        </div>
+      </details>
+      <div className="shilla-location-map">
+        <iframe
+          title="Origin Hotel xaritasi"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=69.26%2C41.29%2C69.30%2C41.33&layer=mapnik&marker=41.3111%2C69.2797"
+          loading="lazy"
+        />
+        <a href={openStreetMap} target="_blank" rel="noreferrer" className="shilla-location-map-open">Xaritani kattalashtirish<ArrowUpRight size={17} /></a>
+      </div>
+      <div className="shilla-location-contact">
+        <a href="mailto:reservations@originhotel.uz"><Mail size={16} />reservations@originhotel.uz</a>
+        <span><Clock size={16} />Qabulxona: 24/7</span>
       </div>
     </section>
   );
@@ -1062,10 +1006,10 @@ export default function LandingPage() {
         <Rooms searchSummary={searchSummary} />
         <Dining />
         <Experiences />
+        <Contact />
         <About />
         <Gallery />
         <Reviews />
-        <Contact />
         <CTA />
       </main>
 
