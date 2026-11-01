@@ -8,6 +8,7 @@ import { HOTEL_PHOTOS, HOTEL_ROOM_DETAIL_PHOTOS } from '@/data/hotelPhotos';
 import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
 import qarshiMosque from '@/assets/qarshi-hero/02-qarshi-masjid.webp';
 import qarshiCenter from '@/assets/qarshi-hero/03-qarshi-markaz.webp';
+import hotelHeroFacade from '@/assets/qarshi-hero/04-origin-hotel-facade.webp';
 import {
   MapPin,
   Hotel,
@@ -104,9 +105,10 @@ function useScrollProgress() {
   }, []);
 }
 
-// City photographs are used only here; room and service imagery stays separate.
+// Hero photographs stay separate from the room and service image assignments.
 const HERO_SLIDES = [
   { src: qarshiClockTower, alt: 'Qarshi shahri — soat minorasi va shahar manzarasi', position: '68% center' },
+  { src: hotelHeroFacade, alt: 'Origin Hotel — ko‘k oynali fasad va mehmonxona kirishi', position: 'center 40%' },
   { src: qarshiMosque, alt: 'Qarshi shahri — moviy gumbazli tarixiy bino va yashil xiyobon', position: 'center' },
   { src: qarshiCenter, alt: 'Qarshi shahri — markaziy maydon, favvora va keng ko‘chalar', position: '35% center' },
 ];
@@ -122,7 +124,7 @@ function Hero() {
   const nextSlide = (direction: number) => setSlide((previous) => (previous + direction + HERO_SLIDES.length) % HERO_SLIDES.length);
 
   return (
-    <section className="shilla-hero" aria-label="Qarshi shahri manzaralari" aria-roledescription="slayder">
+    <section className="shilla-hero" aria-label="Origin Hotel va Qarshi manzaralari" aria-roledescription="slayder">
       {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
       <h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</h1>
       <div className="shilla-mobile-hero-copy"><h2>Qarshida unutilmas hordiq</h2><p>Origin Hotel’da shinam xonalar va samimiy xizmatdan bahramand bo‘ling.</p></div>
