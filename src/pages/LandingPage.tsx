@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Navbar from '@/components/layout/HotelNavbar';
 import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
 import type { HotelInfoKey } from '@/data/hotelInformation';
@@ -662,6 +662,33 @@ function QuickDock() {
 
 /* ─── LandingPage (root) ─────────────────────────────────── */
 export default function LandingPage() {
+  const pageRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+    const parts = [
+      ['.shilla-header', '--intro-header-height'],
+      ['.shilla-reservation', '--intro-booking-height'],
+      ['.hotel-ticker', '--intro-ticker-height'],
+    ] as const;
+    const measure = () => {
+      for (const [selector, variable] of parts) {
+        const element = page.querySelector(selector);
+        if (element) page.style.setProperty(variable, `${element.getBoundingClientRect().height}px`);
+      }
+    };
+    measure();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    for (const [selector] of parts) {
+      const element = page.querySelector(selector);
+      if (element) observer?.observe(element);
+    }
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
   const [searchSummary, setSearchSummary] = useState('');
   const [selectedRoom, setSelectedRoom] = useState<typeof ROOM_DATA[0] | null>(null);
   const [experienceSlide, setExperienceSlide] = useState(0);
@@ -671,7 +698,7 @@ export default function LandingPage() {
   useScrollProgress();
 
   return (
-    <div className="marketing-page hotel-marketing shilla-site">
+    <div ref={pageRef} className="marketing-page hotel-marketing shilla-site">
       {/* Scroll progress bar */}
       <div className="marketing-progress" aria-hidden />
 

@@ -56,7 +56,7 @@
 .shilla-guest-popover > button { background: #302525; color: #fff; width: 100%; padding: 10px; }
 .shilla-reservation-submit { min-height: 50px; width: 100%; background: #302525; color: #fff; font-size: 17px; font-weight: 500; }
 .shilla-reservation-submit:hover { background: #4c3a32; }
-.shilla-site .shilla-hero { position: relative; height: 62svh; min-height: 360px; max-height: 640px; overflow: hidden; background: #a89b86; }
+.shilla-site .shilla-hero { position: relative; height: calc(100vh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); height: calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); min-height: 180px; overflow: hidden; background: #a89b86; }
 .shilla-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 900ms ease; object-position: center; }
 .shilla-hero > img.is-active { opacity: 1; }
 .shilla-hero::after { content: ''; position: absolute; inset: 65% 0 0; background: linear-gradient(transparent, #0004); pointer-events: none; }
@@ -111,7 +111,6 @@
   .shilla-date-field { grid-column: 2 / 4; grid-row: 2; border-right: 0; }
   .shilla-reservation-submit { grid-column: 3; grid-row: 1; min-height: 52px; }
   .shilla-guest-field { grid-column: 1; grid-row: 2; }
-  .shilla-site .shilla-hero { height: 54svh; }
   .shilla-primary-nav { gap: 20px; }
   .shilla-primary-nav > a { font-size: 17px; }
   .shilla-packages-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 25px; }
@@ -140,7 +139,6 @@
   .shilla-guest-field > button { gap: 8px; font-size: 16px; }
   .shilla-guest-popover { left: 0; right: auto; width: 240px; }
   .shilla-reservation-submit { grid-column: 2; grid-row: 3; min-height: 46px; font-size: 17px; }
-  .shilla-site .shilla-hero { height: 48svh; min-height: 280px; max-height: 420px; }
   .shilla-slider-controls { left: 20px; right: 20px; bottom: 35px; gap: 4px; }
   .shilla-site .shilla-packages { padding: 50px 20px; }
   .shilla-site .shilla-packages-heading h2 { font-size: 34px; line-height: 44px; }
