@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapPin, Minus, Plus, UsersRound, X } from 'lucide-react';
+import { MapPin, Minus, Plus, Search, UsersRound, X } from 'lucide-react';
 import ReservationDatePicker from './ReservationDatePicker';
 import { hotelToday, nextDate } from '@/data/reservationDates';
 
@@ -13,6 +13,12 @@ const GUEST_TYPES = [
 const MAX_ROOMS = 8;
 
 export default function ReservationBar({ onSearch }: { onSearch: (summary: string) => void }) {
+  const [mobileExpanded, setMobileExpanded] = useState(false);
+  useEffect(() => {
+    const show = () => setMobileExpanded(true);
+    window.addEventListener('origin-open-mobile-reservation', show);
+    return () => window.removeEventListener('origin-open-mobile-reservation', show);
+  }, []);
   const [mode, setMode] = useState<'room' | 'dining'>('room');
   const [checkIn, setCheckIn] = useState(hotelToday);
   const [checkOut, setCheckOut] = useState(() => nextDate(hotelToday()));
@@ -68,7 +74,7 @@ export default function ReservationBar({ onSearch }: { onSearch: (summary: strin
   }
 
   return (
-    <form id="reservation" className="shilla-reservation" onSubmit={(event) => {
+    <form id="reservation" className={`shilla-reservation ${mobileExpanded ? 'is-mobile-expanded' : ''}`} onSubmit={(event) => {
       event.preventDefault();
       setGuestsOpen(false);
       if (checkIn < hotelToday() || checkOut <= checkIn) { setDatesOpen(true); return; }
@@ -78,8 +84,9 @@ export default function ReservationBar({ onSearch }: { onSearch: (summary: strin
       onSearch(`${checkIn} — ${checkOut} · ${rooms.length} xona · ${totals.adults} katta, ${totals.children} bola, ${totals.infants} chaqaloq. ${breakdown}. Xonani tanlab, bronni tasdiqlash uchun biz bilan bog‘laning.`);
       document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
       // The focused panel is removed on submit; move focus to the results.
-      requestAnimationFrame(() => document.querySelector<HTMLElement>('#rooms h2')?.focus({ preventScroll: true }));
+      requestAnimationFrame(() => [...document.querySelectorAll<HTMLElement>('#rooms h2')].find((heading) => heading.offsetParent !== null)?.focus({ preventScroll: true }));
     }}>
+      <button type="button" className="shilla-mobile-hotel-search" aria-expanded={mobileExpanded} aria-label="Bron sanalari va mehmonlarni tanlash" onClick={() => { setMobileExpanded(!mobileExpanded); setDatesOpen(false); setGuestsOpen(false); }}><span>Origin Hotel · Qarshi — bron qilish</span>{mobileExpanded ? <X size={23} strokeWidth={1.2} /> : <Search size={23} strokeWidth={1.2} />}</button>
       <div className="shilla-booking-mode" aria-label="Bron turi">
         <button type="button" className={mode === 'room' ? 'active' : ''} aria-pressed={mode === 'room'} onClick={() => setMode('room')}>Xona</button>
         <button type="button" className={mode === 'dining' ? 'active' : ''} aria-pressed={mode === 'dining'} onClick={() => setMode('dining')}>Restoran</button>

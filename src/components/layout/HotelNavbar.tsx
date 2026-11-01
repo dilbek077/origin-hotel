@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Globe, Home, Menu, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Globe, Home, Menu, Phone, X } from 'lucide-react';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import type { HotelInfoKey } from '@/data/hotelInformation';
 import { hotelNavigationText } from '@/data/hotelNavigationTranslations';
@@ -170,6 +170,33 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
     };
   }, [setActiveMenu]);
 
+  useEffect(() => {
+    if (!mobileOpen || !window.matchMedia('(max-width: 767px)').matches) return;
+    const menu = document.getElementById('hotel-primary-navigation');
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const background = [...(headerRef.current?.parentElement?.children ?? [])].filter((element) => element.matches('main, footer, .hotel-quick-dock')) as HTMLElement[];
+    const previousInert = background.map((element) => element.inert);
+    background.forEach((element) => { element.inert = true; });
+    menu?.querySelector<HTMLElement>('.shilla-mobile-menu-close')?.focus();
+    const trap = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return;
+      const items = [...(menu?.querySelectorAll<HTMLElement>('a[href], button:not(:disabled), select') ?? [])].filter((element) => element.offsetParent !== null && !element.closest('[inert]'));
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !menu?.contains(document.activeElement))) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || !menu?.contains(document.activeElement))) { event.preventDefault(); first?.focus(); }
+    };
+    const resize = () => { if (window.innerWidth >= 768) setMobileOpen(false); };
+    document.addEventListener('keydown', trap);
+    window.addEventListener('resize', resize);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      background.forEach((element, index) => { element.inert = previousInert[index]; });
+      document.removeEventListener('keydown', trap);
+      window.removeEventListener('resize', resize);
+    };
+  }, [mobileOpen]);
+
   const cancelClose = () => {
     if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
     closeTimer.current = null;
@@ -227,7 +254,7 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
     <>
     <header
       ref={headerRef}
-      className={`shilla-header ${scrolled ? 'is-scrolled' : ''}`}
+      className={`shilla-header ${scrolled ? 'is-scrolled' : ''} ${mobileOpen ? 'is-mobile-open' : ''}`}
       onPointerEnter={cancelClose}
       onPointerLeave={(event) => {
         if (event.pointerType !== 'mouse' || event.currentTarget.contains(document.activeElement)) return;
@@ -254,6 +281,7 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
       }}
     >
       <div className="shilla-header-top" onPointerEnter={() => setActiveMenu(null)}>
+        <Link to="/" className="shilla-mobile-home" aria-label={text('Bosh sahifaga qaytish')} onClick={goHome}><Home size={24} strokeWidth={1.2} /></Link>
         <div className="shilla-hotel-link">
           <Link to="/" onClick={goHome} aria-label={text('Bosh sahifaga qaytish')}><Home size={21} strokeWidth={1.2} /></Link>
           <button ref={overviewRef} id="hotel-overview-trigger" type="button" aria-haspopup="dialog" aria-expanded={overviewOpen} aria-controls="hotel-overview-panel" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
@@ -272,6 +300,25 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
         <button ref={mobileRef} type="button" className="shilla-mobile-toggle" aria-label={text('Menyu')} aria-controls="hotel-primary-navigation" aria-expanded={mobileOpen} onClick={() => { setMobileOpen(!mobileOpen); setActiveMenu(null); setLanguageOpen(false); }}>{mobileOpen ? <X size={23} /> : <Menu size={23} />}</button>
       </div>
       <nav id="hotel-primary-navigation" className={`shilla-primary-nav ${mobileOpen ? 'is-open' : ''}`} aria-label={text('Asosiy menyu')}>
+        <div className="shilla-mobile-menu-intro">
+          <div className="shilla-mobile-menu-bar">
+            <Link to="/" aria-label={text('Bosh sahifaga qaytish')} onClick={goHome}><Home size={25} strokeWidth={1.2} /></Link>
+            <a href="tel:+998712002020" aria-label="Mehmonxonaga qo‘ng‘iroq qilish"><Phone size={24} strokeWidth={1.2} /></a>
+            <button type="button" className="shilla-mobile-menu-close" aria-label="Menyuni yopish" onClick={() => { closeAll(); mobileRef.current?.focus(); }}><X size={27} strokeWidth={1.2} /></button>
+          </div>
+          <div className="shilla-mobile-account-card">
+            <Link className="shilla-mobile-account-title" to={accountPath} onClick={closeAll}>{signedIn ? text('Hisobim') : 'Tizimga kirish'}<ChevronRight size={20} strokeWidth={1} /></Link>
+            <p>{signedIn ? 'Bronlaringiz va mehmonxona xizmatlarini boshqaring.' : 'Bronlaringizni ko‘rish va mehmonxona xizmatlaridan foydalanish uchun tizimga kiring.'}</p>
+            <div className="shilla-mobile-account-grid">
+              <a href="#reservation" onClick={() => { closeAll(); window.dispatchEvent(new Event('origin-open-mobile-reservation')); }}>Xona bron qilish</a>
+              <a href="#dining" onClick={closeAll}>Restoran</a>
+              <Link to={`${dashboard}/bronlar`} onClick={closeAll}>Bronlarimni ko‘rish</Link>
+              <a href="tel:+998712002020" onClick={closeAll}>Restoran bilan aloqa</a>
+            </div>
+          </div>
+          <button type="button" className="shilla-mobile-overview" aria-haspopup="dialog" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
+          <Link to="/" className="shilla-mobile-menu-home" onClick={goHome}>{text('Bosh sahifaga qaytish')}</Link>
+        </div>
         {MENUS.map((menu, index) => (
           <div className="shilla-nav-item" key={menu.label} onPointerEnter={(event) => { if (event.pointerType === 'mouse' && window.matchMedia('(min-width: 768px) and (hover: hover)').matches) showMenu(index); }}>
             <button
@@ -321,7 +368,6 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
           </div>
         ))}
         <div className="shilla-mobile-accounts">
-          <button type="button" className="shilla-mobile-overview" aria-haspopup="dialog" onClick={openOverview}>{text('Mehmonxona haqida +')}</button>
           <Link to={accountPath} onClick={closeAll}>{text(accountLabel)}</Link>
           <Link to={`${dashboard}/bronlar`} onClick={closeAll}>{text('Bronlarim')}</Link>
           <Link to={dashboard} onClick={closeAll}>{text('Boshqaruv')}</Link>

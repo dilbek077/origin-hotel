@@ -123,6 +123,8 @@ function Hero() {
     <section className="shilla-hero" aria-label="Qarshi shahri manzaralari" aria-roledescription="slayder">
       {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
       <h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</h1>
+      <div className="shilla-mobile-hero-copy"><h2>Qarshida unutilmas hordiq</h2><p>Origin Hotel’da shinam xonalar va samimiy xizmatdan bahramand bo‘ling.</p></div>
+      <div className="shilla-mobile-hero-dots">{HERO_SLIDES.map((photo, index) => <button type="button" key={photo.src} aria-label={`${index + 1}-hero suratini ko‘rsatish`} aria-pressed={index === slide} onClick={() => setSlide(index)} />)}</div>
       <div className="shilla-slider-controls">
         <div className="shilla-slide-progress" aria-label={`${slide + 1} / ${HERO_SLIDES.length}`}><span style={{ width: `${((slide + 1) / HERO_SLIDES.length) * 100}%` }} /></div>
         <button type="button" aria-label={paused ? 'Slayderni davom ettirish' : 'Slayderni to‘xtatish'} onClick={() => setPaused(!paused)}>{paused ? <Play size={16} /> : <Pause size={16} />}</button>
@@ -250,11 +252,18 @@ function RoomDetailModal({
   );
 }
 
-function Rooms({ searchSummary, selected, onSelect }: {
+function Rooms({ searchSummary, selected, onSelect, onInfo }: {
   searchSummary: string;
   selected: typeof ROOM_DATA[0] | null;
   onSelect: (room: typeof ROOM_DATA[0] | null) => void;
+  onInfo: (key: HotelInfoKey, triggerId: string) => void;
 }) {
+  const [mobileTab, setMobileTab] = useState<'rooms' | 'services'>('rooms');
+  const services: { key: HotelInfoKey; title: string; image: string }[] = [
+    { key: 'pool', title: 'Basseyn va hordiq', image: IMAGES.pool },
+    { key: 'spa', title: 'SPA', image: IMAGES.spa },
+    { key: 'fitness', title: 'Fitnes zali', image: IMAGES.gym },
+  ];
   return (
     <section id="rooms" className="shilla-packages">
       <div className="shilla-packages-heading">
@@ -263,6 +272,17 @@ function Rooms({ searchSummary, selected, onSelect }: {
         <a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
       </div>
       {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
+      <div className="shilla-mobile-offers">
+        <div className="shilla-mobile-section-heading"><h2 tabIndex={-1}>TAKLIFLAR</h2><a href="#experiences" aria-label="Barcha suratlarni ko‘rish"><ChevronRight size={24} strokeWidth={1} /></a></div>
+        <div className="shilla-mobile-offer-tabs" role="group" aria-label="Taklif turi"><button type="button" aria-pressed={mobileTab === 'rooms'} onClick={() => setMobileTab('rooms')}>XONALAR</button><button type="button" aria-pressed={mobileTab === 'services'} onClick={() => setMobileTab('services')}>XIZMATLAR</button></div>
+        {mobileTab === 'rooms' ? <>
+          <article className="shilla-mobile-featured-offer"><button type="button" onClick={() => onSelect(ROOM_DATA[0])} aria-label="Standart xonani ko‘rish"><img src={ROOM_DATA[0].image} alt="Standart xona" loading="lazy" /><h3>Standart xona va nonushta</h3></button><p>{formatPrice(ROOM_DATA[0].price)} / tun <span>Origin Hotel</span></p></article>
+          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <article key={room.type}><button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><img src={room.image} alt={`${room.label} xona`} loading="lazy" /><h3>{room.label} Xona</h3></button><p>{formatPrice(room.price)} / tun</p></article>)}</div>
+        </> : <>
+          <article className="shilla-mobile-featured-offer"><button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><img src={IMAGES.pool} alt="Basseyn va dam olish hududi" loading="lazy" /><h3>Basseyn va hordiq</h3></button><p>Mehmonxona qulayliklari <span>Origin Hotel</span></p></article>
+          <div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <article key={service.key}><button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><img src={service.image} alt={service.title} loading="lazy" /><h3>{service.title}</h3></button><p>Origin Hotel</p></article>)}</div>
+        </>}
+      </div>
       <div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</div>
       {selected && <RoomDetailModal room={selected} onClose={() => onSelect(null)} />}
     </section>
@@ -447,6 +467,7 @@ function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSl
           return (
             <article key={slide.title} className={`shilla-experience-slide is-${position}`} aria-hidden={position !== 'active'}>
               <img src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
+              <div className="shilla-mobile-experience-copy"><h3>{slide.title}</h3><p>{slide.description}</p></div>
             </article>
           );
         })}
@@ -462,6 +483,7 @@ function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSl
         </div>
         <span className="sr-only" aria-live="polite">{activeSlide + 1} / {EXPERIENCE_SLIDES.length}: {EXPERIENCE_SLIDES[activeSlide].title}</span>
       </div>
+      <div className="shilla-mobile-experience-progress">{EXPERIENCE_SLIDES.map((item, index) => <button type="button" key={item.title} aria-label={`${index + 1}-taassurotni ko‘rsatish`} aria-pressed={activeSlide === index} onClick={() => onSlideChange(index)} />)}</div>
     </section>
   );
 }
@@ -659,7 +681,7 @@ export default function LandingPage() {
         <ReservationBar onSearch={setSearchSummary} />
         <Hero />
         <Ticker />
-        <Rooms searchSummary={searchSummary} selected={selectedRoom} onSelect={setSelectedRoom} />
+        <Rooms searchSummary={searchSummary} selected={selectedRoom} onSelect={setSelectedRoom} onInfo={(key, triggerId) => setSelectedInfo({ key, triggerId })} />
         <Dining selection={diningSelection} />
         <Experiences activeSlide={experienceSlide} onSlideChange={setExperienceSlide} />
         <Contact />
