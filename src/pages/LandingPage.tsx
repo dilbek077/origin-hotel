@@ -245,7 +245,7 @@ function RoomDetailModal({
     return () => {
       document.removeEventListener('keydown', fn);
       document.body.style.overflow = previousOverflow;
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected && !previousFocus.closest('[inert]')) previousFocus.focus({ preventScroll: true });
       else document.querySelector<HTMLElement>(window.matchMedia('(max-width: 767px)').matches ? '.shilla-mobile-toggle' : '#hotel-nav-trigger-2')?.focus({ preventScroll: true });
     };
   }, [onClose]);

@@ -545,3 +545,48 @@ body:has(.hotel-information-dialog) [data-slot='dialog-overlay'] { z-index: 100;
   .shilla-nav-panel-links > span > a { justify-content: flex-start; width: 100%; min-height: 44px; padding: 11px 6px; font-size: 16px; font-weight: 400; text-transform: none; }
   .hotel-information-dialog .hotel-information-title { font-size: 25px; }
 }
+/* Restrained navigation motion; interactive state changes immediately. */
+@keyframes hotel-menu-enter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes hotel-menu-exit {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes hotel-menu-item-enter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.shilla-nav-panel[data-state='open'] { animation: hotel-menu-enter 180ms cubic-bezier(.2, .7, .2, 1) both; }
+.shilla-nav-panel[data-state='closing'] { animation: hotel-menu-exit 140ms ease-out both; pointer-events: none; }
+.shilla-nav-panel[data-state='open'] .shilla-nav-group,
+.shilla-nav-panel[data-state='open'] .shilla-nav-panel-links > span { animation: hotel-menu-item-enter 180ms ease-out both; }
+.shilla-nav-panel[data-state='open'] :is(.shilla-nav-group, .shilla-nav-panel-links > span):nth-child(2) { animation-delay: 15ms; }
+.shilla-nav-panel[data-state='open'] :is(.shilla-nav-group, .shilla-nav-panel-links > span):nth-child(3) { animation-delay: 30ms; }
+.shilla-nav-panel[data-state='open'] :is(.shilla-nav-group, .shilla-nav-panel-links > span):nth-child(4) { animation-delay: 45ms; }
+.shilla-nav-panel[data-state='open'] :is(.shilla-nav-group, .shilla-nav-panel-links > span):nth-child(5) { animation-delay: 60ms; }
+.shilla-nav-trigger { transition: color 160ms ease; }
+.shilla-nav-trigger::after { transition: transform 200ms cubic-bezier(.2, .7, .2, 1); }
+.shilla-nav-group li > a, .shilla-nav-group li > button,
+.shilla-nav-panel-links > span > a { transition: color 160ms ease, transform 160ms ease; }
+.shilla-nav-group li > a:hover, .shilla-nav-group li > button:hover,
+.shilla-nav-panel-links > span > a:hover { transform: translateX(3px); }
+.shilla-language-options { animation: hotel-menu-enter 160ms ease-out both; }
+@media (max-width: 767px) {
+  .shilla-primary-nav.is-open { animation: hotel-menu-enter 180ms ease-out both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shilla-nav-panel[data-state], .shilla-nav-panel .shilla-nav-group,
+  .shilla-nav-panel .shilla-nav-panel-links > span,
+  .shilla-primary-nav.is-open, .shilla-language-options { animation: none; }
+  .shilla-nav-trigger, .shilla-nav-trigger::after,
+  .shilla-nav-group li > a, .shilla-nav-group li > button,
+  .shilla-nav-panel-links > span > a { transition: none; }
+  .shilla-nav-group li > a:hover, .shilla-nav-group li > button:hover,
+  .shilla-nav-panel-links > span > a:hover { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shilla-nav-panel[data-state='open'] .shilla-nav-group,
+  .shilla-nav-panel[data-state='open'] .shilla-nav-panel-links > span { animation: none; }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, Globe, Home, Menu, X } from 'lucide-react';
 import { LANGUAGES, useTranslation } from '@/i18n';
@@ -113,7 +113,8 @@ type Props = {
 
 export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect, onExperienceSelect }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const [menuState, setMenuState] = useState<{ index: number | null; closing: boolean }>({ index: null, closing: false });
+  const activeMenu = menuState.closing ? null : menuState.index;
   const [languageOpen, setLanguageOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -121,8 +122,23 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
   const languageRef = useRef<HTMLButtonElement>(null);
   const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const closeTimer = useRef<number | null>(null);
+  const exitTimer = useRef<number | null>(null);
   const { locale, setLocale } = useTranslation();
   const dashboard = localStorage.getItem('role') === 'STAFF' ? '/staff' : '/admin';
+
+  const setActiveMenu = useCallback((index: number | null) => {
+    if (exitTimer.current !== null) window.clearTimeout(exitTimer.current);
+    exitTimer.current = null;
+    if (index !== null || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setMenuState({ index, closing: false });
+      return;
+    }
+    setMenuState((previous) => previous.index === null ? previous : { ...previous, closing: true });
+    exitTimer.current = window.setTimeout(() => {
+      setMenuState({ index: null, closing: false });
+      exitTimer.current = null;
+    }, 140);
+  }, []);
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 160);
@@ -140,8 +156,9 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
       window.removeEventListener('scroll', update);
       document.removeEventListener('pointerdown', outside);
       if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+      if (exitTimer.current !== null) window.clearTimeout(exitTimer.current);
     };
-  }, []);
+  }, [setActiveMenu]);
 
   const cancelClose = () => {
     if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
@@ -249,8 +266,8 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
                 }
               }}
             >{menu.label}<ChevronDown size={14} className="shilla-nav-chevron" aria-hidden="true" /></button>
-            {activeMenu === index && (
-              <div id={`hotel-submenu-${index}`} className={`shilla-nav-panel ${menu.groups ? 'is-grouped' : ''}`} aria-labelledby={`hotel-nav-trigger-${index}`}>
+            {menuState.index === index && (
+              <div id={`hotel-submenu-${index}`} className={`shilla-nav-panel ${menu.groups ? 'is-grouped' : ''}`} data-state={menuState.closing ? 'closing' : 'open'} inert={menuState.closing} aria-hidden={menuState.closing} aria-labelledby={`hotel-nav-trigger-${index}`}>
                 {menu.groups ? (
                   <div className="shilla-nav-groups" style={{ gridTemplateColumns: `repeat(${menu.groups.length}, minmax(0, 1fr))` }}>
                     {menu.groups.map((group) => (
