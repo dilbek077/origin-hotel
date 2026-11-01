@@ -4,10 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .startup-skeleton { position: fixed; inset: 0; overflow: hidden; background: #fff; min-height: 100vh; }
+      .startup-skeleton * { box-sizing: border-box; }
+      .startup-header { height: 88px; display: grid; place-items: center; }
+      .startup-header span { width: 260px; height: 40px; background: #e9e5df; }
+      .startup-nav { height: 52px; border-top: 1px solid #f0ede9; }
+      .startup-booking { height: 76px; background: #ded2b9; }
+      .startup-hero { height: 65vh; background: linear-gradient(100deg, #e9e5df 20%, #f6f4f1 45%, #e9e5df 70%); background-size: 220% 100%; animation: startup-shimmer 1.5s linear infinite; }
+      @keyframes startup-shimmer { from { background-position: 200% 0; } to { background-position: -20% 0; } }
+      @media (max-width: 767px) { .startup-header { height: 76px; } .startup-header span { width: 190px; height: 30px; } .startup-nav, .startup-booking { display: none; } .startup-hero { height: 475px; } }
+      @media (prefers-reduced-motion: reduce) { .startup-hero { animation: none; } }
+    </style>
     <title>origin-hotel</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="startup-skeleton" aria-hidden="true">
+        <div class="startup-header"><span></span></div>
+        <div class="startup-nav"></div>
+        <div class="startup-booking"></div>
+        <div class="startup-hero"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

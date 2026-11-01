@@ -1,3 +1,4 @@
+import { LoadingImage } from '@/components/ui/loading-image';
 import { L } from '@/localization/elements';
 import { LocalizedText } from '@/localization/Text';
 import { HOTEL_PHOTOS } from '@/data/hotelPhotos';
@@ -51,7 +52,7 @@ export default function HotelEvents() {
     </L.div>
     <L.div className="shilla-events-grid">
       {EVENTS.map((item, index) => <L.article className="shilla-event-card" key={item.title}>
-        <L.button type="button" className="shilla-event-image" aria-label={`${item.title}: batafsil`} aria-haspopup="dialog" onClick={(event) => { trigger.current = event.currentTarget; setSelection(index); }}><L.img src={item.image} alt={item.alt} loading="lazy" decoding="async" /></L.button>
+        <L.button type="button" className="shilla-event-image" aria-label={`${item.title}: batafsil`} aria-haspopup="dialog" onClick={(event) => { trigger.current = event.currentTarget; setSelection(index); }}><LoadingImage src={item.image} alt={item.alt} loading="lazy" decoding="async" /></L.button>
         <L.h3><L.button type="button" aria-haspopup="dialog" onClick={(event) => { trigger.current = event.currentTarget; setSelection(index); }}>{item.title}</L.button></L.h3>
         <L.p>{item.description}</L.p>
         <L.p className="shilla-event-note">{item.note}</L.p>
@@ -62,10 +63,10 @@ export default function HotelEvents() {
         <DialogClose asChild><L.button type="button" className="shilla-event-close" aria-label="Tadbirlar oynasini yopish"><X size={22} strokeWidth={1.2} /></L.button></DialogClose>
         <DialogHeader><DialogTitle><LocalizedText>{selected?.title ?? 'Barcha tadbirlar'}</LocalizedText></DialogTitle><DialogDescription><LocalizedText>{selected?.description ?? 'Origin Hotel’da restoran, shahar manzaralari va oilaviy hordiq haqida ma’lumotlar.'}</LocalizedText></DialogDescription></DialogHeader>
         <LocalizedText>{selected ? <>
-          <L.img className="shilla-event-detail-image" src={selected.image} alt={selected.alt} />
+          <LoadingImage className="shilla-event-detail-image" src={selected.image} alt={selected.alt} />
           <L.p className="shilla-event-detail-copy">{selected.detail}</L.p>
           <L.div className="shilla-event-actions"><L.a href={selected.href} onClick={() => setSelection(null)}>{selected.action}<ChevronRight size={17} /></L.a><L.a href="tel:+998712002020">Qo‘ng‘iroq qilish</L.a></L.div>
-        </> : <L.div className="shilla-event-catalog">{EVENTS.map((item, index) => <L.button type="button" key={item.title} onClick={() => setSelection(index)}><L.img src={item.image} alt={item.alt} loading="lazy" /><L.span><L.strong>{item.title}</L.strong><L.small>{item.description}</L.small></L.span><ChevronRight size={20} strokeWidth={1} /></L.button>)}</L.div>}</LocalizedText>
+        </> : <L.div className="shilla-event-catalog">{EVENTS.map((item, index) => <L.button type="button" key={item.title} onClick={() => setSelection(index)}><LoadingImage src={item.image} alt={item.alt} loading="lazy" /><L.span><L.strong>{item.title}</L.strong><L.small>{item.description}</L.small></L.span><ChevronRight size={20} strokeWidth={1} /></L.button>)}</L.div>}</LocalizedText>
       </DialogContent>
     </Dialog>
   </L.section>;

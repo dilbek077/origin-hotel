@@ -1,3 +1,4 @@
+import { LoadingImage } from '@/components/ui/loading-image';
 import { L } from '@/localization/elements';
 import { LocalizedText } from '@/localization/Text';
 import { X } from 'lucide-react';
@@ -25,7 +26,7 @@ export default function HotelInformationDialog({ selection, onClose }: Props) {
         }}
       >
         <DialogClose asChild><L.button type="button" className="hotel-information-close" aria-label="Ma’lumot oynasini yopish"><X size={20} /></L.button></DialogClose>
-        <LocalizedText>{info.image && <L.img className="hotel-information-image" src={info.image} alt={info.imageAlt ?? 'Origin Hotel'} />}</LocalizedText>
+        <LocalizedText>{info.image && <LoadingImage className="hotel-information-image" src={info.image} alt={info.imageAlt ?? 'Origin Hotel'} />}</LocalizedText>
         <DialogHeader>
           <DialogTitle className="hotel-information-title"><LocalizedText>{info.title}</LocalizedText></DialogTitle>
           <DialogDescription className="hotel-information-description"><LocalizedText>{info.description}</LocalizedText></DialogDescription>

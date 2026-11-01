@@ -1084,3 +1084,48 @@ body:has(.shilla-event-dialog) [data-slot='dialog-overlay'] { z-index: 100; }
 .hotel-room-photo-thumbs > button { flex: 0 0 64px; height: 64px; overflow: hidden; border: 2px solid transparent; background: #f1ede7; }
 .hotel-room-photo-thumbs > button[aria-pressed='true'] { border-color: #a58a60; }
 .shilla-site .hotel-room-photo-thumbs img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; border-radius: 0; }
+
+/* Reserve independent space for the wordmark and translated account links. */
+@media (min-width: 768px) {
+  .shilla-header-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 24px;
+    height: auto;
+    min-height: 88px;
+    padding: 14px clamp(24px, 3vw, 50px);
+  }
+  .shilla-wordmark { position: static; grid-column: 2; grid-row: 1; transform: none; }
+  .shilla-hotel-link { grid-column: 1; grid-row: 1; min-width: 0; }
+  .shilla-account-links {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    line-height: 1.5;
+  }
+  .shilla-account-links > a { white-space: nowrap; }
+  .shilla-account-links > a:nth-child(3), .shilla-account-links > a:nth-child(4) { display: inline-flex; }
+  .shilla-primary-nav, .shilla-header.is-scrolled .shilla-primary-nav {
+    gap: clamp(8px, 1.3vw, 24px);
+    padding-inline: clamp(24px, 3vw, 50px);
+  }
+  .shilla-nav-trigger { padding-inline: 4px; font-size: clamp(14px, 1.15vw, 17px); }
+  .shilla-primary-nav > a.shilla-nav-reserve {
+    flex-shrink: 0;
+    margin-block: 10px;
+    padding: 14px 24px;
+    line-height: 1.4;
+    font-size: clamp(14px, 1.15vw, 17px);
+  }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .shilla-header-top { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px 24px; }
+  .shilla-wordmark { grid-column: 1 / -1; grid-row: 1; justify-self: center; }
+  .shilla-hotel-link { grid-column: 1; grid-row: 2; }
+  .shilla-account-links { grid-column: 2; grid-row: 2; gap: 8px 16px; }
+  .shilla-account-links > a:nth-child(2) { max-width: none; overflow: visible; }
+  .shilla-hotel-link > button:last-child { max-width: none; white-space: normal; text-align: left; }
+}

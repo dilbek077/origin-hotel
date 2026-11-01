@@ -1,14 +1,20 @@
 import { L } from '@/localization/elements';
-// Sahifa yuklanayotganda ko'rsatiladigan spinner
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Match the management page structure while its route bundle is loading.
 export function PageLoading({ message = "Yuklanmoqda..." }: { message?: string }) {
-  return (
-    <L.div className="flex items-center justify-center min-h-screen bg-transparent">
-      <L.div className="flex flex-col items-center gap-3">
-        <L.div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <L.p className="text-gray-500 dark:text-slate-400 text-sm font-medium">{message}</L.p>
+  return <L.div className="w-full space-y-6 p-6" role="status" aria-busy="true">
+    <L.p className="sr-only">{message}</L.p>
+    <L.div aria-hidden="true" className="space-y-6">
+      <Skeleton className="h-9 w-52" />
+      <Skeleton className="h-4 w-2/3 max-w-md" />
+      <L.div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => <Skeleton key={index} className="h-32 w-full" />)}
       </L.div>
+      <Skeleton className="h-72 w-full" />
+      <Skeleton className="h-36 w-full" />
     </L.div>
-  );
+  </L.div>;
 }
 
 // Route xatosi bo'lganda ko'rsatiladigan sahifa

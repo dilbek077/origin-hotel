@@ -1,3 +1,4 @@
+import { LoadingImage } from '@/components/ui/loading-image';
 import { L } from '@/localization/elements';
 import { LocalizedText } from '@/localization/Text';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -127,7 +128,7 @@ function Hero() {
 
   return (
     <L.section className="shilla-hero" aria-label="Origin Hotel va Qarshi manzaralari" aria-roledescription="slayder">
-      {HERO_SLIDES.map((photo, index) => <L.img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
+      {HERO_SLIDES.map((photo, index) => <LoadingImage key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
       <L.h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</L.h1>
       <L.div className="shilla-mobile-hero-copy"><L.h2>Qarshida unutilmas hordiq</L.h2><L.p>Origin Hotel’da shinam xonalar va samimiy xizmatdan bahramand bo‘ling.</L.p></L.div>
       <L.div className="shilla-mobile-hero-dots">{HERO_SLIDES.map((photo, index) => <L.button type="button" key={photo.src} aria-label={`${index + 1}-hero suratini ko‘rsatish`} aria-pressed={index === slide} onClick={() => setSlide(index)} />)}</L.div>
@@ -166,7 +167,7 @@ function RoomCard({ room, onBook }: { room: typeof ROOM_DATA[0]; onBook: (room: 
   return (
     <L.article className="shilla-package-card">
       <L.button type="button" className="shilla-package-image" onClick={() => onBook(room)} aria-label={`${room.label} xonani ko‘rish`}>
-        <L.img src={room.image} alt={`${room.label} xona`} loading="lazy" decoding="async" />
+        <LoadingImage src={room.image} alt={`${room.label} xona`} loading="lazy" decoding="async" />
       </L.button>
       <L.h3><L.button type="button" onClick={() => onBook(room)}>{room.label} Xona</L.button></L.h3>
       <L.p>{room.description}</L.p>
@@ -217,8 +218,8 @@ function RoomDetailModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <L.div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="hotel-room-detail relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
-        <L.img src={activePhoto} alt="Origin Hotel surati" className="hotel-room-main-photo h-52 w-full object-cover" />
-        <L.div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxonaning boshqa suratlari">{photos.filter((photo) => photo !== activePhoto).map((photo) => <L.button type="button" key={photo} aria-label={`${photos.indexOf(photo) + 1}-xona suratini ko‘rsatish`} onClick={() => setActivePhoto(photo)}><L.img src={photo} alt="" loading="lazy" /></L.button>)}</L.div>
+        <LoadingImage src={activePhoto} alt="Origin Hotel surati" className="hotel-room-main-photo h-52 w-full object-cover" />
+        <L.div className="hotel-room-photo-thumbs" role="group" aria-label="Mehmonxonaning boshqa suratlari">{photos.filter((photo) => photo !== activePhoto).map((photo) => <L.button type="button" key={photo} aria-label={`${photos.indexOf(photo) + 1}-xona suratini ko‘rsatish`} onClick={() => setActivePhoto(photo)}><LoadingImage src={photo} alt="" loading="lazy" /></L.button>)}</L.div>
         <L.button
           ref={closeRef}
           type="button"
@@ -285,11 +286,11 @@ function Rooms({ searchSummary, selected, onSelect, onInfo }: {
         <L.div className="shilla-mobile-section-heading"><L.h2 tabIndex={-1}>TAKLIFLAR</L.h2><L.a href="#experiences" aria-label="Barcha suratlarni ko‘rish"><ChevronRight size={24} strokeWidth={1} /></L.a></L.div>
         <L.div className="shilla-mobile-offer-tabs" role="group" aria-label="Taklif turi"><L.button type="button" aria-pressed={mobileTab === 'rooms'} onClick={() => setMobileTab('rooms')}>XONALAR</L.button><L.button type="button" aria-pressed={mobileTab === 'services'} onClick={() => setMobileTab('services')}>XIZMATLAR</L.button></L.div>
         {mobileTab === 'rooms' ? <>
-          <L.article className="shilla-mobile-featured-offer"><L.button type="button" onClick={() => onSelect(ROOM_DATA[0])} aria-label="Standart xonani ko‘rish"><L.img src={ROOM_DATA[0].image} alt="Standart xona" loading="lazy" /><L.h3>Standart xona va nonushta</L.h3></L.button><L.p>{formatPrice(ROOM_DATA[0].price)} / tun <L.span>Origin Hotel</L.span></L.p></L.article>
-          <L.div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <L.article key={room.type}><L.button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><L.img src={room.image} alt={`${room.label} xona`} loading="lazy" /><L.h3>{room.label} Xona</L.h3></L.button><L.p>{formatPrice(room.price)} / tun</L.p></L.article>)}</L.div>
+          <L.article className="shilla-mobile-featured-offer"><L.button type="button" onClick={() => onSelect(ROOM_DATA[0])} aria-label="Standart xonani ko‘rish"><LoadingImage src={ROOM_DATA[0].image} alt="Standart xona" loading="lazy" /><L.h3>Standart xona va nonushta</L.h3></L.button><L.p>{formatPrice(ROOM_DATA[0].price)} / tun <L.span>Origin Hotel</L.span></L.p></L.article>
+          <L.div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Boshqa xonalar, yon tomonga suring">{ROOM_DATA.slice(1).map((room) => <L.article key={room.type}><L.button type="button" onClick={() => onSelect(room)} aria-label={`${room.label} xonani ko‘rish`}><LoadingImage src={room.image} alt={`${room.label} xona`} loading="lazy" /><L.h3>{room.label} Xona</L.h3></L.button><L.p>{formatPrice(room.price)} / tun</L.p></L.article>)}</L.div>
         </> : <>
-          <L.article className="shilla-mobile-featured-offer"><L.button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><L.img src={IMAGES.pool} alt="Origin Hotel tashqi ko‘rinishi" loading="lazy" /><L.h3>Basseyn va hordiq</L.h3></L.button><L.p>Mehmonxona qulayliklari <L.span>Origin Hotel</L.span></L.p></L.article>
-          <L.div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <L.article key={service.key}><L.button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><L.img src={service.image} alt={service.imageAlt} loading="lazy" /><L.h3>{service.title}</L.h3></L.button><L.p>Origin Hotel</L.p></L.article>)}</L.div>
+          <L.article className="shilla-mobile-featured-offer"><L.button id="mobile-offer-service-pool" type="button" onClick={() => onInfo('pool', 'mobile-offer-service-pool')}><LoadingImage src={IMAGES.pool} alt="Origin Hotel tashqi ko‘rinishi" loading="lazy" /><L.h3>Basseyn va hordiq</L.h3></L.button><L.p>Mehmonxona qulayliklari <L.span>Origin Hotel</L.span></L.p></L.article>
+          <L.div className="shilla-mobile-offer-track" tabIndex={0} role="region" aria-label="Mehmonxona xizmatlari, yon tomonga suring">{services.slice(1).map((service) => <L.article key={service.key}><L.button id={`mobile-offer-service-${service.key}`} type="button" onClick={() => onInfo(service.key, `mobile-offer-service-${service.key}`)}><LoadingImage src={service.image} alt={service.imageAlt} loading="lazy" /><L.h3>{service.title}</L.h3></L.button><L.p>Origin Hotel</L.p></L.article>)}</L.div>
         </>}
       </L.div>
       <L.div className="shilla-packages-grid">{ROOM_DATA.map((room) => <RoomCard key={room.type} room={room} onBook={onSelect} />)}</L.div>
@@ -355,7 +356,7 @@ function Dining({ selection }: { selection: { index: number; request: number } |
       <L.div className="shilla-dining-intro">
         <L.h2 id="dining-title">RESTORAN</L.h2>
         <L.p>Origin Hotel restorani, nonushta va shved stoli bilan yoqimli dam oling.</L.p>
-        <L.img
+        <LoadingImage
           className="shilla-dining-main-image"
           src={IMAGES.restaurant}
           alt="Origin Hotel restoran zali"
@@ -389,7 +390,7 @@ function Dining({ selection }: { selection: { index: number; request: number } |
           {DINING_CARDS.map((card, index) => (
             <L.article id={`dining-card-${index}`} key={card.title} className="shilla-dining-card">
               <L.a href="#contact" className="shilla-dining-image-link" aria-label={`${card.title}: bog‘lanish`}>
-                <L.img src={card.image} alt={card.alt} loading="lazy" decoding="async" />
+                <LoadingImage src={card.image} alt={card.alt} loading="lazy" decoding="async" />
               </L.a>
               <L.div className="shilla-dining-caption">
                 <L.h3><L.a href="#contact">{card.title}</L.a></L.h3>
@@ -475,7 +476,7 @@ function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSl
           const position = offset === 0 ? 'active' : offset === 1 ? 'next' : 'previous';
           return (
             <L.article key={slide.title} className={`shilla-experience-slide is-${position}`} aria-hidden={position !== 'active'}>
-              <L.img src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
+              <LoadingImage src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
               <L.div className="shilla-mobile-experience-copy"><L.h3>{slide.title}</L.h3><L.p>{slide.description}</L.p></L.div>
             </L.article>
           );
