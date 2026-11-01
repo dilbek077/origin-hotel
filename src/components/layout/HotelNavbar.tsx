@@ -291,10 +291,12 @@ export default function HotelNavbar({ onRoomSelect, onInfoSelect, onDiningSelect
         </L.div>
         <Link to="/" className="shilla-wordmark" aria-label={`Origin Hotel — ${text('Bosh sahifaga qaytish')}`} onClick={goHome}><L.span>ORIGIN HOTEL</L.span><L.small>TOSHKENT</L.small></Link>
         <L.div className="shilla-account-links">
+          <L.div className="shilla-account-actions">
           <Link to={accountPath} onClick={closeAll}><LocalizedText>{text(accountLabel)}</LocalizedText></Link>
           <Link to={`${dashboard}/bronlar`} title={text('Bronlarim')} onClick={closeAll}><LocalizedText>{text('Bronlarim')}</LocalizedText></Link>
           <Link to={dashboard} onClick={closeAll}><LocalizedText>{text('Boshqaruv')}</LocalizedText></Link>
           <L.a href="#contact" onClick={closeAll}>{text('Bog‘lanish')}</L.a>
+          </L.div>
           <L.div className="shilla-language">
             <L.button ref={languageRef} type="button" aria-expanded={languageOpen} aria-controls="hotel-language-options" aria-label={text('Tilni tanlash')} onClick={() => { setActiveMenu(null); setLanguageOpen(!languageOpen); }}><Globe size={15} strokeWidth={1.1} />{LANGUAGES.find((language) => language.code === locale)?.label}<ChevronDown size={13} /></L.button>
             {languageOpen && <L.div id="hotel-language-options" className="shilla-language-options">{LANGUAGES.map((language) => <L.button type="button" key={language.code} aria-pressed={language.code === locale} onClick={() => { setLocale(language.code); setLanguageOpen(false); languageRef.current?.focus(); }}>{language.label}</L.button>)}</L.div>}
