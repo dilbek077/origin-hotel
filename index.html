@@ -9,12 +9,25 @@
   </head>
   <body>
     <div id="startup-loader" class="startup-skeleton" role="status" aria-label="Yuklanmoqda" aria-busy="true">
-      <div class="startup-page" aria-hidden="true">
-        <div class="startup-page-header"><i></i><i></i><i></i></div>
-        <div class="startup-page-nav"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="startup-page-booking"><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="startup-page-hero"><i></i><i></i></div>
-        <div class="startup-page-ticker"></div>
+      <div class="site-skeleton" aria-hidden="true">
+        <div class="sk-header"><div class="sk-brand"><i></i><i></i></div></div>
+        <div class="sk-nav"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="sk-booking"><span><i></i><i></i></span><span><i></i><i></i></span><span><i></i><i></i></span><i></i></div>
+        <div class="sk-hero sk-surface">
+          <div class="sk-mobile-search"><i></i></div>
+          <svg class="sk-image-symbol" width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="32" rx="4"/><circle cx="17" cy="19" r="3"/><path d="m8 35 10-10 8 8 6-6 9 9"/></svg>
+          <div class="sk-hero-caption"><i></i><i></i></div>
+        </div>
+        <div class="sk-ticker"></div>
+        <div class="sk-content">
+          <div class="sk-section-title"><i></i><i></i></div>
+          <div class="sk-cards">
+            <div class="sk-card"><div class="sk-card-photo sk-surface"></div><i></i><i></i></div>
+            <div class="sk-card"><div class="sk-card-photo sk-surface"></div><i></i><i></i></div>
+            <div class="sk-card"><div class="sk-card-photo sk-surface"></div><i></i><i></i></div>
+            <div class="sk-card"><div class="sk-card-photo sk-surface"></div><i></i><i></i></div>
+          </div>
+        </div>
       </div>
     </div>
     <script>document.getElementById('startup-loader').dataset.started = String(performance.now());</script>

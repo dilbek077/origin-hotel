@@ -17,78 +17,53 @@
 @keyframes hotel-loading-sweep { to { transform: translateX(100%); } }
 .dark .hotel-skeleton-block { background: #303030; }
 .dark .hotel-skeleton-block::after { background: linear-gradient(100deg, transparent 15%, #ffffff0d 48%, transparent 80%); }
-/* Before React is ready, reserve the same header / booking / hero structure. */
+/* Purpose-built page skeleton; the real interface is never painted as blocks. */
 html:has(#startup-loader) { overflow: hidden; }
+#root[data-loading] { visibility: hidden; }
 .startup-skeleton { position: fixed; inset: 0; z-index: 9999; overflow: hidden; background: #fff; }
-.startup-skeleton[hidden] { display: none; }
-.startup-skeleton * { box-sizing: border-box; }
-.startup-page-header { height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 3%; }
-.startup-page-header i { height: 8px; width: 100px; border-radius: 3px; }
-.startup-page-header i:nth-child(2) { width: 140px; height: 10px; }
-.startup-page-header i:first-child, .startup-page-header i:last-child { visibility: hidden; }
-.startup-page-nav { height: 52px; display: flex; align-items: center; justify-content: space-evenly; gap: 20px; padding: 0 3%; }
-.startup-page-nav i { height: 6px; width: 44px; border-radius: 3px; }
-.startup-page-booking { height: 76px; padding: 12px 3%; display: grid; grid-template-columns: 1fr 1.2fr 1.5fr 1.2fr .8fr; gap: 24px; background: #f7f7f7; }
-.startup-page-booking i { visibility: hidden; }
-.startup-page-hero { height: calc(100dvh - 273px); min-height: 180px; background: #e5e7eb; position: relative; }
-.startup-page-hero i { position: absolute; bottom: 35px; left: 3%; width: 84%; height: 3px; }
-.startup-page-hero i:last-child { left: auto; right: 3%; width: 40px; height: 12px; }
-.startup-page-ticker { height: 57px; background: #f7f7f7; }
-/* Once mounted, the real layout supplies the exact skeleton dimensions. */
-#root[data-loading] { pointer-events: none; user-select: none; background: #fff; }
-#root[data-loading] * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; box-shadow: none !important; border-color: transparent !important; caret-color: transparent !important; background-color: transparent !important; background-image: none !important; }
-#root[data-loading] *::before, #root[data-loading] *::after { visibility: hidden !important; }
-#root[data-loading] ::placeholder { color: transparent !important; }
-#root[data-loading] :is(img, svg, iframe) { opacity: 0 !important; }
-/* Only image areas and short text lines get placeholders; controls stay clear. */
-#root[data-loading] :is(.shilla-hero, .shilla-package-image, .shilla-event-image, .shilla-dining-visual, .shilla-dining-card-image, .shilla-experience-image, .shilla-mobile-featured-offer > button, .shilla-mobile-offer-track button, .hotel-room-main-photo) {
-  background-color: #e5e7eb !important;
-  background-image: linear-gradient(100deg, transparent 25%, #ffffff50 50%, transparent 75%) !important;
-  background-size: 240% 100% !important;
-  animation: hotel-page-sweep 2s ease-in-out infinite !important;
-}
-#root[data-loading] :is(.shilla-wordmark, .shilla-packages-heading h2, .shilla-mobile-section-heading h2, .shilla-package-card h3, .shilla-mobile-featured-offer h3, .shilla-mobile-offer-track h3, .shilla-events-heading h2) { position: relative; }
-#root[data-loading] :is(.shilla-wordmark, .shilla-packages-heading h2, .shilla-mobile-section-heading h2, .shilla-package-card h3, .shilla-mobile-featured-offer h3, .shilla-mobile-offer-track h3, .shilla-events-heading h2)::after {
-  content: '';
-  visibility: visible !important;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: min(150px, 65%);
-  height: 9px;
-  border-radius: 20px;
-  background: #e5e7eb !important;
-  transform: translateY(-50%);
-}
-#root[data-loading] .shilla-header .shilla-wordmark::after { left: 50%; width: 140px; height: 10px; transform: translate(-50%, -50%); }
-#root[data-loading] .shilla-packages-heading h2::after { left: 50%; transform: translate(-50%, -50%); }
-#root[data-loading] :is(.shilla-mobile-hero-copy, .shilla-mobile-hero-dots, .shilla-slider-controls, .shilla-mobile-offer-tabs) { opacity: 0 !important; }
-#root[data-loading] .shilla-nav-trigger::after {
-  content: '';
-  visibility: visible !important;
-  inset: auto;
-  top: 50%;
-  left: 50%;
-  width: 44px;
-  height: 6px;
-  border-radius: 20px;
-  background: #e5e7eb !important;
-  transform: translate(-50%, -50%);
-}
-@keyframes hotel-page-sweep { from { background-position: 180% 0; } to { background-position: -60% 0; } }
+.site-skeleton, .site-skeleton * { box-sizing: border-box; }
+.site-skeleton i { border-radius: 4px; height: 10px; background: #e5e7eb; }
+.sk-header { height: var(--sk-header, 88px); display: grid; place-items: center; border-bottom: 1px solid #f7f7f7; }
+.sk-brand { display: grid; justify-items: center; gap: 10px; width: 180px; }
+.sk-brand i:first-child { width: 170px; height: 15px; }
+.sk-brand i:last-child { width: 65px; height: 6px; }
+.sk-nav { height: var(--sk-nav, 52px); max-width: 1050px; margin: auto; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.sk-nav i { width: 64px; height: 7px; }
+.sk-booking { height: var(--sk-booking, 76px); display: flex; align-items: center; gap: 40px; padding: 0 5%; border-block: 1px solid #f1f2f4; }
+.sk-booking span { display: grid; gap: 9px; flex: 1; }
+.sk-booking span i:first-child { height: 6px; width: 52px; }
+.sk-booking span i:last-child { width: min(110px, 90%); height: 10px; }
+.sk-booking > i { width: 110px; height: 30px; }
+.sk-surface { position: relative; overflow: hidden; background: #f0f1f3; }
+.sk-surface::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 20%, #ffffff90 50%, transparent 80%); transform: translateX(-100%); animation: hotel-loading-sweep 1.8s ease-in-out infinite; }
+.sk-hero { height: var(--sk-hero, calc(100dvh - 273px)); min-height: 180px; display: grid; place-items: center; }
+.sk-image-symbol { stroke: #cdd1d7; stroke-width: 1.5; }
+.sk-hero-caption { position: absolute; left: 5%; bottom: 40px; display: grid; gap: 12px; width: min(300px, 65%); }
+.sk-hero-caption i:first-child { width: 100%; height: 13px; }
+.sk-hero-caption i:last-child { width: 65%; height: 8px; }
+.sk-mobile-search { display: none; }
+.sk-ticker { height: 57px; background: #fafafa; }
+.sk-content { padding: 48px 40px; }
+.sk-section-title { display: grid; justify-items: center; gap: 12px; margin-bottom: 36px; }
+.sk-section-title i:first-child { width: 120px; height: 14px; }
+.sk-section-title i:last-child { width: 180px; height: 8px; }
+.sk-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.sk-card-photo { aspect-ratio: 4 / 3; border-radius: 4px; margin-bottom: 18px; }
+.sk-card > i { width: 65%; margin-bottom: 10px; }
+.sk-card > i:last-child { width: 45%; height: 7px; }
 @media (max-width: 767px) {
-  .startup-page-header { height: 64px; padding: 0 20px; }
-  .startup-page-header i { width: 24px; height: 24px; }
-  .startup-page-header i:nth-child(2) { width: 140px; height: 10px; }
-  .startup-page-header i:last-child { width: 24px; }
-  .startup-page-nav { display: none; }
-  .startup-page-booking { position: absolute; z-index: 1; top: 84px; left: 20px; right: 20px; height: 50px; padding: 0; display: block; background: #f7f7f7; }
-  .startup-page-booking i { display: none; }
-  .startup-page-hero { height: 475px; }
-  .startup-page-hero i { bottom: 35px; left: 38%; width: 24%; height: 8px; border-radius: 8px; }
-  .startup-page-hero i:last-child, .startup-page-ticker { display: none; }
+  .sk-header { height: var(--sk-header, 64px); }
+  .sk-brand i:first-child { width: 150px; height: 12px; }
+  .sk-nav, .sk-booking, .sk-ticker { display: none; }
+  .sk-hero { height: var(--sk-hero, 475px); }
+  .sk-mobile-search { display: flex; align-items: center; position: absolute; inset: 20px 20px auto; height: 48px; background: #fff; padding: 0 16px; border-radius: 3px; }
+  .sk-mobile-search i { width: 45%; height: 8px; }
+  .sk-hero-caption { left: 12%; bottom: 48px; width: 76%; justify-items: center; }
+  .sk-hero-caption i:first-child { width: 82%; }
+  .sk-content { padding: 60px 20px; }
+  .sk-section-title { justify-items: start; margin-bottom: 32px; }
+  .sk-cards { grid-template-columns: 1fr; gap: 30px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hotel-skeleton-block::after, .startup-skeleton i::after { animation: none; transform: none; }
-  #root[data-loading] * { animation: none !important; }
+  .hotel-skeleton-block::after, .startup-skeleton i::after, .sk-surface::after { animation: none; transform: none; }
 }
