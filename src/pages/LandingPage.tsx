@@ -90,6 +90,20 @@ const ROOM_DATA = [
   },
 ];
 
+type ShowcaseRoom = {
+  id: number;
+  number: string;
+  floor: number;
+  label: string;
+  price: number;
+  capacity: string;
+  size: string;
+  image: string;
+  status: StorageRoom['status'];
+  features: string[];
+  description: string;
+};
+
 const AMENITIES = [
   { icon: Wifi,           label: 'Bepul Wi-Fi',      key: 'wifi' },
   { icon: Waves,          label: 'Basseyn va SPA',   key: 'pool' },
@@ -500,9 +514,9 @@ function RoomCard({
   index,
   onBook,
 }: {
-  room: typeof ROOM_DATA[0];
+  room: ShowcaseRoom;
   index: number;
-  onBook: (r: typeof ROOM_DATA[0]) => void;
+  onBook: (r: ShowcaseRoom) => void;
 }) {
   return (
     <article
@@ -519,7 +533,18 @@ function RoomCard({
           className="h-full w-full bg-[--line] object-cover transition duration-500 group-hover:scale-[1.04]"
         />
         <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-[--ink] dark:bg-[--ink]/80 dark:text-white">
-          {room.size}
+          {room.capacity}
+        </span>
+        <span className={`absolute right-4 top-4 rounded-full px-3 py-1 text-[10px] font-bold ${
+          room.status === "Bo'sh"
+            ? 'bg-emerald-500/90 text-white'
+            : room.status === "Band"
+              ? 'bg-red-500/90 text-white'
+              : room.status === "Tozalashda"
+                ? 'bg-amber-400/95 text-[--ink]'
+                : 'bg-violet-500/90 text-white'
+        }`}>
+          {room.status}
         </span>
       </div>
 
@@ -528,7 +553,8 @@ function RoomCard({
         <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">
           {room.label}
         </p>
-        <h3 className="font-display mt-2 text-xl">{room.label} Xona</h3>
+        <h3 className="font-display mt-2 text-xl">{room.label} Xona · #{room.number}</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{room.floor}-qavat · {room.size}</p>
         <p className="mt-2 text-xs leading-6 text-muted-foreground flex-1">{room.description}</p>
 
         {/* Features */}
@@ -566,7 +592,7 @@ function RoomDetailModal({
   room,
   onClose,
 }: {
-  room: typeof ROOM_DATA[0];
+  room: ShowcaseRoom;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -593,9 +619,10 @@ function RoomDetailModal({
           <X size={16} />
         </button>
         <div className="p-6">
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">{room.label}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">{room.label} · #{room.number}</p>
           <h3 className="font-display mt-1 text-2xl">{room.label} Xona</h3>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{room.description}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{room.floor}-qavat · {room.capacity} · {room.status}</p>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
             {room.features.map((f) => (
@@ -625,8 +652,25 @@ function RoomDetailModal({
   );
 }
 
-function Rooms() {
-  const [selected, setSelected] = useState<typeof ROOM_DATA[0] | null>(null);
+function Rooms({ rooms }: { rooms: StorageRoom[] }) {
+  const [selected, setSelected] = useState<ShowcaseRoom | null>(null);
+  const showcaseRooms = rooms.map((room) => {
+    const roomTemplate = ROOM_DATA.find((item) =>
+      item.type === room.type ||
+      (item.type === 'Presidential' && room.type === 'President'),
+    ) ?? ROOM_DATA[0];
+
+    return {
+      ...roomTemplate,
+      id: room.id,
+      number: room.number,
+      floor: room.floor,
+      capacity: room.capacity,
+      price: room.pricePerNight,
+      status: room.status,
+      image: room.imageUrl || roomTemplate.image,
+    };
+  });
 
   return (
     <section id="rooms" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
@@ -642,8 +686,8 @@ function Rooms() {
       </div>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {ROOM_DATA.map((r, i) => (
-          <RoomCard key={r.type} room={r} index={i} onBook={setSelected} />
+        {showcaseRooms.map((r, i) => (
+          <RoomCard key={r.id} room={r} index={i} onBook={setSelected} />
         ))}
       </div>
 
@@ -1092,7 +1136,30 @@ function QuickDock() {
 
 /* ─── LandingPage (root) ─────────────────────────────────── */
 export default function LandingPage() {
-  const rooms = StorageService.getRooms();
+  const [rooms, setRooms] = useState<StorageRoom[]>(() => StorageService.getRooms());
+
+  useEffect(() => {
+    const refreshRooms = () => setRooms(StorageService.getRooms());
+    const refreshFromStorage = (event: StorageEvent) => {
+      if (event.key === 'origin_hotel_rooms' || event.key === null) refreshRooms();
+    };
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') refreshRooms();
+    };
+
+    window.addEventListener('origin-hotel-storage-change', refreshRooms);
+    window.addEventListener('storage', refreshFromStorage);
+    window.addEventListener('focus', refreshRooms);
+    window.addEventListener('pageshow', refreshRooms);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      window.removeEventListener('origin-hotel-storage-change', refreshRooms);
+      window.removeEventListener('storage', refreshFromStorage);
+      window.removeEventListener('focus', refreshRooms);
+      window.removeEventListener('pageshow', refreshRooms);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, []);
 
   useScrollProgress();
   useScrollAnimate();
@@ -1108,7 +1175,7 @@ export default function LandingPage() {
         <Hero rooms={rooms} />
         <Ticker />
         <Stats rooms={rooms} />
-        <Rooms />
+        <Rooms rooms={rooms} />
         <About />
         <Gallery />
         <Reviews />

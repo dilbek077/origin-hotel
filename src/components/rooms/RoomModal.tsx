@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ImagePlus, Trash2 } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import type { Room, RoomStatus, RoomType } from "@/types/room";
 import { useTranslation } from "@/i18n";
@@ -26,6 +27,7 @@ export default function RoomModal({
   const [capacity, setCapacity] = useState("2 kishilik");
   const [status, setStatus] = useState<RoomStatus>("Bo'sh");
   const [floor, setFloor] = useState<number>(1);
+  const [imageUrl, setImageUrl] = useState<string | undefined>();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,6 +38,7 @@ export default function RoomModal({
       setCapacity(initialData.capacity);
       setStatus(initialData.status);
       setFloor(initialData.floor);
+      setImageUrl(initialData.imageUrl);
     } else {
       setNumber("");
       setType("Standart");
@@ -43,9 +46,73 @@ export default function RoomModal({
       setCapacity("2 kishilik");
       setStatus("Bo'sh");
       setFloor(1);
+      setImageUrl(undefined);
     }
     setError(null);
   }, [initialData, isOpen]);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Iltimos, rasm faylini tanlang.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setError("Rasm hajmi 8 MB dan oshmasligi kerak.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onerror = () => setError("Rasmni o‘qib bo‘lmadi. Boshqa faylni tanlang.");
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        setError("Rasmni o‘qib bo‘lmadi. Boshqa faylni tanlang.");
+        return;
+      }
+
+      const sourceImage = new Image();
+      sourceImage.onerror = () => setError("Rasmni ochib bo‘lmadi. Boshqa faylni tanlang.");
+      sourceImage.onload = () => {
+        try {
+          const scale = Math.min(1, 900 / sourceImage.width, 600 / sourceImage.height);
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(sourceImage.width * scale));
+          canvas.height = Math.max(1, Math.round(sourceImage.height * scale));
+          const context = canvas.getContext("2d");
+          if (!context) {
+            setError("Rasmni tayyorlab bo‘lmadi. Boshqa faylni tanlang.");
+            return;
+          }
+
+          let compressedImage = "";
+          while (Math.max(canvas.width, canvas.height) >= 320) {
+            context.drawImage(sourceImage, 0, 0, canvas.width, canvas.height);
+            for (const quality of [0.72, 0.6, 0.48]) {
+              compressedImage = canvas.toDataURL("image/jpeg", quality);
+              if (compressedImage.length <= 160_000) break;
+            }
+            if (compressedImage.length <= 160_000) break;
+            canvas.width = Math.round(canvas.width * 0.8);
+            canvas.height = Math.round(canvas.height * 0.8);
+          }
+          if (!compressedImage || compressedImage.length > 160_000) {
+            setError("Rasmni yetarlicha kichraytirib bo‘lmadi. Boshqa rasm tanlang.");
+            return;
+          }
+
+          setImageUrl(compressedImage);
+          setError(null);
+        } catch {
+          setError("Rasmni tayyorlab bo‘lmadi. Boshqa faylni tanlang.");
+        }
+      };
+      sourceImage.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +136,7 @@ export default function RoomModal({
           capacity: capacity.trim() || "1 kishilik",
           status,
           floor: Number(floor) || 1,
+          imageUrl,
         }
       : {
           number: number.trim(),
@@ -77,9 +145,16 @@ export default function RoomModal({
           capacity: capacity.trim() || "1 kishilik",
           status,
           floor: Number(floor) || 1,
+          imageUrl,
         };
 
-    const res = onSave(payload);
+    let res;
+    try {
+      res = onSave(payload);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Xonani saqlashda xatolik yuz berdi.");
+      return;
+    }
     if (!res.success) {
       setError(res.error || "Xatolik yuz berdi");
     } else {
@@ -189,6 +264,34 @@ export default function RoomModal({
                 className={inputClass}
               />
             </div>
+          </div>
+
+          <div>
+            <label className={labelClass}>Xona rasmi</label>
+            {imageUrl ? (
+              <div className="relative overflow-hidden rounded-xl border border-slate-700">
+                <img src={imageUrl} alt="Xona rasmi" className="h-48 w-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setImageUrl(undefined)}
+                  className="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg border border-white/15 bg-black/70 px-3 py-2 text-xs font-semibold text-white transition hover:bg-black/90"
+                >
+                  <Trash2 size={14} />
+                  Rasmni olib tashlash
+                </button>
+              </div>
+            ) : (
+              <label className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-700 bg-[#0e1215] text-sm text-slate-400 transition hover:border-slate-500 hover:text-slate-200">
+                <ImagePlus size={22} />
+                <span>Rasm tanlash (8 MB gacha)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="sr-only"
+                />
+              </label>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-2">

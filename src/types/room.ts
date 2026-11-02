@@ -10,4 +10,5 @@ export interface Room {
   capacity: string;
   status: RoomStatus;
   floor: number;
+  imageUrl?: string;
 }

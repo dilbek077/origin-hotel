@@ -222,46 +222,59 @@ export default function Rooms() {
               <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>{t('rooms.notFoundDesc')}</p>
             </div>
           ) : (
-            <div className={`mt-6 overflow-hidden rounded-[18px] border ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-slate-200 bg-white"}`}>
-              <div className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] ${isDark ? "border-[#1c252d] bg-[#0d1419] text-slate-400" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
-                <span>Xona</span>
-                <span>Qavat</span>
-                <span>Tur</span>
-                <span>Mehmon</span>
-                <span>Narx</span>
-                <span>Holat</span>
-              </div>
-
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {filtered.map((room) => (
                 <div
                   key={room.id}
-                  className={`grid grid-cols-[1.4fr_1fr_1fr_1.1fr_1.2fr_1fr] items-center border-b px-4 py-4 text-sm last:border-b-0 ${isDark ? "border-[#1b2430] text-slate-200 hover:bg-[#0f171d]" : "border-slate-200 text-slate-700 hover:bg-slate-50"}`}
+                  className={`overflow-hidden rounded-[18px] border transition hover:-translate-y-0.5 hover:shadow-lg ${isDark ? "border-[#1c252d] bg-[#0a0f13] text-slate-200 hover:border-slate-600 hover:shadow-black/20" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:shadow-slate-200/70"}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>#{room.number}</span>
-                    <span className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{room.type}</span>
+                  <div className={`relative h-48 ${isDark ? "bg-[#111a20]" : "bg-slate-100"}`}>
+                    {room.imageUrl ? (
+                      <img src={room.imageUrl} alt={`${room.number}-xona`} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full flex-col items-center justify-center gap-2 text-slate-500">
+                        <BedDouble size={34} strokeWidth={1.5} />
+                        <span className="text-xs">Rasm qo‘shilmagan</span>
+                      </div>
+                    )}
+                    <div className="absolute left-3 top-3">{getStatusBadge(room.status)}</div>
                   </div>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>#{room.number}</h2>
+                        <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>{translateRoomType(room.type)}</p>
+                      </div>
+                      {getTypeBadge(room.type)}
+                    </div>
 
-                  <span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.floor} qavat</span>
+                    <div className={`mt-4 grid grid-cols-2 gap-3 border-t py-4 text-sm ${isDark ? "border-[#1c252d]" : "border-slate-100"}`}>
+                      <div>
+                        <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>Qavat</p>
+                        <p className="mt-1 font-medium">{room.floor} qavat</p>
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>Mehmonlar</p>
+                        <p className="mt-1 font-medium">{room.capacity} kishi</p>
+                      </div>
+                    </div>
 
-                  <div>{getTypeBadge(room.type)}</div>
-
-                  <span className={isDark ? "text-slate-300" : "text-slate-600"}>{room.capacity} kishi</span>
-
-                  <span className={`font-medium ${isDark ? "text-slate-100" : "text-slate-900"}`}>{formatPrice(room.pricePerNight)}</span>
-
-                  <div className="flex items-center justify-between gap-2">
-                    {getStatusBadge(room.status)}
-                    <div className={`flex items-center gap-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                      <button onClick={() => setViewRoom(room)} className={isDark ? "hover:text-sky-300" : "hover:text-sky-600"} aria-label={t('common.view')}>
-                        <Eye size={15} />
-                      </button>
-                      <button onClick={() => handleOpenEdit(room)} className={isDark ? "hover:text-amber-300" : "hover:text-amber-600"} aria-label={t('common.edit')}>
-                        <Edit size={15} />
-                      </button>
-                      <button onClick={() => handleDelete(room.id)} className={isDark ? "hover:text-red-300" : "hover:text-red-600"} aria-label={t('common.delete')}>
-                        <Trash2 size={15} />
-                      </button>
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>1 kecha uchun</p>
+                        <p className={`mt-1 font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{formatPrice(room.pricePerNight)}</p>
+                      </div>
+                      <div className={`flex items-center gap-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                        <button onClick={() => setViewRoom(room)} className={`rounded-lg p-2 transition ${isDark ? "hover:bg-slate-800 hover:text-sky-300" : "hover:bg-slate-100 hover:text-sky-600"}`} aria-label={t('common.view')} title={t('common.view')}>
+                          <Eye size={16} />
+                        </button>
+                        <button onClick={() => handleOpenEdit(room)} className={`rounded-lg p-2 transition ${isDark ? "hover:bg-slate-800 hover:text-amber-300" : "hover:bg-slate-100 hover:text-amber-600"}`} aria-label={t('common.edit')} title={t('common.edit')}>
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => handleDelete(room.id)} className={`rounded-lg p-2 transition ${isDark ? "hover:bg-slate-800 hover:text-red-300" : "hover:bg-slate-100 hover:text-red-600"}`} aria-label={t('common.delete')} title={t('common.delete')}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -296,6 +309,9 @@ export default function Rooms() {
           title={`${t('rooms.detailsTitle')} #${viewRoom.number}`}
         >
           <div className="space-y-4">
+            {viewRoom.imageUrl && (
+              <img src={viewRoom.imageUrl} alt={`${viewRoom.number}-xona`} className="h-56 w-full rounded-xl object-cover" />
+            )}
             <div className={isDark ? "p-4 bg-slate-800/80 rounded-xl space-y-2.5 text-sm" : "p-4 bg-gray-50 rounded-xl space-y-2.5 text-sm"}>
               <div className="flex justify-between">
                 <span className="text-gray-400 dark:text-slate-400">{t('rooms.number')}:</span>

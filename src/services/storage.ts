@@ -183,7 +183,20 @@ export const StorageService = {
   },
 
   saveRooms(rooms: Room[]) {
-    localStorage.setItem(ROOMS_KEY, JSON.stringify(rooms));
+    try {
+      localStorage.setItem(ROOMS_KEY, JSON.stringify(rooms));
+    } catch (error) {
+      if (
+        error instanceof DOMException &&
+        (error.name === "QuotaExceededError" || error.code === 22 || error.code === 1014)
+      ) {
+        throw new Error(
+          "Brauzer xotirasi to‘ldi. Xonalar rasmini kichraytiring yoki keraksiz ma’lumotlarni o‘chiring.",
+          { cause: error },
+        );
+      }
+      throw error;
+    }
     notifyChange();
   },
 
@@ -197,7 +210,12 @@ export const StorageService = {
       id: Date.now(),
     };
     rooms.unshift(newRoom);
-    this.saveRooms(rooms);
+    try {
+      this.saveRooms(rooms);
+    } catch (error) {
+      if (error instanceof Error) return { success: false, error: error.message };
+      throw error;
+    }
     return { success: true, room: newRoom };
   },
 
@@ -212,7 +230,12 @@ export const StorageService = {
     const index = rooms.findIndex((r) => r.id === room.id);
     if (index === -1) return { success: false, error: "Xona topilmadi" };
     rooms[index] = room;
-    this.saveRooms(rooms);
+    try {
+      this.saveRooms(rooms);
+    } catch (error) {
+      if (error instanceof Error) return { success: false, error: error.message };
+      throw error;
+    }
     return { success: true };
   },
 
