@@ -71,9 +71,7 @@ export default function Sidebar() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(true);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('username');
+    ['token', 'role', 'username'].forEach((key) => localStorage.removeItem(key));
     navigate('/');
   };
 

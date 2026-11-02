@@ -1,36 +1,33 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import Navbar from '@/components/layout/HotelNavbar';
+import ReservationBar from '@/components/layout/ReservationBar';
+import HotelInformationDialog from '@/components/layout/HotelInformationDialog';
+import type { HotelInfoKey } from '@/data/hotelInformation';
 import { StorageService } from '@/services/storage';
-import { useTheme } from '@/theme';
+import type { Room as StorageRoom } from '@/types/room';
+import qarshiClockTower from '@/assets/qarshi-hero/01-qarshi-soat-minorasi.webp';
+import qarshiMosque from '@/assets/qarshi-hero/02-qarshi-masjid.webp';
+import qarshiCenter from '@/assets/qarshi-hero/03-qarshi-markaz.webp';
 import {
-  Hotel,
   MapPin,
-  Phone,
+  Hotel,
   Mail,
-  Star,
-  Wifi,
-  UtensilsCrossed,
-  ArrowRight,
-  Menu,
   X,
-  Car,
-  Moon,
-  Sun,
-  Dumbbell,
-  Waves,
   Clock,
   ChevronUp,
   BedDouble,
-  CalendarCheck,
   ArrowUpRight,
-  Sparkles,
-  Shield,
-  Camera,
-  Send,
-  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+  Tickets,
+  Coffee,
+  Gift,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { Room as StorageRoom } from '@/types/room';
 import '../landing.css';
+import '../shilla-layout.css';
 
 /* ─── constants ──────────────────────────────────────────── */
 const IMAGES = {
@@ -92,6 +89,7 @@ const ROOM_DATA = [
 
 type ShowcaseRoom = {
   id: number;
+  type: StorageRoom['type'];
   number: string;
   floor: number;
   label: string;
@@ -104,73 +102,26 @@ type ShowcaseRoom = {
   description: string;
 };
 
-const AMENITIES = [
-  { icon: Wifi,           label: 'Bepul Wi-Fi',      key: 'wifi' },
-  { icon: Waves,          label: 'Basseyn va SPA',   key: 'pool' },
-  { icon: UtensilsCrossed,label: 'Restoran',          key: 'restaurant' },
-  { icon: Car,            label: 'Bepul parking',    key: 'parking' },
-  { icon: Dumbbell,       label: 'Fitnes zali',      key: 'gym' },
-  { icon: Shield,         label: '24/7 xavfsizlik',  key: 'security' },
-  { icon: CalendarCheck,  label: 'Aeroport transfer',key: 'transfer' },
-  { icon: Clock,          label: '24/7 qabulxona',   key: 'reception' },
-];
+function toShowcaseRoom(room: StorageRoom): ShowcaseRoom {
+  const template = ROOM_DATA.find((item) =>
+    item.type === room.type || (item.type === 'Presidential' && room.type === 'President'),
+  ) ?? ROOM_DATA[0];
 
-const GALLERY_PHOTOS = [
-  { src: IMAGES.exterior,    wide: true,  alt: 'Origin Hotel tashqi ko\'rinish' },
-  { src: IMAGES.lobby,       wide: false, alt: 'Qabulxona' },
-  { src: IMAGES.pool,        wide: false, alt: 'Basseyn' },
-  { src: IMAGES.suite,       wide: true,  alt: 'Suite xona' },
-  { src: IMAGES.restaurant,  wide: false, alt: 'Restoran' },
-  { src: IMAGES.spa,         wide: false, alt: 'SPA zona' },
-  { src: IMAGES.gym,         wide: false, alt: 'Fitnes zali' },
-  { src: IMAGES.presidential,wide: true,  alt: 'Presidential suite' },
-];
-
-const REVIEWS = [
-  {
-    name: 'Madina R.',
-    origin: 'Toshkent',
-    rating: 5,
-    text: 'Xona juda tinch, nonushta boy. Xodimlar har bir so\'rovga darhol javob berdi.',
-  },
-  {
-    name: 'Daniel M.',
-    origin: 'London',
-    rating: 5,
-    text: 'Shahar markazida, ammo shovqin eshitilmaydi. Basseyn va spa kutganimdan yaxshi chiqdi.',
-  },
-  {
-    name: 'Elena P.',
-    origin: 'Moskva',
-    rating: 4,
-    text: 'Aeroportdan transfer oldindan kelib, kutishga to\'g\'ri kelmadi. Keyingi safar ham shu yerda qolaman.',
-  },
-];
-
-const NAV_LINKS = [
-  { href: '#rooms',   label: 'Xonalar' },
-  { href: '#about',   label: 'Biz haqimizda' },
-  { href: '#reviews', label: 'Fikrlar' },
-  { href: '#contact', label: 'Aloqa' },
-];
+  return {
+    ...template,
+    id: room.id,
+    type: room.type,
+    number: room.number,
+    floor: room.floor,
+    capacity: room.capacity,
+    price: room.pricePerNight,
+    status: room.status,
+    image: room.imageUrl || template.image,
+  };
+}
 
 function formatPrice(n: number) {
   return n.toLocaleString('uz-UZ') + ' so\'m';
-}
-
-/* ─── scroll-animate hook ─────────────────────────────────── */
-function useScrollAnimate() {
-  useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>('.anim-fade-up');
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { (e.target as HTMLElement).classList.add('visible'); }
-      }),
-      { threshold: 0.12 },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
 }
 
 /* ─── scroll-progress hook ────────────────────────────────── */
@@ -186,258 +137,32 @@ function useScrollProgress() {
   }, []);
 }
 
-/* ─── Navbar ─────────────────────────────────────────────── */
-function Navbar() {
-  const { isDark, toggleTheme } = useTheme();
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
+// City photographs are used only here; room and service imagery stays separate.
+const HERO_SLIDES = [
+  { src: qarshiClockTower, alt: 'Qarshi shahri — soat minorasi va shahar manzarasi', position: '68% center' },
+  { src: qarshiMosque, alt: 'Qarshi shahri — moviy gumbazli tarixiy bino va yashil xiyobon', position: 'center' },
+  { src: qarshiCenter, alt: 'Qarshi shahri — markaziy maydon, favvora va keng ko‘chalar', position: '35% center' },
+];
 
+function Hero() {
+  const [slide, setSlide] = useState(0);
+  const [paused, setPaused] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 40);
-    fn();
-    window.addEventListener('scroll', fn, { passive: true });
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-
-  const onNav = useCallback((href: string) => {
-    setOpen(false);
-    const el = document.querySelector(href);
-    el?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
-
-  const headerClass = [
-    'marketing-header w-full',
-    scrolled ? 'scrolled' : 'at-top',
-  ].join(' ');
-
-  const linkClass = scrolled
-    ? 'text-sm font-medium text-foreground hover:text-[--champagne] transition-colors'
-    : 'text-sm font-medium text-white/85 hover:text-[--champagne] transition-colors';
+    if (paused) return;
+    const timer = window.setInterval(() => setSlide((previous) => (previous + 1) % HERO_SLIDES.length), 7000);
+    return () => window.clearInterval(timer);
+  }, [paused]);
+  const nextSlide = (direction: number) => setSlide((previous) => (previous + direction + HERO_SLIDES.length) % HERO_SLIDES.length);
 
   return (
-    <header className={headerClass}>
-      <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-4 px-5 lg:px-10">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ background: 'var(--champagne)', color: 'var(--ink)' }}
-          >
-            <Hotel size={18} strokeWidth={2.2} />
-          </div>
-          <span
-            className={`font-bold text-base tracking-tight ${scrolled ? 'text-foreground' : 'text-white'}`}
-          >
-            Origin Hotel
-          </span>
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
-          {NAV_LINKS.map((l) => (
-            <button key={l.href} onClick={() => onNav(l.href)} className={linkClass}>
-              {l.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => toggleTheme()}
-            className={[
-              'rounded-full border p-2.5 transition',
-              scrolled
-                ? 'border-border text-foreground hover:border-[--champagne] hover:text-[--champagne]'
-                : 'border-white/30 text-white hover:border-[--champagne] hover:text-[--champagne]',
-            ].join(' ')}
-            aria-label="Mavzu almashtirish"
-          >
-            {isDark ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-
-          <Link
-            to="/admin"
-            className={[
-              'hidden sm:inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition',
-              scrolled
-                ? 'border-border text-foreground hover:border-[--champagne] hover:text-[--champagne]'
-                : 'border-white/30 text-white hover:border-[--champagne] hover:text-[--champagne]',
-            ].join(' ')}
-          >
-            Kirish
-          </Link>
-
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden rounded-lg p-2"
-            onClick={() => setOpen(!open)}
-            aria-label="Menyu"
-          >
-            {open ? (
-              <X size={20} className={scrolled ? 'text-foreground' : 'text-white'} />
-            ) : (
-              <Menu size={20} className={scrolled ? 'text-foreground' : 'text-white'} />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden border-t bg-[--page] border-[--line] px-5 py-4 flex flex-col gap-3">
-          {NAV_LINKS.map((l) => (
-            <button
-              key={l.href}
-              onClick={() => onNav(l.href)}
-              className="text-left text-sm font-medium py-2 border-b border-[--line] last:border-0 hover:text-[--champagne] transition-colors"
-            >
-              {l.label}
-            </button>
-          ))}
-          <Link to="/admin" className="text-sm font-semibold text-[--champagne] pt-1">
-            Boshqaruv tizimi →
-          </Link>
-        </div>
-      )}
-    </header>
-  );
-}
-
-/* ─── Hero ───────────────────────────────────────────────── */
-function Hero({ rooms }: { rooms: StorageRoom[] }) {
-  const scrollToRooms = () =>
-    document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
-
-  const scrollToContact = () =>
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-
-  return (
-    <section className="relative isolate flex min-h-[92vh] items-center overflow-hidden bg-[--ink] text-white">
-      {/* Background */}
-      <img
-        src={IMAGES.exterior}
-        alt="Origin Hotel"
-        className="absolute inset-0 h-full w-full object-cover"
-        fetchPriority="high"
-        decoding="async"
-      />
-      {/* Overlays */}
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[--ink] via-[#0e141799] to-[#0e141733]" />
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0e1417cc] via-transparent to-[#0e141766]" />
-
-      {/* Orbit decorations */}
-      <div aria-hidden className="hero-orbit hero-orbit-one" />
-      <div aria-hidden className="hero-orbit hero-orbit-two" />
-
-      {/* Content */}
-      <div className="relative mx-auto grid w-full max-w-[1440px] items-center gap-12 px-5 py-14 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16 lg:px-10 lg:py-32">
-        <div
-          className="max-w-2xl"
-          style={{ animation: 'slide-up 0.8s ease both' }}
-        >
-          {/* Badge */}
-          <p className="inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[.2em] text-white/85">
-            <Sparkles size={12} className="text-[--champagne]" />
-            Shahar markazidagi 5 yulduzli mehmonxona
-          </p>
-
-          {/* Headline */}
-          <h1 className="font-display mt-6 text-[2.5rem] leading-[1.05] sm:text-5xl lg:text-[4rem]">
-            Har bir lahza —{' '}
-            <span className="text-[--champagne]">unutilmas</span>{' '}
-            taassurot
-          </h1>
-
-          <p className="mt-5 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
-            Shinam xonalar, samimiy xizmat va o'zingizni uyda his qiladigan
-            muhitdan bahramand bo'ling.
-          </p>
-
-          {/* CTAs */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              onClick={scrollToRooms}
-              className="inline-flex items-center gap-2 rounded-full bg-[--champagne] px-6 py-3.5 text-xs font-bold text-[--ink] transition hover:bg-white"
-            >
-              Xonani bron qilish
-              <BedDouble size={14} />
-            </button>
-            <a
-              href="#rooms"
-              onClick={(e) => { e.preventDefault(); scrollToRooms(); }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/35 px-6 py-3.5 text-xs font-bold text-white transition hover:border-[--champagne] hover:text-[--champagne]"
-            >
-              Xonalarni ko'rish
-            </a>
-          </div>
-
-          {/* Mini stats */}
-          <dl className="mt-10 flex flex-wrap gap-x-8 gap-y-5 border-t border-white/15 pt-7">
-            <div className="flex items-center gap-3">
-              <BedDouble size={18} className="text-[--champagne]" />
-              <div>
-                <dt className="text-[10px] uppercase tracking-[.16em] text-white/55">Xonalar</dt>
-                <dd className="text-sm font-semibold">{rooms.length || 40} ta</dd>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Star size={18} className="text-[--champagne]" />
-              <div>
-                <dt className="text-[10px] uppercase tracking-[.16em] text-white/55">Mehmon reytingi</dt>
-                <dd className="text-sm font-semibold">4.9 / 5</dd>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone size={18} className="text-[--champagne]" />
-              <div>
-                <dt className="text-[10px] uppercase tracking-[.16em] text-white/55">Mehmonlar xizmati</dt>
-                <dd className="text-sm font-semibold">+998 71 200 20 20</dd>
-              </div>
-            </div>
-          </dl>
-        </div>
-
-        {/* Right panel – live availability badge */}
-        <div
-          className="relative lg:justify-self-end w-full max-w-sm lg:max-w-none"
-          style={{ animation: 'slide-up 0.9s 0.2s ease both', opacity: 0, animationFillMode: 'both' }}
-        >
-          <div className="mb-4 flex items-center gap-2 text-[10px] uppercase tracking-[.2em] text-white/80">
-            <span className="hotel-live-dot" />
-            Hozir bron qilish mumkin
-          </div>
-          <div className="rounded-3xl border border-white/15 bg-white/8 p-6 backdrop-blur-sm" style={{ background: '#ffffff10' }}>
-            <p className="text-xs text-white/60 mb-4">Tezkor bron</p>
-            <div className="space-y-3">
-              {ROOM_DATA.slice(0, 3).map((r) => (
-                <div
-                  key={r.type}
-                  className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:border-[--champagne]/40 transition-colors cursor-pointer"
-                  onClick={scrollToRooms}
-                >
-                  <div>
-                    <p className="font-semibold text-xs">{r.label}</p>
-                    <p className="text-white/50 text-[11px]">{r.size} · {r.capacity} kishi</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[--champagne] font-bold text-xs">{formatPrice(r.price)}</p>
-                    <p className="text-white/40 text-[10px]">/ tun</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={scrollToContact}
-              className="mt-4 w-full rounded-2xl bg-[--champagne] py-3 text-xs font-bold text-[--ink] transition hover:bg-white"
-            >
-              Bog'lanish
-            </button>
-          </div>
-          <p className="mt-3 text-center text-[10px] text-white/50">
-            Tasdiqlash odatda 30 daqiqa ichida keladi
-          </p>
-        </div>
+    <section className="shilla-hero" aria-label="Qarshi shahri manzaralari" aria-roledescription="slayder">
+      {HERO_SLIDES.map((photo, index) => <img key={photo.src} src={photo.src} alt={photo.alt} aria-hidden={index !== slide} className={index === slide ? 'is-active' : ''} style={{ objectPosition: photo.position }} fetchPriority={index === 0 ? 'high' : 'auto'} />)}
+      <h1 className="sr-only">Origin Hotel — Har bir lahza unutilmas taassurot</h1>
+      <div className="shilla-slider-controls">
+        <div className="shilla-slide-progress" aria-label={`${slide + 1} / ${HERO_SLIDES.length}`}><span style={{ width: `${((slide + 1) / HERO_SLIDES.length) * 100}%` }} /></div>
+        <button type="button" aria-label={paused ? 'Slayderni davom ettirish' : 'Slayderni to‘xtatish'} onClick={() => setPaused(!paused)}>{paused ? <Play size={16} /> : <Pause size={16} />}</button>
+        <button type="button" aria-label="Oldingi surat" onClick={() => nextSlide(-1)}><ChevronLeft size={25} strokeWidth={1} /></button>
+        <button type="button" aria-label="Keyingi surat" onClick={() => nextSlide(1)}><ChevronRight size={25} strokeWidth={1} /></button>
       </div>
     </section>
   );
@@ -445,145 +170,36 @@ function Hero({ rooms }: { rooms: StorageRoom[] }) {
 
 /* ─── Ticker ─────────────────────────────────────────────── */
 function Ticker() {
-  const items = [0, 1, 2, 3];
   return (
-    <div className="hotel-ticker" aria-label="Mehmonxona qulayliklari" aria-hidden>
-      <div className="hotel-ticker-track">
-        {items.map((i) => (
-          <span key={i}>
-            ORIGIN HOTEL <i>✦</i> TOSHKENT <i>✦</i> QULAYLIK VA NAFOSAT{' '}
-            <i>✦</i> UNUTILMAS HORDIQ <i>✦</i>
-          </span>
+    <div className="hotel-ticker" role="region" aria-label="Origin Hotel — Toshkent. Qulaylik va nafosat. Unutilmas hordiq.">
+      <div className="hotel-ticker-track" aria-hidden="true">
+        {[0, 1].map((group) => (
+          <div className="hotel-ticker-group" key={group}>
+            {[0, 1].map((copy) => (
+              <span key={copy}>
+                ORIGIN HOTEL <i>✦</i> TOSHKENT <i>✦</i> QULAYLIK VA NAFOSAT{' '}
+                <i>✦</i> UNUTILMAS HORDIQ <i>✦</i>
+              </span>
+            ))}
+          </div>
         ))}
       </div>
     </div>
   );
 }
 
-/* ─── Stats ──────────────────────────────────────────────── */
-function StatCard({ value, label, suffix = '' }: { value: number | string; label: string; suffix?: string }) {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const numVal = typeof value === 'number' ? value : parseFloat(String(value));
-
-  useEffect(() => {
-    if (!ref.current || isNaN(numVal)) return;
-    const duration = 1200;
-    const step = (timestamp: number, startTime: number) => {
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const cur = +(progress * numVal).toFixed(1);
-      if (ref.current) ref.current.textContent = cur + suffix;
-      if (progress < 1) requestAnimationFrame((t) => step(t, startTime));
-    };
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        requestAnimationFrame((t) => step(t, t));
-        io.disconnect();
-      }
-    }, { threshold: 0.5 });
-    if (ref.current) io.observe(ref.current);
-    return () => io.disconnect();
-  }, [numVal, suffix]);
-
-  return (
-    <div className="flex flex-col gap-1 p-4">
-      <p ref={ref} className="font-display text-3xl font-semibold text-foreground">
-        {numVal}{suffix}
-      </p>
-      <p className="text-[11px] uppercase tracking-[.14em] text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function Stats({ rooms }: { rooms: StorageRoom[] }) {
-  const floors = rooms.reduce((m, r) => Math.max(m, r.floor ?? 0), 0) || 5;
-  return (
-    <section className="border-b border-[--line] bg-[--surface]">
-      <div className="mx-auto grid max-w-[1440px] gap-2 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-10 lg:py-12 divide-y sm:divide-y-0 sm:divide-x divide-[--line]">
-        <StatCard value={rooms.length || 40} label="Xonalar soni" />
-        <StatCard value={floors} label="Qavatlar" />
-        <StatCard value={4.9} label="Mehmon reytingi" suffix="/5" />
-        <StatCard value={98} label="Mamnun mehmonlar" suffix="%" />
-      </div>
-    </section>
-  );
-}
-
 /* ─── Rooms ──────────────────────────────────────────────── */
-function RoomCard({
-  room,
-  index,
-  onBook,
-}: {
-  room: ShowcaseRoom;
-  index: number;
-  onBook: (r: ShowcaseRoom) => void;
-}) {
+function RoomCard({ room, onBook }: { room: ShowcaseRoom; onBook: (room: ShowcaseRoom) => void }) {
   return (
-    <article
-      className={`room-showcase-card surface group flex flex-col overflow-hidden rounded-3xl border border-[--line] anim-fade-up`}
-      style={{ transitionDelay: `${(index % 3) * 100}ms` }}
-    >
-      {/* Image */}
-      <div className="relative aspect-[16/11] overflow-hidden">
-        <img
-          src={room.image}
-          alt={room.label}
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full bg-[--line] object-cover transition duration-500 group-hover:scale-[1.04]"
-        />
-        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-[--ink] dark:bg-[--ink]/80 dark:text-white">
-          {room.capacity}
-        </span>
-        <span className={`absolute right-4 top-4 rounded-full px-3 py-1 text-[10px] font-bold ${
-          room.status === "Bo'sh"
-            ? 'bg-emerald-500/90 text-white'
-            : room.status === "Band"
-              ? 'bg-red-500/90 text-white'
-              : room.status === "Tozalashda"
-                ? 'bg-amber-400/95 text-[--ink]'
-                : 'bg-violet-500/90 text-white'
-        }`}>
-          {room.status}
-        </span>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 flex-col p-5">
-        <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">
-          {room.label}
-        </p>
-        <h3 className="font-display mt-2 text-xl">{room.label} Xona · #{room.number}</h3>
-        <p className="mt-1 text-xs text-muted-foreground">{room.floor}-qavat · {room.size}</p>
-        <p className="mt-2 text-xs leading-6 text-muted-foreground flex-1">{room.description}</p>
-
-        {/* Features */}
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {room.features.slice(0, 3).map((f) => (
-            <li
-              key={f}
-              className="rounded-full border border-[--line] px-2.5 py-1 text-[10px] font-medium text-muted-foreground"
-            >
-              {f}
-            </li>
-          ))}
-        </ul>
-
-        {/* Price + CTA */}
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-[--line] pt-4">
-          <div>
-            <p className="text-[10px] text-muted-foreground">Tunlik narx</p>
-            <p className="mt-0.5 text-base font-bold text-[--champagne]">{formatPrice(room.price)}</p>
-          </div>
-          <button
-            onClick={() => onBook(room)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[--ink] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[--ink-soft] dark:bg-[--champagne] dark:text-[--ink] dark:hover:bg-white"
-          >
-            Batafsil
-            <ArrowRight size={13} />
-          </button>
-        </div>
-      </div>
+    <article className="shilla-package-card">
+      <button type="button" className="shilla-package-image" onClick={() => onBook(room)} aria-label={`${room.label} xonani ko‘rish`}>
+        <img src={room.image} alt={`${room.label} xona`} loading="lazy" decoding="async" />
+      </button>
+      <h3><button type="button" onClick={() => onBook(room)}>{room.label} Xona · #{room.number}</button></h3>
+      <p>{room.description}</p>
+      <p className="shilla-package-features">{room.features.slice(0, 2).join(' · ')}</p>
+      <p className="shilla-package-price">{formatPrice(room.price)} / tun · {room.size} · {room.capacity}</p>
+      <p className="shilla-package-features">{room.floor}-qavat · {room.status}</p>
     </article>
   );
 }
@@ -595,13 +211,29 @@ function RoomDetailModal({
   room: ShowcaseRoom;
   onClose: () => void;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    const fn = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    closeRef.current?.focus({ preventScroll: true });
+    const fn = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key !== 'Tab') return;
+      const items = panelRef.current?.querySelectorAll<HTMLElement>('button, a[href]');
+      if (!items?.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', fn);
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', fn);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected && !previousFocus.closest('[inert]')) previousFocus.focus({ preventScroll: true });
+      else document.querySelector<HTMLElement>(window.matchMedia('(max-width: 767px)').matches ? '.shilla-mobile-toggle' : '#hotel-nav-trigger-2')?.focus({ preventScroll: true });
     };
   }, [onClose]);
 
@@ -610,9 +242,12 @@ function RoomDetailModal({
       className="gallery-overlay"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
+      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="room-detail-title" className="relative bg-[--page] rounded-3xl overflow-hidden max-w-lg w-full mx-4 shadow-2xl">
         <img src={room.image} alt={room.label} className="h-52 w-full object-cover" />
         <button
+          ref={closeRef}
+          type="button"
+          aria-label="Xona tafsilotlarini yopish"
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full bg-[--ink]/60 p-2 text-white hover:bg-[--ink] transition"
         >
@@ -620,7 +255,7 @@ function RoomDetailModal({
         </button>
         <div className="p-6">
           <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">{room.label} · #{room.number}</p>
-          <h3 className="font-display mt-1 text-2xl">{room.label} Xona</h3>
+          <h3 id="room-detail-title" className="font-display mt-1 text-2xl">{room.label} Xona</h3>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{room.description}</p>
           <p className="mt-2 text-xs text-muted-foreground">{room.floor}-qavat · {room.capacity} · {room.status}</p>
 
@@ -652,228 +287,220 @@ function RoomDetailModal({
   );
 }
 
-function Rooms({ rooms }: { rooms: StorageRoom[] }) {
-  const [selected, setSelected] = useState<ShowcaseRoom | null>(null);
-  const showcaseRooms = rooms.map((room) => {
-    const roomTemplate = ROOM_DATA.find((item) =>
-      item.type === room.type ||
-      (item.type === 'Presidential' && room.type === 'President'),
-    ) ?? ROOM_DATA[0];
-
-    return {
-      ...roomTemplate,
-      id: room.id,
-      number: room.number,
-      floor: room.floor,
-      capacity: room.capacity,
-      price: room.pricePerNight,
-      status: room.status,
-      image: room.imageUrl || roomTemplate.image,
-    };
-  });
-
+function Rooms({ searchSummary, rooms, selected, onSelect }: {
+  searchSummary: string;
+  rooms: ShowcaseRoom[];
+  selected: ShowcaseRoom | null;
+  onSelect: (room: ShowcaseRoom | null) => void;
+}) {
   return (
-    <section id="rooms" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-      <div className="max-w-2xl anim-fade-up">
-        <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">
-          Bizning xonalarimiz
-        </p>
-        <h2 className="font-display mt-3 text-4xl lg:text-5xl">Har bir sayohatga mos xona</h2>
-        <p className="mt-4 text-sm leading-7 text-muted-foreground">
-          Standart xonadan Prezident lyuksigacha — barchasi shahar manzarasi,
-          tezkor Wi-Fi va kundalik xizmat bilan jihozlangan.
-        </p>
+    <section id="rooms" className="shilla-packages">
+      <div className="shilla-packages-heading">
+        <h2 tabIndex={-1}>XONALAR</h2>
+        <p>Har bir sayohatga mos xona.</p>
+        <a href="#experiences">Barcha suratlar <ChevronRight size={17} strokeWidth={1} /></a>
       </div>
-
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {showcaseRooms.map((r, i) => (
-          <RoomCard key={r.id} room={r} index={i} onBook={setSelected} />
-        ))}
+      {searchSummary && <p role="status" className="shilla-search-summary">{searchSummary}</p>}
+      <div className="shilla-packages-grid">
+        {rooms.map((room) => <RoomCard key={room.id} room={room} onBook={onSelect} />)}
       </div>
-
-      {selected && <RoomDetailModal room={selected} onClose={() => setSelected(null)} />}
+      {selected && <RoomDetailModal room={selected} onClose={() => onSelect(null)} />}
     </section>
   );
 }
 
-/* ─── About ──────────────────────────────────────────────── */
-function About() {
-  return (
-    <section id="about" className="border-y border-[--line] bg-[--surface]">
-      <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-24">
+const DINING_CARDS = [
+  {
+    title: 'Restoran',
+    description: 'Origin Hotel restorani va shinam muhit.',
+    image: IMAGES.restaurant,
+    alt: 'Restoran zali',
+  },
+  {
+    title: 'Bepul nonushta',
+    description: 'Standart xona qulayliklari qatorida bepul nonushta.',
+    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1000&q=85',
+    alt: 'Restorandagi dasturxon',
+  },
+  {
+    title: 'Shved stoli',
+    description: 'Deluxe xona mehmonlari uchun shved stoli.',
+    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1000&q=85',
+    alt: 'Restoran interyeri',
+  },
+];
 
-        {/* Images */}
-        <div className="relative anim-fade-up">
-          <img
-            src={IMAGES.lobby}
-            alt="Origin Hotel qabulxonasi"
-            loading="lazy"
-            decoding="async"
-            className="aspect-[4/3] w-full rounded-3xl object-cover shadow-lift"
-          />
-          <img
-            src={IMAGES.standard}
-            alt="Origin Hotel xona"
-            loading="lazy"
-            decoding="async"
-            className="absolute -bottom-8 right-4 hidden h-40 w-40 rounded-3xl border-4 border-[--surface] object-cover sm:block lg:h-48 lg:w-48 shadow-lift"
-          />
-        </div>
-
-        {/* Text */}
-        <div className="anim-fade-up">
-          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">
-            Biz haqimizda
-          </p>
-          <h2 className="font-display mt-3 text-4xl lg:text-5xl">Bir tom ostida barcha qulayliklar</h2>
-          <p className="mt-5 text-sm leading-7 text-muted-foreground">
-            Origin Hotel besh qavatda 40 ta xonani birlashtiradi: basseyn va
-            spa, restoran, fitnes zali, bepul parking va aeroportdan transfer.
-            Qabulxona kechayu kunduz ishlaydi.
-          </p>
-
-          {/* Amenity grid */}
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            {AMENITIES.map(({ icon: Icon, label }) => (
-              <div
-                key={label}
-                className="flex items-center gap-3 rounded-2xl border border-[--line] bg-[--page] px-4 py-3.5"
-              >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[--champagne]/15 text-[--champagne]">
-                  <Icon size={18} />
-                </span>
-                <span className="text-xs font-semibold">{label}</span>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[--line] pt-6 text-[11px] text-muted-foreground">
-            <span>Amir Temur shoh ko'chasi 15, Toshkent</span>
-            <span className="text-[--champagne]">Qabulxona: 24/7</span>
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Gallery ────────────────────────────────────────────── */
-function Gallery() {
-  const [lightbox, setLightbox] = useState<string | null>(null);
+function Dining({ selection }: { selection: { index: number; request: number } | null }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeCard, setActiveCard] = useState(0);
 
   useEffect(() => {
-    if (!lightbox) return;
-    const fn = (e: KeyboardEvent) => e.key === 'Escape' && setLightbox(null);
-    document.addEventListener('keydown', fn);
-    return () => document.removeEventListener('keydown', fn);
-  }, [lightbox]);
+    if (!selection) return;
+    const frame = requestAnimationFrame(() => {
+      const track = trackRef.current;
+      const first = track?.children[0] as HTMLElement | undefined;
+      const card = track?.children[selection.index] as HTMLElement | undefined;
+      if (track && first && card) track.scrollTo({
+        left: card.offsetLeft - first.offsetLeft,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [selection]);
+
+  const moveTo = (index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const next = Math.max(0, Math.min(DINING_CARDS.length - 1, index));
+    const card = track.children[next] as HTMLElement | undefined;
+    const first = track.children[0] as HTMLElement | undefined;
+    if (!card || !first) return;
+    track.scrollTo({
+      left: card.offsetLeft - first.offsetLeft,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+  };
 
   return (
-    <section id="gallery" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-      <div className="flex flex-wrap items-end justify-between gap-4 anim-fade-up">
-        <div className="max-w-2xl">
-          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">Galereya</p>
-          <h2 className="font-display mt-3 text-4xl lg:text-5xl">Origin muhitini his qiling</h2>
-        </div>
-        <p className="text-[11px] uppercase tracking-[.14em] text-muted-foreground">
-          Suratni kattalashtirish uchun bosing
-        </p>
+    <section id="dining" className="shilla-dining" aria-labelledby="dining-title">
+      <div className="shilla-dining-intro">
+        <h2 id="dining-title">RESTORAN</h2>
+        <p>Origin Hotel restorani, nonushta va shved stoli bilan yoqimli dam oling.</p>
+        <img
+          className="shilla-dining-main-image"
+          src={IMAGES.restaurant}
+          alt="Origin Hotel restoran bo‘limi"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
-
-      <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {GALLERY_PHOTOS.map((p, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setLightbox(p.src)}
-            className={`group relative h-44 overflow-hidden rounded-2xl border border-[--line] sm:h-52 ${
-              p.wide ? 'col-span-2' : ''
-            } anim-fade-up`}
-            style={{ transitionDelay: `${i * 60}ms` }}
-          >
-            <img
-              src={p.src}
-              alt={p.alt}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
-            />
-            <span
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-[--ink]/70 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"
-            />
-            <span className="absolute bottom-3 left-3 rounded-full bg-white/10 p-1.5 opacity-0 backdrop-blur-sm transition group-hover:opacity-100">
-              <ArrowUpRight size={13} className="text-white" />
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {lightbox && (
-        <div className="gallery-overlay" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="Origin Hotel" />
-          <button
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2.5 text-white hover:bg-white/25 transition backdrop-blur-sm"
-            onClick={() => setLightbox(null)}
-          >
-            <X size={18} />
-          </button>
+      <div className="shilla-dining-gallery">
+        <div
+          ref={trackRef}
+          className="shilla-dining-track"
+          tabIndex={0}
+          role="region"
+          aria-label="Restoran xizmatlari, yon tomonga suring"
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+              event.preventDefault();
+              moveTo(activeCard + (event.key === 'ArrowRight' ? 1 : -1));
+            }
+          }}
+          onScroll={() => {
+            const track = trackRef.current;
+            const first = track?.children[0] as HTMLElement | undefined;
+            const second = track?.children[1] as HTMLElement | undefined;
+            if (!track || !first || !second) return;
+            const step = second.offsetLeft - first.offsetLeft;
+            const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+            setActiveCard(atEnd ? DINING_CARDS.length - 1 : Math.min(DINING_CARDS.length - 1, Math.round(track.scrollLeft / step)));
+          }}
+        >
+          {DINING_CARDS.map((card, index) => (
+            <article id={`dining-card-${index}`} key={card.title} className="shilla-dining-card">
+              <a href="#contact" className="shilla-dining-image-link" aria-label={`${card.title}: bog‘lanish`}>
+                <img src={card.image} alt={card.alt} loading="lazy" decoding="async" />
+              </a>
+              <div className="shilla-dining-caption">
+                <h3><a href="#contact">{card.title}</a></h3>
+                <p>{card.description}</p>
+              </div>
+            </article>
+          ))}
         </div>
-      )}
+        <div className="shilla-dining-controls">
+          <span aria-live="polite">{String(activeCard + 1).padStart(2, '0')} / {String(DINING_CARDS.length).padStart(2, '0')}</span>
+          <div>
+            <button type="button" aria-label="Oldingi restoran kartochkasi" disabled={activeCard === 0} onClick={() => moveTo(activeCard - 1)}><ChevronLeft size={23} strokeWidth={1} /></button>
+            <button type="button" aria-label="Keyingi restoran kartochkasi" disabled={activeCard === DINING_CARDS.length - 1} onClick={() => moveTo(activeCard + 1)}><ChevronRight size={23} strokeWidth={1} /></button>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
 
-/* ─── Reviews ────────────────────────────────────────────── */
-function Reviews() {
-  return (
-    <section id="reviews" className="border-y border-[--line] bg-[--surface]">
-      <div className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-        <div className="flex flex-wrap items-end justify-between gap-6 anim-fade-up">
-          <div className="max-w-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">
-              Mehmonlarimiz fikrlari
-            </p>
-            <h2 className="font-display mt-3 text-4xl lg:text-5xl">Mehmonlar fikri</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">
-              So'nggi 12 oyda 1 200 dan ortiq mehmon sharh qoldirdi. O'rtacha baho — 4.9.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-[--champagne]/40 bg-[--champagne]/10 px-5 py-4 text-center">
-            <p className="font-display text-4xl text-foreground">4.9</p>
-            <p className="mt-1 flex items-center justify-center gap-1 text-[--champagne]" aria-hidden>
-              {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={13} fill="currentColor" />)}
-            </p>
-            <p className="mt-2 text-[10px] uppercase tracking-[.14em] text-muted-foreground">Mehmon reytingi</p>
-          </div>
-        </div>
+const EXPERIENCE_SLIDES = [
+  {
+    image: IMAGES.exterior,
+    alt: 'Origin Hotel tashqi ko‘rinishi',
+    title: 'Origin Hotel — unutilmas taassurotlar',
+    description: 'Shinam xonalar, samimiy xizmat va o‘zingizni uyda his qiladigan muhitdan bahramand bo‘ling.',
+  },
+  {
+    image: IMAGES.pool,
+    alt: 'Basseyn va dam olish hududi',
+    title: 'Basseyn va SPA — xotirjam hordiq',
+    description: 'Basseyn, SPA va fitnes zali — bir tom ostida barcha qulayliklar.',
+  },
+  {
+    image: IMAGES.lobby,
+    alt: 'Origin Hotel qabulxonasi',
+    title: 'Origin muhitini his qiling',
+    description: 'Qabulxona kechayu kunduz ishlaydi. Amir Temur shoh ko‘chasi 15, Toshkent.',
+  },
+];
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {REVIEWS.map((r, i) => (
-            <figure
-              key={r.name}
-              className="surface flex h-full flex-col rounded-3xl border border-[--line] p-6 anim-fade-up"
-              style={{ transitionDelay: `${i * 100}ms` }}
-            >
-              <Star size={22} className="text-[--champagne]" fill="currentColor" />
-              <blockquote className="mt-4 flex-1 text-sm leading-7 text-foreground">{r.text}</blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 border-t border-[--line] pt-5">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[--ink] text-[11px] font-bold text-[--champagne]">
-                  {r.name[0]}{r.name.split(' ')[1]?.[0]}
-                </span>
-                <span>
-                  <span className="block text-xs font-semibold">{r.name}</span>
-                  <span className="block text-[10px] text-muted-foreground">{r.origin}</span>
-                </span>
-                <span className="ml-auto flex gap-0.5 text-[--champagne]">
-                  {Array.from({ length: r.rating }, (_, j) => (
-                    <Star key={j} size={11} fill="currentColor" />
-                  ))}
-                </span>
-              </figcaption>
-            </figure>
-          ))}
+function Experiences({ activeSlide, onSlideChange }: { activeSlide: number; onSlideChange: (index: number) => void }) {
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const move = (direction: number) => onSlideChange((activeSlide + direction + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length);
+
+  return (
+    <section id="experiences" className="shilla-experiences" aria-labelledby="experiences-title">
+      <div className="shilla-experiences-heading">
+        <h2 id="experiences-title">TAASSUROTLAR</h2>
+        <p>Origin Hotel’da har bir sayohatingizni unutilmas lahzalarga boyiting.</p>
+      </div>
+      <div
+        className="shilla-experiences-stage"
+        role="region"
+        aria-roledescription="slayder"
+        aria-label="Mehmonxona suratlari va taassurotlar"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
+            move(event.key === 'ArrowRight' ? 1 : -1);
+          }
+        }}
+        onTouchStart={(event) => {
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          touchStart.current = { x: touch.clientX, y: touch.clientY };
+        }}
+        onTouchEnd={(event) => {
+          const start = touchStart.current;
+          touchStart.current = null;
+          if (!start) return;
+          const touch = event.changedTouches[0];
+          if (!touch) return;
+          const distanceX = touch.clientX - start.x;
+          const distanceY = touch.clientY - start.y;
+          if (Math.abs(distanceX) > 50 && Math.abs(distanceX) > Math.abs(distanceY)) move(distanceX < 0 ? 1 : -1);
+        }}
+        onTouchCancel={() => { touchStart.current = null; }}
+      >
+        {EXPERIENCE_SLIDES.map((slide, index) => {
+          const offset = (index - activeSlide + EXPERIENCE_SLIDES.length) % EXPERIENCE_SLIDES.length;
+          const position = offset === 0 ? 'active' : offset === 1 ? 'next' : 'previous';
+          return (
+            <article key={slide.title} className={`shilla-experience-slide is-${position}`} aria-hidden={position !== 'active'}>
+              <img src={slide.image} alt={slide.alt} loading="lazy" decoding="async" draggable={false} />
+            </article>
+          );
+        })}
+        <div className="shilla-experience-caption">
+          <div className="shilla-experience-copy">
+            <h2>{EXPERIENCE_SLIDES[activeSlide].title}</h2>
+            <p>{EXPERIENCE_SLIDES[activeSlide].description}</p>
+          </div>
+          <div className="shilla-experience-arrows">
+            <button type="button" aria-label="Oldingi taassurot" onClick={() => move(-1)}><ChevronLeft size={26} strokeWidth={1} /></button>
+            <button type="button" aria-label="Keyingi taassurot" onClick={() => move(1)}><ChevronRight size={26} strokeWidth={1} /></button>
+          </div>
         </div>
+        <span className="sr-only" aria-live="polite">{activeSlide + 1} / {EXPERIENCE_SLIDES.length}: {EXPERIENCE_SLIDES[activeSlide].title}</span>
       </div>
     </section>
   );
@@ -881,94 +508,42 @@ function Reviews() {
 
 /* ─── Contact ────────────────────────────────────────────── */
 function Contact() {
-  const contactItems = [
-    { icon: MapPin, label: 'Manzil', value: 'Amir Temur shoh ko\'chasi 15, Toshkent 100000', href: 'https://maps.google.com/?q=Origin+Hotel+Tashkent' },
-    { icon: Phone, label: 'Telefon', value: '+998 71 200 20 20', href: 'tel:+998712002020' },
-    { icon: Mail, label: 'Email', value: 'reservations@originhotel.uz', href: 'mailto:reservations@originhotel.uz' },
-    { icon: Clock, label: 'Qabulxona', value: '24 soat, 7 kun', href: undefined },
-  ];
+  const address = 'Amir Temur shoh ko‘chasi 15, Toshkent 100000';
+  const mapQuery = encodeURIComponent('Origin Hotel, Amir Temur shoh ko‘chasi 15, Toshkent');
+  const googleMap = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+  const openStreetMap = 'https://www.openstreetmap.org/?mlat=41.3111&mlon=69.2797#map=15/41.3111/69.2797';
 
   return (
-    <section id="contact" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-10 lg:py-24">
-      <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16">
-
-        {/* Left */}
-        <div className="anim-fade-up">
-          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[--champagne]">Aloqa</p>
-          <h2 className="font-display mt-3 text-4xl lg:text-5xl">
-            Toshkent markazida, hamma joyga yaqin
-          </h2>
-          <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            Amir Temur shoh ko'chasi bo'yida — aeroportga 20 daqiqa, metro va
-            biznes markazlariga piyoda masofada.
-          </p>
-
-          <ul className="mt-9 space-y-4 text-sm">
-            {contactItems.map(({ icon: Icon, label, value, href }) => (
-              <li key={label} className="flex gap-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[--champagne]/15 text-[--champagne]">
-                  <Icon size={18} />
-                </span>
-                <span>
-                  <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-muted-foreground">
-                    {label}
-                  </span>
-                  {href ? (
-                    <a
-                      href={href}
-                      target={href.startsWith('http') ? '_blank' : undefined}
-                      rel="noreferrer"
-                      className="mt-0.5 block font-medium hover:text-[--champagne] transition-colors"
-                    >
-                      {value}
-                    </a>
-                  ) : (
-                    <span className="mt-0.5 block font-medium">{value}</span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          {/* Social */}
-          <div className="mt-8 flex gap-3">
-            {[
-              { icon: Send,         href: '#', label: 'Telegram' },
-              { icon: Camera,       href: '#', label: 'Instagram' },
-              { icon: ExternalLink, href: '#', label: 'Facebook' },
-            ].map(({ icon: Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={label}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[--line] text-muted-foreground hover:border-[--champagne] hover:text-[--champagne] transition-colors"
-              >
-                <Icon size={16} />
-              </a>
-            ))}
-          </div>
+    <section id="contact" className="shilla-location" aria-labelledby="location-title">
+      <h2 id="location-title">JOYLASHUV</h2>
+      <div className="shilla-location-info">
+        <p><strong>Manzil</strong><a href={googleMap} target="_blank" rel="noreferrer">{address}</a></p>
+        <p><strong>Tel.</strong><a href="tel:+998712002020">+998 71 200 20 20</a></p>
+        <nav className="shilla-map-links" aria-label="Xarita xizmatlari">
+          <a href={googleMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-google" aria-hidden="true" />Google Maps</a>
+          <a href={`https://yandex.com/maps/?text=${mapQuery}`} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-yandex" aria-hidden="true" />Yandex Maps</a>
+          <a href={openStreetMap} target="_blank" rel="noreferrer"><MapPin size={23} className="shilla-map-osm" aria-hidden="true" />OpenStreetMap</a>
+        </nav>
+      </div>
+      <details id="transport-details" className="shilla-location-directions">
+        <summary>Yo‘l va transport ma’lumotlari<ChevronRight size={18} strokeWidth={1} /></summary>
+        <div className="shilla-location-directions-content">
+          <p>Amir Temur shoh ko‘chasi bo‘yida — aeroportga 20 daqiqa, metro va biznes markazlariga piyoda masofada.</p>
+          <p>Qabulxona 24 soat, haftasiga 7 kun ishlaydi. Yo‘l bo‘yicha yordam uchun <a href="tel:+998712002020">+998 71 200 20 20</a> raqamiga murojaat qiling.</p>
+          <a className="shilla-directions-link" href={`https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`} target="_blank" rel="noreferrer">Yo‘nalishni xaritada ochish<ArrowUpRight size={17} /></a>
         </div>
-
-        {/* Right – map placeholder */}
-        <div className="anim-fade-up relative overflow-hidden rounded-3xl border border-[--line] aspect-[4/3] bg-[--surface]">
-          <iframe
-            title="Origin Hotel xarita"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=69.26%2C41.29%2C69.30%2C41.33&layer=mapnik&marker=41.3111%2C69.2797"
-            className="h-full w-full border-0"
-            loading="lazy"
-          />
-          <a
-            href="https://www.openstreetmap.org/?mlat=41.3111&mlon=69.2797#map=15/41.3111/69.2797"
-            target="_blank"
-            rel="noreferrer"
-            className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-full bg-[--ink] px-4 py-2 text-xs font-semibold text-white hover:bg-[--ink-soft] transition"
-          >
-            Xaritani ochish
-            <ArrowUpRight size={12} />
-          </a>
-        </div>
+      </details>
+      <div className="shilla-location-map">
+        <iframe
+          title="Origin Hotel xaritasi"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=69.26%2C41.29%2C69.30%2C41.33&layer=mapnik&marker=41.3111%2C69.2797"
+          loading="lazy"
+        />
+        <a href={openStreetMap} target="_blank" rel="noreferrer" className="shilla-location-map-open">Xaritani kattalashtirish<ArrowUpRight size={17} /></a>
+      </div>
+      <div className="shilla-location-contact">
+        <a href="mailto:reservations@originhotel.uz"><Mail size={16} />reservations@originhotel.uz</a>
+        <span><Clock size={16} />Qabulxona: 24/7</span>
       </div>
     </section>
   );
@@ -976,140 +551,82 @@ function Contact() {
 
 /* ─── CTA ────────────────────────────────────────────────── */
 function CTA() {
-  const scrollToContact = () =>
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  const benefits = [
+    { icon: Tickets, title: 'Xonalar tanlovi', description: 'Standart, Deluxe, Suite va Presidential — sayohatingizga mos xona.' },
+    { icon: Coffee, title: 'Nonushta va restoran', description: 'Xona turiga mos nonushta va shved stoli, mehmonxona restorani.' },
+    { icon: Gift, title: 'Qulaylik va xizmat', description: 'Basseyn, SPA, fitnes zali va kechayu kunduz ishlaydigan qabulxona.' },
+  ];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[--ink] text-white">
-      <img
-        src={IMAGES.presidential}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover opacity-35"
-      />
-      <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[--ink] via-[#0e1417cc] to-[#0e141788]" />
-      <div className="relative mx-auto flex max-w-[1440px] flex-col items-start gap-8 px-5 py-16 lg:flex-row lg:items-center lg:justify-between lg:px-10 lg:py-20">
-        <div className="max-w-2xl anim-fade-up">
-          <h2 className="font-display text-3xl leading-tight lg:text-4xl">
-            Keyingi tashrifingizni bugun rejalashtiring
-          </h2>
-          <p className="mt-3 text-sm leading-7 text-white/80">
-            Sanalar band bo'lib qolmasidan oldin xonangizni band qiling —
-            tasdiqlash odatda 30 daqiqa ichida keladi.
-          </p>
+    <section id="benefits" className="shilla-benefits" aria-labelledby="benefits-title">
+      <div className="shilla-benefits-intro">
+        <h2 id="benefits-title">Origin Hotel</h2>
+        <p>Keyingi tashrifingizni bugun rejalashtiring. Shinam xonalar, samimiy xizmat va barcha qulayliklar sizni kutmoqda.</p>
+        <div className="shilla-benefits-actions">
+          <a href="#rooms">Batafsil</a>
+          <Link to="/login">Kirish</Link>
         </div>
-        <div className="flex flex-wrap items-center gap-3 anim-fade-up">
-          <button
-            onClick={scrollToContact}
-            className="inline-flex items-center gap-2 rounded-full bg-[--champagne] px-6 py-3.5 text-xs font-bold text-[--ink] transition hover:bg-white"
-          >
-            Bog'lanish
-            <ArrowRight size={14} />
-          </button>
-          <Link
-            to="/admin"
-            className="inline-flex items-center gap-2 rounded-full border border-white/35 px-6 py-3.5 text-xs font-bold text-white transition hover:border-[--champagne] hover:text-[--champagne]"
-          >
-            Boshqaruv tizimi
-          </Link>
-        </div>
+      </div>
+      <div className="shilla-benefits-grid">
+        {benefits.map(({ icon: Icon, title, description }) => (
+          <article key={title} className="shilla-benefit-card">
+            <div className="shilla-benefit-icon" aria-hidden="true"><Icon size={66} strokeWidth={.9} /></div>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>
+        ))}
       </div>
     </section>
   );
 }
 
-/* ─── Footer ─────────────────────────────────────────────── */
 function Footer() {
   const year = new Date().getFullYear();
   const links = [
-    { href: '#rooms',   label: 'Xonalar' },
-    { href: '#about',   label: 'Biz haqimizda' },
-    { href: '#gallery', label: 'Galereya' },
-    { href: '#reviews', label: 'Fikrlar' },
-    { href: '#contact', label: 'Aloqa' },
+    { href: '#benefits', label: 'Biz haqimizda' },
+    { href: '#contact', label: 'Joylashuv' },
+    { href: '#rooms', label: 'Xonalar' },
+    { href: '#dining', label: 'Restoran' },
+    { href: '#experiences', label: 'Galereya' },
   ];
 
   return (
-    <footer className="border-t border-[--line] bg-[--surface]">
-      <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr] lg:px-10">
-
-        {/* Brand */}
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[--champagne]">
-              <Hotel size={16} className="text-[--ink]" />
-            </div>
-            <span className="font-bold">Origin Hotel</span>
-          </div>
-          <p className="mt-4 max-w-sm text-xs leading-6 text-muted-foreground">
-            Toshkent markazidagi 5 yulduzli mehmonxona. Haqiqiy mehmondo'stlik
-            va zamonaviy qulaylik maskani.
-          </p>
-          <p className="font-display mt-5 text-3xl text-foreground">
-            4.9
-            <span className="ml-2 text-xs font-normal text-muted-foreground">Mehmon reytingi</span>
-          </p>
+    <footer className="shilla-footer">
+      <nav className="shilla-footer-brands" aria-label="Origin Hotel xizmatlari">
+        <Link to="/">ORIGIN HOTEL</Link>
+        <a href="#dining">RESTORAN & HORDIQ</a>
+        <a href="#contact">24/7 QABULXONA</a>
+      </nav>
+      <div className="shilla-footer-main">
+        <Link to="/" className="shilla-footer-wordmark" aria-label="Origin Hotel — bosh sahifa"><span>ORIGIN HOTEL</span><small>TOSHKENT</small></Link>
+        <div className="shilla-footer-address">
+          <p><strong>Origin Hotel</strong><span className="shilla-footer-divider" aria-hidden="true" /><span>Amir Temur shoh ko‘chasi 15, Toshkent 100000, O‘zbekiston</span></p>
+          <p><a href="tel:+998712002020">TEL. +998 71 200 20 20</a><a href="mailto:reservations@originhotel.uz">reservations@originhotel.uz</a></p>
         </div>
-
-        {/* Nav */}
-        <nav aria-label="Sayt bo'limlari">
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">Bo'limlar</p>
-          <ul className="mt-4 space-y-2.5">
-            {links.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="text-xs text-muted-foreground transition hover:text-[--champagne]">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <nav className="shilla-footer-links" aria-label="Sayt bo‘limlari">
+          <div className="shilla-footer-link-row">
+            {links.map((link) => <a key={link.href} href={link.href}>{link.label}</a>)}
+            <Link to="/login">Kirish</Link>
+          </div>
+          <div className="shilla-footer-link-row shilla-footer-secondary">
+            <Link to="/admin">Boshqaruv tizimi</Link>
+            <span className="shilla-footer-policy">Maxfiylik siyosati</span>
+            <span>Foydalanish shartlari</span>
+          </div>
         </nav>
-
-        {/* Contact info */}
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">Aloqa</p>
-          <ul className="mt-4 space-y-2.5 text-xs text-muted-foreground">
-            <li>Amir Temur shoh ko'chasi 15</li>
-            <li>Toshkent 100000, O'zbekiston</li>
-            <li className="pt-1">
-              <a href="tel:+998712002020" className="hover:text-[--champagne] transition-colors">
-                +998 71 200 20 20
-              </a>
-            </li>
-            <li>
-              <a href="mailto:reservations@originhotel.uz" className="hover:text-[--champagne] transition-colors">
-                reservations@originhotel.uz
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Admin CTA */}
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[--champagne]">Boshqaruv</p>
-          <p className="mt-4 text-xs leading-5 text-muted-foreground">
-            Mehmonxona xodimlari va administratorlar uchun boshqaruv paneli.
-          </p>
-          <Link
-            to="/admin"
-            className="mt-4 inline-flex items-center gap-2 rounded-full border border-[--line] bg-[--page] px-4 py-2.5 text-xs font-semibold transition hover:border-[--champagne] hover:text-[--champagne]"
-          >
-            Boshqaruv tizimiga kirish
-            <ArrowRight size={13} />
-          </Link>
-        </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div className="border-t border-[--line] px-5 py-4 lg:px-10">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 text-[11px] text-muted-foreground">
-          <p>© {year} Origin Hotel. Barcha huquqlar himoyalangan.</p>
-          <div className="flex gap-4">
-            <span className="cursor-default hover:text-[--champagne] transition-colors">Maxfiylik siyosati</span>
-            <span className="cursor-default hover:text-[--champagne] transition-colors">Foydalanish shartlari</span>
+        <div className="shilla-footer-bottom">
+          <div className="shilla-footer-legal">
+            <p>Origin Hotel · Amir Temur shoh ko‘chasi 15, Toshkent 100000 · Qabulxona: 24/7</p>
+            <div className="shilla-footer-social-icons">
+              <span role="img" aria-label="Instagram"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none" /></svg></span>
+              <span role="img" aria-label="Facebook" className="shilla-footer-facebook"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 22v-9h3l.5-3H14V8c0-1 .3-1.5 1.5-1.5H18V3h-3c-3 0-5 1.8-5 5v2H7v3h3v9z" /></svg></span>
+            </div>
           </div>
+          <div className="shilla-footer-feature">
+            <span aria-hidden="true"><Hotel size={28} strokeWidth={1.2} /></span>
+            <div><p>Origin Hotel — Toshkent</p><p>Shinam xonalar, restoran va dam olish qulayliklari.</p></div>
+          </div>
+          <p className="shilla-footer-copyright">© {year} Origin Hotel. Barcha huquqlar himoyalangan.</p>
         </div>
       </div>
     </footer>
@@ -1137,7 +654,6 @@ function QuickDock() {
 /* ─── LandingPage (root) ─────────────────────────────────── */
 export default function LandingPage() {
   const [rooms, setRooms] = useState<StorageRoom[]>(() => StorageService.getRooms());
-
   useEffect(() => {
     const refreshRooms = () => setRooms(StorageService.getRooms());
     const refreshFromStorage = (event: StorageEvent) => {
@@ -1160,31 +676,63 @@ export default function LandingPage() {
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
   }, []);
+  const pageRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+    const parts = [
+      ['.shilla-header', '--intro-header-height'],
+      ['.shilla-reservation', '--intro-booking-height'],
+      ['.hotel-ticker', '--intro-ticker-height'],
+    ] as const;
+    const measure = () => {
+      for (const [selector, variable] of parts) {
+        const element = page.querySelector(selector);
+        if (element) page.style.setProperty(variable, `${element.getBoundingClientRect().height}px`);
+      }
+    };
+    measure();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    for (const [selector] of parts) {
+      const element = page.querySelector(selector);
+      if (element) observer?.observe(element);
+    }
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
+  const [searchSummary, setSearchSummary] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState<ShowcaseRoom | null>(null);
+  const [experienceSlide, setExperienceSlide] = useState(0);
+  const [selectedInfo, setSelectedInfo] = useState<{ key: HotelInfoKey; triggerId: string } | null>(null);
+  const [diningSelection, setDiningSelection] = useState<{ index: number; request: number } | null>(null);
+  const showcaseRooms = rooms.map(toShowcaseRoom);
 
   useScrollProgress();
-  useScrollAnimate();
 
   return (
-    <div className="marketing-page">
+    <div ref={pageRef} className="marketing-page hotel-marketing shilla-site">
       {/* Scroll progress bar */}
       <div className="marketing-progress" aria-hidden />
 
-      <Navbar />
+      <Navbar onRoomSelect={(type) => setSelectedRoom(showcaseRooms.find((room) => room.type === type) ?? null)} onInfoSelect={(key, triggerId) => setSelectedInfo({ key, triggerId })} onExperienceSelect={setExperienceSlide} onDiningSelect={(index) => setDiningSelection((previous) => ({ index, request: (previous?.request ?? 0) + 1 }))} />
 
       <main>
-        <Hero rooms={rooms} />
+        <ReservationBar onSearch={setSearchSummary} />
+        <Hero />
         <Ticker />
-        <Stats rooms={rooms} />
-        <Rooms rooms={rooms} />
-        <About />
-        <Gallery />
-        <Reviews />
+        <Rooms searchSummary={searchSummary} rooms={showcaseRooms} selected={selectedRoom} onSelect={setSelectedRoom} />
+        <Dining selection={diningSelection} />
+        <Experiences activeSlide={experienceSlide} onSlideChange={setExperienceSlide} />
         <Contact />
         <CTA />
       </main>
 
       <Footer />
       <QuickDock />
+      {selectedInfo && <HotelInformationDialog selection={selectedInfo} onClose={() => setSelectedInfo(null)} />}
     </div>
   );
 }
