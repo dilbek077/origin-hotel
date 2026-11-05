@@ -243,3 +243,9 @@
     font-size: 11px;
   }
 }
+
+/* ─── Harita (map) — sayt scroll qilganda ekranga ustida turadi, qaytganda o‘rigina qaytadi ─── */
+.shilla-location-map {
+  position: sticky;
+  top: 1rem;
+}
