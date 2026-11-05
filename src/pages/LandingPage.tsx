@@ -543,7 +543,6 @@ function CTA() {
 function Footer() {
   const year = new Date().getFullYear();
   const links = [
-    { href: '#benefits', label: 'Biz haqimizda' },
     { href: '#contact', label: 'Joylashuv' },
     { href: '#rooms', label: 'Xonalar' },
     { href: '#dining', label: 'Restoran' },
