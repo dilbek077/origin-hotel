@@ -31,39 +31,27 @@
 .shilla-account-links { display: flex; gap: 22px; align-items: center; color: #514b48; font-size: 15px; }
 .shilla-account-links > a:hover, .shilla-hotel-link:hover { text-decoration: underline; text-underline-offset: 5px; }
 .shilla-language { position: relative; }
-.shilla-language > button { display: flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 10px; border: 1px solid #ddd; background: #f8f6f3; color: #514b48; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 150ms ease; }
-.shilla-language > button:hover { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
-.shilla-language > button:active { transform: translateY(0); }
+.shilla-language > button { display: flex; align-items: center; gap: 7px; }
 .shilla-language-options { position: absolute; right: 0; top: 30px; width: 155px; padding: 8px; background: white; border: 1px solid #ddd; box-shadow: 0 8px 20px #0001; z-index: 4; }
-.shilla-language-options button { display: block; width: 100%; padding: 8px 12px; text-align: left; border-radius: 8px; border: 0; background: transparent; color: #514b48; font-size: 14px; cursor: pointer; transition: all 150ms ease; text-align: left; }
-.shilla-language-options button:hover { background: #efe9db; color: #222; transform: translateX(4px); }
-.shilla-language-options button[aria-pressed='true'] { background: #302525; color: #fff; border-radius: 8px; }
+.shilla-language-options button { display: block; width: 100%; padding: 10px; text-align: left; }
+.shilla-language-options button:hover, .shilla-language-options button[aria-pressed='true'] { background: #f2ecdf; }
 .shilla-primary-nav { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: 0 auto; padding: 0 15px; max-width: 1120px; }
 .shilla-primary-nav > a { font-size: 17px; font-weight: 500; white-space: nowrap; color: #111; }
 .shilla-primary-nav > a:hover { color: #8c7550; }
-.shilla-primary-nav > a.shilla-nav-reserve { display: none; background: linear-gradient(135deg, #241e1e, #302525); color: #fff; padding: 13px 28px; border-radius: 14px; border: 0; cursor: pointer; box-shadow: 0 8px 20px #0001; transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease; text-decoration: none; text-align: center; }
-.shilla-primary-nav > a.shilla-nav-reserve:hover { background: linear-gradient(135deg, #3b2e2e, #4c3a32); box-shadow: 0 12px 24px #0002; transform: translateY(-2px); }
-.shilla-primary-nav > a.shilla-nav-reserve:active { transform: translateY(0); }
-.shilla-mobile-toggle { display: none; width: 36px; height: 36px; border-radius: 10px; border: 1px solid #ddd; background: #f8f6f3; color: #111; cursor: pointer; transition: all 150ms ease; }
-.shilla-mobile-toggle:hover { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
+.shilla-primary-nav > a.shilla-nav-reserve { display: none; background: #302525; color: #fff; padding: 13px 28px; }
+.shilla-mobile-toggle { display: none; }
 .shilla-site .shilla-reservation { min-height: 76px; display: grid; grid-template-columns: 170px minmax(160px, 1fr) minmax(300px, 1.2fr) minmax(190px, .9fr) 160px; align-items: center; gap: 24px; padding: 12px 40px; background: #d2c09a; color: #111; scroll-margin-top: 125px; font-size: 16px; }
 .shilla-booking-mode { display: grid; grid-template-columns: 1fr 1fr; border-radius: 40px; background: #fff; overflow: hidden; height: 40px; }
-.shilla-site .shilla-booking-mode button { padding: 0 12px; color: #8c8c8c; border-radius: 40px; font-size: 14px; transition: all 150ms ease; }
-.shilla-site .shilla-booking-mode button:hover { transform: translateY(-1px); }
-.shilla-site .shilla-booking-mode button.active { background: #202020; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px #0001; }
+.shilla-site .shilla-booking-mode button { padding: 0 14px; color: #8c8c8c; border-radius: 40px; font-size: 15px; }
 .shilla-site .shilla-booking-mode button.active { background: #202020; color: #fff; }
 .shilla-hotel-field { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
 .shilla-date-field { display: flex; align-items: center; justify-content: space-around; border-inline: 1px solid #ece3cf; padding-inline: 25px; gap: 8px; min-width: 0; }
 .shilla-date-field label { min-width: 0; }
 .shilla-date-field input { width: 100%; min-width: 0; max-width: 190px; background: transparent; border: 0; outline-offset: 4px; font: inherit; color: #111; color-scheme: light; padding-block: 6px; }
 .shilla-guest-field { position: relative; }
-.shilla-guest-field > button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; padding: 10px 14px; border-radius: 12px; border: 1px solid #ddd; background: #f8f6f3; color: #222; font-size: 15px; cursor: pointer; transition: all 150ms ease; }
-.shilla-guest-field > button:hover { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
-.shilla-guest-field > button:active { transform: translateY(0); }
-.shilla-reservation-submit { min-height: 56px; width: 100%; background: linear-gradient(135deg, #241e1e, #302525); color: #fff; font-size: 17px; font-weight: 600; border-radius: 16px; border: 0; outline: none; cursor: pointer; box-shadow: 0 8px 24px #0001; transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease; }
-.shilla-reservation-submit:hover { background: linear-gradient(135deg, #3b2e2e, #4c3a32); box-shadow: 0 12px 28px #0002; transform: translateY(-2px); }
-.shilla-reservation-submit:active { transform: translateY(0); box-shadow: 0 6px 16px #0001; }
-.shilla-reservation-submit:focus-visible { outline: 3px solid #8c7550; outline-offset: 4px; }
+.shilla-guest-field > button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px; text-align: left; }
+.shilla-reservation-submit { min-height: 50px; width: 100%; background: #302525; color: #fff; font-size: 17px; font-weight: 500; }
+.shilla-reservation-submit:hover { background: #4c3a32; }
 .shilla-site .shilla-hero { position: relative; height: calc(100vh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); height: calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); min-height: 180px; overflow: hidden; background: #a89b86; }
 .shilla-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 900ms ease; object-position: center; }
 .shilla-hero > img.is-active { opacity: 1; }
@@ -71,8 +59,7 @@
 .shilla-slider-controls { position: absolute; z-index: 2; left: 50px; right: 50px; bottom: 48px; display: flex; align-items: center; gap: 12px; color: white; }
 .shilla-slide-progress { height: 1px; background: #ffffff60; flex: 1; margin-right: 16px; }
 .shilla-slide-progress > span { display: block; height: 1px; background: #fff; transition: width 600ms ease; }
-.shilla-slider-controls button { width: 32px; height: 32px; display: grid; place-items: center; background: rgba(255,255,255,0.15); border: 0; color: white; border-radius: 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-slider-controls button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+.shilla-slider-controls button { width: 28px; height: 32px; display: grid; place-items: center; background: transparent; border: 0; color: white; }
 .shilla-site .shilla-packages { max-width: none; padding: 48px 40px 50px; margin: 0; scroll-margin-top: 170px; background: #fff; }
 .shilla-packages-heading { text-align: center; position: relative; margin-bottom: 44px; }
 .shilla-site .shilla-packages-heading h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 46px; line-height: 56px; font-weight: 400; letter-spacing: 0; margin: 0; }
@@ -95,8 +82,8 @@
 .shilla-site .hotel-ticker { border-top: 1px solid #e6ddce; }
 .shilla-site footer .font-bold { font-family: Georgia, serif; font-weight: 400; font-size: 24px; }
 .shilla-site .gallery-overlay { z-index: 100; font-family: 'Roboto Condensed', Arial, sans-serif; }
-.shilla-site .gallery-overlay > div { background: #fff; color: #222; border-radius: var(--radius); }
-.shilla-site .gallery-overlay button { border-radius: var(--radius); }
+.shilla-site .gallery-overlay > div { background: #fff; color: #222; border-radius: 0; }
+.shilla-site .gallery-overlay button { border-radius: 0; }
 @media (min-width: 1500px) {
   .shilla-account-links { gap: 22px; }
 }
@@ -230,9 +217,8 @@
 .shilla-dining-controls { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px 40px 0 0; }
 .shilla-dining-controls > span { color: #80756a; font-size: 14px; letter-spacing: .06em; }
 .shilla-dining-controls > div { display: flex; gap: 12px; }
-.shilla-dining-controls button { display: grid; place-items: center; width: 36px; height: 36px; color: #43392e; background: #f8f6f3; border: 1px solid #d5cec5; border-radius: 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-dining-controls button:hover:not(:disabled) { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
-.shilla-dining-controls button:disabled { opacity: .3; cursor: default; }
+.shilla-dining-controls button { display: grid; place-items: center; width: 38px; height: 38px; color: #43392e; background: transparent; border: 1px solid #d5cec5; }
+.shilla-dining-controls button:hover:not(:disabled) { background: #eee8df; }
 .shilla-dining-controls button:disabled { opacity: .3; cursor: default; }
 @media (min-width: 1101px) and (max-width: 1499px) {
   .shilla-header.is-scrolled .shilla-primary-nav { padding-left: 30px; padding-right: 30px; gap: 18px; }
@@ -316,8 +302,8 @@
 .shilla-site .shilla-experience-copy h2 { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 23px; font-weight: 400; line-height: 1.4; letter-spacing: 0; }
 .shilla-experience-copy p { margin-top: 6px; color: #808080; font-size: 17px; line-height: 1.5; }
 .shilla-experience-arrows { display: flex; flex-shrink: 0; gap: 12px; padding-top: 1px; }
-.shilla-experience-arrows button { display: grid; place-items: center; width: 34px; height: 34px; background: #f8f6f3; color: #5b5853; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-experience-arrows button:hover { background: #efe9db; color: #a58a60; border-color: #c9b7a1; transform: translateY(-1px); }
+.shilla-experience-arrows button { display: grid; place-items: center; width: 30px; height: 35px; background: transparent; color: #5b5853; }
+.shilla-experience-arrows button:hover { color: #a58a60; }
 @media (max-width: 1100px) {
   .marketing-page.shilla-site .shilla-experiences { --experience-width: 70vw; --experience-gap: 4vw; padding: 32px 0; }
   .shilla-experience-caption { gap: 12px; padding-top: 20px; }
@@ -488,9 +474,7 @@
 }
 /* Accessible disclosure navigation: full-width white hover panels. */
 .shilla-nav-item { display: flex; align-self: stretch; align-items: stretch; }
-.shilla-nav-trigger { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 14px; border: 0; background: #f8f6f3; color: #111; font: inherit; font-size: 16px; font-weight: 500; white-space: nowrap; border-radius: 12px; cursor: pointer; transition: all 150ms ease; }
-.shilla-nav-trigger:hover { background: #efe9db; color: #222; transform: translateY(-1px); }
-.shilla-nav-trigger::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #302525; transform: scaleX(0); transition: transform 160ms ease; border-radius: 3px 3px 0 0; }
+.shilla-nav-trigger { position: relative; display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 12px; border: 0; background: transparent; color: #111; font: inherit; font-size: 17px; font-weight: 500; white-space: nowrap; }
 .shilla-nav-trigger::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #302525; transform: scaleX(0); transition: transform 160ms ease; }
 .shilla-nav-trigger:hover::after, .shilla-nav-trigger[aria-expanded='true']::after { transform: scaleX(1); }
 .shilla-nav-chevron { display: none; }
@@ -520,19 +504,19 @@
 }
 /* Information-rich menus use headings and bulleted links in broad columns. */
 .shilla-nav-panel.is-grouped { padding: 34px 30px 38px; max-height: calc(100svh - 125px); overflow-y: auto; }
-.shilla-nav-groups { display: grid; max-width: 1540px; margin: 0 auto; gap: 36px; }
+.shilla-nav-groups { display: grid; width: 100%; max-width: 1120px; margin: 0 auto; padding-inline: 15px; gap: 36px; }
 .shilla-nav-group { min-width: 0; }
 .shilla-nav-group h3 { margin: 0 0 12px; font-size: 17px; line-height: 1.5; font-weight: 500; }
 .shilla-nav-group h3 > a, .shilla-nav-group h3 > button { font: inherit; color: #222; text-align: left; }
 .shilla-nav-group ul { margin: 0; padding: 0; list-style: none; }
 .shilla-nav-group li { position: relative; padding-left: 12px; font-size: 17px; line-height: 1.6; color: #686868; }
 .shilla-nav-group li::before { content: '·'; position: absolute; left: 0; top: 4px; }
-.shilla-nav-group li > a, .shilla-nav-group li > button { display: inline-block; padding: 6px 14px; font: inherit; color: inherit; text-align: left; background: transparent; border: 0; }
-.shilla-nav-group a:hover, .shilla-nav-group button:hover { background: #f8f6f3; color: #8b704a; transform: translateX(4px); text-decoration: none; border-radius: 10px; }
+.shilla-nav-group li > a, .shilla-nav-group li > button { display: inline-block; padding: 4px 0; font: inherit; color: inherit; text-align: left; background: transparent; border: 0; }
+.shilla-nav-group a:hover, .shilla-nav-group button:hover { color: #8b704a; text-decoration: underline; text-underline-offset: 4px; }
 .shilla-nav-panel-links > span > a { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 4px 8px; color: #222; font-size: 17px; line-height: 1.5; font-weight: 500; text-transform: uppercase; }
 .shilla-nav-panel-links > span > a:hover { color: #8b704a; text-decoration: underline; text-underline-offset: 5px; }
 body:has(.hotel-information-dialog) [data-slot='dialog-overlay'] { z-index: 100; }
-.hotel-information-dialog { z-index: 101; max-height: calc(100svh - 40px); overflow-y: auto; border-radius: 1rem; background: #fff; color: #29231e; font-family: 'Roboto Condensed', Arial, sans-serif; }
+.hotel-information-dialog { z-index: 101; max-height: calc(100svh - 40px); overflow-y: auto; border-radius: 0; background: #fff; color: #29231e; font-family: 'Roboto Condensed', Arial, sans-serif; }
 .hotel-information-close { position: absolute; right: 12px; top: 12px; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px; background: #fff; color: #302525; border: 1px solid #ddd5c9; }
 .hotel-information-image { display: block; width: 100%; aspect-ratio: 16 / 8; object-fit: cover; background: #eee9df; }
 .hotel-information-dialog .hotel-information-title { font-family: Georgia, serif; font-size: 28px; line-height: 1.3; font-weight: 400; }
@@ -599,8 +583,7 @@ body:has(.hotel-information-dialog) [data-slot='dialog-overlay'] { z-index: 100;
   .shilla-nav-panel[data-state='open'] .shilla-nav-group,
   .shilla-nav-panel[data-state='open'] .shilla-nav-panel-links > span { animation: none; }
 }
-.shilla-hotel-link > a, .shilla-hotel-link > button { display: inline-flex; align-items: center; padding: 6px 12px; background: #f8f6f3; border: 0; color: inherit; font: inherit; border-radius: 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-hotel-link > a:hover, .shilla-hotel-link > button:hover { background: #efe9db; color: #927b58; transform: translateY(-1px); }
+.shilla-hotel-link > a, .shilla-hotel-link > button { display: inline-flex; align-items: center; padding: 0; background: transparent; border: 0; color: inherit; font: inherit; }
 .shilla-hotel-link > a:hover, .shilla-hotel-link > button:hover { color: #927b58; }
 .shilla-mobile-accounts { display: none; }
 @media (min-width: 768px) and (max-width: 1100px) {
@@ -613,9 +596,8 @@ body:has(.hotel-information-dialog) [data-slot='dialog-overlay'] { z-index: 100;
   .shilla-mobile-accounts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 20px 0 10px; border-bottom: 1px solid #eee; }
   .shilla-mobile-accounts > a { padding: 10px; border: 1px solid #e6dfd5; font-size: 16px; text-align: center; color: #5b4834; }
   .shilla-mobile-languages { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 7px; padding-top: 8px; }
-  .shilla-mobile-languages > button { padding: 7px 12px; background: #f8f6f3; border: 1px solid #e6dfd5; border-radius: 10px; font-size: 14px; color: #625247; cursor: pointer; transition: all 150ms ease; }
-  .shilla-mobile-languages > button:hover { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
-  .shilla-mobile-languages > button[aria-pressed='true'] { color: #fff; background: #302525; border-color: #302525; border-radius: 10px; }
+  .shilla-mobile-languages > button { padding: 7px 9px; background: #f8f6f3; border: 1px solid #e6dfd5; font-size: 14px; color: #625247; }
+  .shilla-mobile-languages > button[aria-pressed='true'] { color: #fff; background: #302525; border-color: #302525; }
 }
 /* Hotel selector sized to the supplied 1600 × 794 desktop reference. */
 body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; background: #0006; }
@@ -630,14 +612,14 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   padding: 0;
   overflow: hidden;
   border: 1px solid #ddd;
-  border-radius: 1rem;
+  border-radius: 0;
   background: #fff;
   color: #222;
   font-family: 'Roboto Condensed', Arial, sans-serif;
 }
 .hotel-overview-tabs { display: grid; grid-template-columns: calc(182 * var(--overview-unit)) minmax(0, 1fr); gap: 0; width: 100%; height: 100%; }
-.hotel-overview-tab-list { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; width: 100%; height: 100%; padding: 0; gap: 0; border-radius: 0.75rem; background: #f7f7f7; }
-.hotel-overview-tab { flex: none; justify-content: flex-start; min-height: calc(92 * var(--overview-unit)); height: auto; padding: calc(24 * var(--overview-unit)) calc(48 * var(--overview-unit)); border: 0; border-radius: 0.5rem; background: transparent; color: #999; font-size: calc(18 * var(--overview-unit)); font-weight: 500; box-shadow: none; }
+.hotel-overview-tab-list { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; width: 100%; height: 100%; padding: 0; gap: 0; border-radius: 0; background: #f7f7f7; }
+.hotel-overview-tab { flex: none; justify-content: flex-start; min-height: calc(92 * var(--overview-unit)); height: auto; padding: calc(24 * var(--overview-unit)) calc(48 * var(--overview-unit)); border: 0; border-radius: 0; background: transparent; color: #999; font-size: calc(18 * var(--overview-unit)); font-weight: 500; box-shadow: none; }
 .hotel-overview-tab[data-state='active'] { background: #fff; color: #111; box-shadow: none; }
 .hotel-overview-content { min-width: 0; min-height: 0; height: 100%; margin: 0; padding: calc(10 * var(--overview-unit)) calc(60 * var(--overview-unit)) calc(40 * var(--overview-unit)) calc(40 * var(--overview-unit)); overflow-y: auto; }
 .hotel-overview-row { display: grid; grid-template-columns: calc(220 * var(--overview-unit)) minmax(0, 1fr); gap: calc(30 * var(--overview-unit)); padding: calc(48 * var(--overview-unit)) 0; border-bottom: 1px solid #eee; }
@@ -666,8 +648,7 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   .hotel-overview-content { padding-inline: 28px; }
 }
 @media (max-width: 767px) {
-  .shilla-mobile-overview { grid-column: 1 / -1; padding: 12px 14px; background: #f8f6f3; border: 1px solid #e6dfd5; border-radius: 12px; color: #5b4834; font-size: 16px; cursor: pointer; transition: all 150ms ease; text-align: center; }
-  .shilla-mobile-overview:hover { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
+  .shilla-mobile-overview { grid-column: 1 / -1; padding: 12px 10px; background: #f8f6f3; border: 1px solid #e6dfd5; color: #5b4834; font-size: 16px; }
   .hotel-overview-dialog { width: calc(100vw - 32px); height: min(600px, calc(100dvh - 80px)); max-height: calc(100dvh - 80px); }
   .hotel-overview-tabs { grid-template-columns: 84px minmax(0, 1fr); }
   .hotel-overview-tab { min-height: 74px; padding: 18px 14px; font-size: 16px; }
@@ -690,31 +671,29 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
 .shilla-guest-panel { position: absolute; top: 100%; left: 50px; right: 50px; z-index: 1; display: flex; flex-direction: column; min-height: 352px; padding: 56px 50px 38px; max-height: calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - 16px); overflow-y: auto; overscroll-behavior: contain; background: #fff; color: #555; box-shadow: 0 12px 28px #0001; font-size: 18px; animation: guest-panel-enter 180ms ease-out; }
 .shilla-guest-panel:focus { outline: none; }
 .shilla-guest-panel > * { flex-shrink: 0; }
-.shilla-guest-close { position: absolute; right: 15px; top: 12px; width: 32px; height: 32px; display: grid; place-items: center; color: #777; background: #f8f6f3; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-guest-close:hover { background: #efe9db; color: #302525; transform: rotate(90deg); }
+.shilla-guest-close { position: absolute; right: 15px; top: 12px; width: 30px; height: 30px; display: grid; place-items: center; color: #777; }
 .shilla-guest-room { display: grid; grid-template-columns: minmax(120px, 1fr) repeat(3, minmax(200px, 240px)); align-items: center; gap: 60px; padding: 14px 0 30px; border-bottom: 1px solid #eaeaea; }
 .shilla-guest-room + .shilla-guest-room { padding-top: 20px; }
 .shilla-guest-room-heading h3 { font: inherit; font-size: 20px; color: #222; margin: 0; }
 .shilla-guest-room-heading h3:focus { outline: 1px solid #a58a60; outline-offset: 5px; }
-.shilla-guest-remove { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 14px; color: #888; background: #f8f6f3; border: 1px solid #ddd; border-radius: 10px; padding: 4px 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-guest-remove:hover { background: #efe9db; color: #302525; border-color: #c9b7a1; transform: translateY(-1px); }
+.shilla-guest-remove { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 14px; color: #888; }
+.shilla-guest-remove:hover { color: #302525; }
 .shilla-guest-counter { display: grid; grid-template-columns: minmax(65px, 1fr) 40px 32px 40px; align-items: center; gap: 12px; }
-.shilla-guest-counter > button { width: 38px; height: 38px; border: 1px solid #ddd; border-radius: 12px; display: grid; place-items: center; background: #f8f6f3; color: #333; transition: border-color 150ms, background 150ms; cursor: pointer; }
-.shilla-guest-counter > button:hover:not(:disabled) { border-color: #8b7b68; background: #efe9db; transform: translateY(-1px); }
+.shilla-guest-counter > button { width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #333; transition: border-color 150ms, background 150ms; }
+.shilla-guest-counter > button:hover:not(:disabled) { border-color: #8b7b68; background: #f7f4ee; }
 .shilla-guest-counter > button:disabled { background: #f8f8f8; color: #ddd; border-color: #f8f8f8; cursor: not-allowed; }
 .shilla-guest-counter > output { text-align: center; font-size: 23px; font-variant-numeric: tabular-nums; }
 .shilla-guest-panel-note { display: flex; justify-content: space-between; gap: 25px; align-items: flex-start; padding-top: 22px; }
 .shilla-guest-panel-note p { margin: 0; color: #888; font-size: 16px; line-height: 1.6; }
 .shilla-guest-panel-note small { display: inline; margin-left: 10px; font-size: 14px; color: #999; }
-.shilla-guest-add { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; padding: 6px 14px; border-radius: 12px; border: 1px solid #ddd; background: #f8f6f3; color: #302525; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 150ms ease; }
-.shilla-guest-add:hover:not(:disabled) { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
+.shilla-guest-add { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; padding: 3px 0; }
+.shilla-guest-add:hover:not(:disabled) { color: #302525; }
 .shilla-guest-add:disabled { color: #bbb; cursor: not-allowed; }
 .shilla-guest-actions { display: flex; justify-content: center; gap: 10px; margin-top: auto; padding-top: 48px; }
-.shilla-guest-actions > button { min-height: 56px; width: 225px; border: 1px solid #b5aba2; background: #fff; color: #222; font-size: 18px; font-weight: 600; border-radius: 16px; cursor: pointer; transition: all 150ms ease; }
-.shilla-guest-actions > button:last-child { color: #fff; background: #857661; border-color: #857661; border-radius: 16px; }
-.shilla-guest-actions > button:hover { background: #f7f4ee; transform: translateY(-2px); }
-.shilla-guest-actions > button:last-child:hover { background: #71624f; transform: translateY(-2px); }
-.shilla-guest-actions > button:active { transform: translateY(0); }
+.shilla-guest-actions > button { min-height: 70px; width: 225px; border: 1px solid #b5aba2; background: #fff; color: #222; font-size: 20px; }
+.shilla-guest-actions > button:last-child { color: #fff; background: #857661; border-color: #857661; }
+.shilla-guest-actions > button:hover { background: #f7f4ee; }
+.shilla-guest-actions > button:last-child:hover { background: #71624f; }
 .shilla-guest-panel button:focus-visible { outline: 2px solid #8c7550; outline-offset: 4px; }
 @keyframes guest-panel-enter { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 1499px) {
@@ -782,8 +761,7 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
 /* Two-month date range calendar, measured from the supplied desktop reference. */
 .shilla-date-picker { position: static; }
 .shilla-date-triggers { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-.shilla-date-triggers > button { display: flex; align-items: center; gap: 12px; white-space: nowrap; padding: 8px 14px; font: inherit; border-radius: 12px; border: 1px solid #ddd; background: #f8f6f3; color: #222; cursor: pointer; transition: all 150ms ease; }
-.shilla-date-triggers > button:hover { background: #efe9db; border-color: #c9b7a1; transform: translateY(-1px); }
+.shilla-date-triggers > button { display: flex; align-items: center; gap: 18px; white-space: nowrap; padding: 6px 0; font: inherit; }
 .shilla-date-triggers svg { flex-shrink: 0; }
 .shilla-calendar-panel {
   --calendar-unit: 1px;
@@ -804,8 +782,8 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
 .shilla-calendar-weekdays { margin-bottom: 16px; color: #888; }
 .shilla-calendar-days { grid-auto-rows: 90px; }
 .shilla-calendar-day { position: relative; height: 56px; display: grid; place-items: center; isolation: isolate; }
-.shilla-calendar-day > button { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; color: inherit; z-index: 1; font-size: 18px; cursor: pointer; transition: all 150ms ease; }
-.shilla-calendar-day > button:hover:not(:disabled) { background: #f8f6f3; box-shadow: inset 0 0 0 1px #857661; transform: translateY(-1px); }
+.shilla-calendar-day > button { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; color: inherit; z-index: 1; font-size: 20px; }
+.shilla-calendar-day > button:hover:not(:disabled) { box-shadow: inset 0 0 0 1px #857661; }
 .shilla-calendar-day > button:focus-visible { outline: 2px solid #857661; outline-offset: 2px; }
 .shilla-calendar-day > button:disabled { color: #c5c5c5; cursor: not-allowed; }
 .shilla-calendar-panel .is-sunday { color: #a23c45; }
@@ -815,14 +793,11 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
 .shilla-calendar-day.is-range-end::before { right: calc(50% - 31px); border-radius: 0 32px 32px 0; }
 .shilla-calendar-day.is-range-start.is-range-end::before { left: calc(50% - 31px); right: calc(50% - 31px); border-radius: 32px; }
 .shilla-calendar-day small { position: absolute; top: 60px; font-size: 14px; color: #999; }
-.shilla-calendar-prev, .shilla-calendar-next { position: absolute; top: 50%; width: 38px; height: 38px; display: grid; place-items: center; color: #222; background: #f8f6f3; border: 1px solid #ddd; border-radius: 12px; cursor: pointer; transition: all 150ms ease; }
+.shilla-calendar-prev, .shilla-calendar-next { position: absolute; top: 50%; width: 40px; height: 44px; display: grid; place-items: center; color: #222; }
 .shilla-calendar-prev { left: 35px; }
 .shilla-calendar-next { right: 35px; }
-.shilla-calendar-prev:hover:not(:disabled) { background: #efe9db; border-color: #c9b7a1; transform: translateX(-2px); }
-.shilla-calendar-next:hover:not(:disabled) { background: #efe9db; border-color: #c9b7a1; transform: translateX(2px); }
 .shilla-calendar-prev:disabled { color: #bbb; cursor: not-allowed; }
-.shilla-calendar-close { position: absolute; top: 10px; right: 12px; display: grid; place-items: center; width: 32px; height: 32px; color: #888; background: #f8f6f3; border: 1px solid #ddd; border-radius: 10px; cursor: pointer; transition: all 150ms ease; }
-.shilla-calendar-close:hover { background: #efe9db; color: #302525; transform: rotate(90deg); }
+.shilla-calendar-close { position: absolute; top: 10px; right: 12px; display: grid; place-items: center; width: 30px; height: 30px; color: #888; }
 .shilla-calendar-note { font-size: 14px; color: #888; margin: 18px 50px 0; }
 .shilla-calendar-note > span { margin-left: 10px; }
 @media (min-width: 1101px) {
@@ -881,3 +856,19 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   .shilla-calendar-note > span { display: block; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .shilla-calendar-panel { animation: none; } }
+
+/* Align dropdown content with the centered desktop navigation. */
+@media (min-width: 768px) {
+  .shilla-site .shilla-nav-panel .shilla-nav-groups {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 15px;
+    box-sizing: border-box;
+  }
+  .shilla-site .shilla-nav-panel .shilla-nav-group {
+    width: fit-content;
+    max-width: 100%;
+    justify-self: center;
+  }
+}
