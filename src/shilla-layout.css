@@ -38,7 +38,9 @@
 .shilla-primary-nav { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: 0 auto; padding: 0 15px; max-width: 1120px; }
 .shilla-primary-nav > a { font-size: 17px; font-weight: 500; white-space: nowrap; color: #111; }
 .shilla-primary-nav > a:hover { color: #8c7550; }
-.shilla-primary-nav > a.shilla-nav-reserve { display: none; background: #302525; color: #fff; padding: 13px 28px; }
+.shilla-primary-nav > a.shilla-nav-reserve { display: none; background: linear-gradient(135deg, #241e1e, #302525); color: #fff; padding: 13px 28px; border-radius: 14px; border: 0; cursor: pointer; box-shadow: 0 8px 20px #0001; transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease; text-decoration: none; text-align: center; }
+.shilla-primary-nav > a.shilla-nav-reserve:hover { background: linear-gradient(135deg, #3b2e2e, #4c3a32); box-shadow: 0 12px 24px #0002; transform: translateY(-2px); }
+.shilla-primary-nav > a.shilla-nav-reserve:active { transform: translateY(0); }
 .shilla-mobile-toggle { display: none; }
 .shilla-site .shilla-reservation { min-height: 76px; display: grid; grid-template-columns: 170px minmax(160px, 1fr) minmax(300px, 1.2fr) minmax(190px, .9fr) 160px; align-items: center; gap: 24px; padding: 12px 40px; background: #d2c09a; color: #111; scroll-margin-top: 125px; font-size: 16px; }
 .shilla-booking-mode { display: grid; grid-template-columns: 1fr 1fr; border-radius: 40px; background: #fff; overflow: hidden; height: 40px; }
@@ -50,8 +52,10 @@
 .shilla-date-field input { width: 100%; min-width: 0; max-width: 190px; background: transparent; border: 0; outline-offset: 4px; font: inherit; color: #111; color-scheme: light; padding-block: 6px; }
 .shilla-guest-field { position: relative; }
 .shilla-guest-field > button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 15px; text-align: left; }
-.shilla-reservation-submit { min-height: 50px; width: 100%; background: #302525; color: #fff; font-size: 17px; font-weight: 500; }
-.shilla-reservation-submit:hover { background: #4c3a32; }
+.shilla-reservation-submit { min-height: 56px; width: 100%; background: linear-gradient(135deg, #241e1e, #302525); color: #fff; font-size: 17px; font-weight: 600; border-radius: 16px; border: 0; outline: none; cursor: pointer; box-shadow: 0 8px 24px #0001; transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease; }
+.shilla-reservation-submit:hover { background: linear-gradient(135deg, #3b2e2e, #4c3a32); box-shadow: 0 12px 28px #0002; transform: translateY(-2px); }
+.shilla-reservation-submit:active { transform: translateY(0); box-shadow: 0 6px 16px #0001; }
+.shilla-reservation-submit:focus-visible { outline: 3px solid #8c7550; outline-offset: 4px; }
 .shilla-site .shilla-hero { position: relative; height: calc(100vh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); height: calc(100dvh - var(--intro-header-height, 125px) - var(--intro-booking-height, 76px) - var(--intro-ticker-height, 57px)); min-height: 180px; overflow: hidden; background: #a89b86; }
 .shilla-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 900ms ease; object-position: center; }
 .shilla-hero > img.is-active { opacity: 1; }
