@@ -19,7 +19,92 @@ type SubLink = {
 type NavGroup = { heading: SubLink; links: SubLink[] };
 type NavMenu = { label: string; links?: SubLink[]; groups?: NavGroup[] };
 
-const MENUS: NavMenu[] = [];
+const MENUS: NavMenu[] = [
+  { label: 'Biz haqimizda', groups: [
+    { heading: { label: 'Origin Hotel', href: '#benefits' }, links: [
+      { label: 'Mehmonxona afzalliklari', href: '#benefits' },
+      { label: 'Xonalar va narxlar', href: '#rooms' },
+    ] },
+    { heading: { label: 'Joylashuv', href: '#contact' }, links: [
+      { label: 'Manzil va xarita', href: '#contact' },
+      { label: 'Yo‘l ma’lumotlari', href: '#transport-details', openDirections: true },
+    ] },
+    { heading: { label: 'Qabulxona', href: '#benefits', infoKey: 'reception' }, links: [
+      { label: 'Qabulxona: 24/7', href: '#benefits', infoKey: 'reception' },
+      { label: 'Email yuborish', href: 'mailto:reservations@originhotel.uz' },
+    ] },
+  ] },
+  { label: 'Takliflar', links: [
+    { label: 'Xonalar va narxlar', href: '#rooms' },
+    { label: 'Bron qilish', href: '#reservation' },
+    { label: 'Afzalliklar', href: '#benefits' },
+  ] },
+  { label: 'Xonalar', groups: [
+    { heading: { label: 'Standart', href: '#rooms', roomType: 'Standart' }, links: [
+      { label: '28 m² · 2 kishi', href: '#rooms', roomType: 'Standart' },
+      { label: 'Bepul nonushta', href: '#rooms', roomType: 'Standart' },
+    ] },
+    { heading: { label: 'Deluxe', href: '#rooms', roomType: 'Deluxe' }, links: [
+      { label: '42 m² · 2 kishi', href: '#rooms', roomType: 'Deluxe' },
+      { label: 'Balkon va mini-bar', href: '#rooms', roomType: 'Deluxe' },
+    ] },
+    { heading: { label: 'Suite', href: '#rooms', roomType: 'Suite' }, links: [
+      { label: '68 m² · 4 kishi', href: '#rooms', roomType: 'Suite' },
+      { label: 'Jakuzi va VIP xizmat', href: '#rooms', roomType: 'Suite' },
+    ] },
+    { heading: { label: 'Presidential', href: '#rooms', roomType: 'Presidential' }, links: [
+      { label: '120 m² · 4 kishi', href: '#rooms', roomType: 'Presidential' },
+      { label: 'Shaxsiy terras va batler', href: '#rooms', roomType: 'Presidential' },
+    ] },
+  ] },
+  { label: 'Restoran', groups: [
+    { heading: { label: 'Restoran haqida', href: '#dining', diningSlide: 0 }, links: [
+      { label: 'Restoran muhiti', href: '#dining', diningSlide: 0 },
+      { label: 'Bog‘lanish', href: '#contact' },
+    ] },
+    { heading: { label: 'Nonushta', href: '#dining', diningSlide: 1 }, links: [
+      { label: 'Standart xona nonushtasi', href: '#dining', diningSlide: 1 },
+      { label: 'Xona tafsilotlari', href: '#rooms', roomType: 'Standart' },
+    ] },
+    { heading: { label: 'Shved stoli', href: '#dining', diningSlide: 2 }, links: [
+      { label: 'Deluxe xona qulayliklari', href: '#rooms', roomType: 'Deluxe' },
+      { label: 'Restoran bilan bog‘lanish', href: '#contact' },
+    ] },
+  ] },
+  { label: 'Qulayliklar', groups: [
+    { heading: { label: 'Basseyn', href: '#experiences', experienceSlide: 1 }, links: [
+      { label: 'Basseyn haqida', href: '#benefits', infoKey: 'pool' },
+      { label: 'Suratlarni ko‘rish', href: '#experiences', experienceSlide: 1 },
+    ] },
+    { heading: { label: 'Fitnes', href: '#benefits', infoKey: 'fitness' }, links: [
+      { label: 'Fitnes zali', href: '#benefits', infoKey: 'fitness' },
+    ] },
+    { heading: { label: 'SPA', href: '#benefits', infoKey: 'spa' }, links: [
+      { label: 'SPA haqida', href: '#benefits', infoKey: 'spa' },
+    ] },
+    { heading: { label: 'Mehmonxona xizmatlari', href: '#benefits' }, links: [
+      { label: 'Bepul Wi-Fi', href: '#benefits', infoKey: 'wifi' },
+      { label: 'Bepul parking', href: '#benefits', infoKey: 'parking' },
+      { label: 'Aeroport transferi', href: '#benefits', infoKey: 'transfer' },
+      { label: 'Qabulxona: 24/7', href: '#benefits', infoKey: 'reception' },
+    ] },
+    { heading: { label: 'Restoran', href: '#dining' }, links: [
+      { label: 'Nonushta', href: '#dining', diningSlide: 1 },
+      { label: 'Shved stoli', href: '#dining', diningSlide: 2 },
+    ] },
+  ] },
+  { label: 'Galereya', links: [
+    { label: 'Tashqi ko‘rinish', href: '#experiences', experienceSlide: 0 },
+    { label: 'Basseyn', href: '#experiences', experienceSlide: 1 },
+    { label: 'Qabulxona', href: '#experiences', experienceSlide: 2 },
+  ] },
+  { label: 'Aloqa', links: [
+    { label: 'Manzil va xarita', href: '#contact' },
+    { label: 'Yo‘l ma’lumotlari', href: '#transport-details', openDirections: true },
+    { label: '+998 71 200 20 20', href: 'tel:+998712002020' },
+    { label: 'Email yuborish', href: 'mailto:reservations@originhotel.uz' },
+  ] },
+];
 
 type Props = {
   onRoomSelect: (type: string) => void;
