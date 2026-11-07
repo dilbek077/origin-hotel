@@ -220,29 +220,21 @@ export default function Settings() {
     showSaveSuccess('Shrift o‘lchami yangilandi!');
   };
 
-  // Styling helper classes
-  const cardClass = isDark
-    ? 'bg-slate-900 rounded-2xl border border-slate-800 shadow-sm overflow-hidden'
-    : 'bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden';
+  // Styling helper classes (semantic tokens — work in both light and dark mode automatically)
+  const cardClass = 'bg-card text-card-foreground rounded-2xl border border-border shadow-sm overflow-hidden';
 
-  const cardHeaderClass = isDark
-    ? 'px-6 py-4 border-b border-slate-800 flex items-center justify-between'
-    : 'px-6 py-4 border-b border-gray-100 flex items-center justify-between';
+  const cardHeaderClass = 'px-6 py-4 border-b border-border flex items-center justify-between';
 
-  const labelClass = isDark
-    ? 'block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5'
-    : 'block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5';
+  const labelClass = 'block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5';
 
-  const inputClass = isDark
-    ? 'w-full px-4 py-2.5 text-sm border border-slate-700 bg-slate-800/90 text-white rounded-xl outline-none focus:ring-2 focus:ring-sky-500 transition'
-    : 'w-full px-4 py-2.5 text-sm border border-gray-200 bg-white text-gray-900 rounded-xl outline-none focus:ring-2 focus:ring-sky-500 transition';
+  const inputClass = 'w-full px-4 py-2.5 text-sm border border-border bg-background text-foreground rounded-xl outline-none focus:ring-2 focus:ring-sky-500 transition';
 
   const tabsConfig = [
     { id: 'profil' as const, label: t('nav.profile'), icon: UserCog, desc: "Shaxsiy profil va mehmonxona ma'lumotlari" },
     { id: 'bildirishnomalar' as const, label: t('nav.notifications'), icon: Bell, desc: 'Ogohlantirishlar va kanallar' },
   ];
   return (
-    <div className={isDark ? 'p-6 space-y-6 bg-slate-950 text-slate-100 min-h-screen' : 'p-6 space-y-6 bg-gray-50 text-gray-900 min-h-screen'}>
+    <div className="p-6 space-y-6 bg-background text-foreground min-h-screen">
       {/* Sahifa sarlavhasi va bildirishnoma tosti */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -250,7 +242,7 @@ export default function Settings() {
             <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20">
               {t('nav.system')}
             </span>
-            <h1 className={isDark ? 'text-2xl font-bold text-white' : 'text-2xl font-bold text-gray-900'}>
+            <h1 className="text-2xl font-bold text-foreground">
               {t('nav.settings')}
             </h1>
           </div>
@@ -268,7 +260,7 @@ export default function Settings() {
       </div>
 
       {/* 5 ta sub-tab navigation paneli (Sidebar bilan sinxron) */}
-      <div className={isDark ? 'p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800 flex flex-wrap gap-1 shadow-sm' : 'p-1.5 bg-white rounded-2xl border border-gray-200 flex flex-wrap gap-1 shadow-sm'}>
+      <div className="p-1.5 bg-card rounded-2xl border border-border flex flex-wrap gap-1 shadow-sm">
         {tabsConfig.map((tabItem) => {
           const isActive = currentTab === tabItem.id;
           const IconComponent = tabItem.icon;
@@ -289,7 +281,7 @@ export default function Settings() {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/70',
               ].join(' ')}
             >
-              <IconComponent size={17} className={isActive ? (isDark ? 'text-sky-400' : 'text-sky-600') : 'opacity-70'} />
+              <IconComponent size={17} className={isActive ? 'text-sky-500' : 'opacity-70'} />
               <span>{tabItem.label}</span>
             </button>
           );
@@ -316,7 +308,7 @@ export default function Settings() {
 
               <div className="p-6 space-y-5">
                 {/* Avatar blok */}
-                <div className={isDark ? 'flex items-center gap-4 p-4 bg-slate-800/60 rounded-xl border border-slate-700/60' : 'flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100'}>
+                <div className="flex items-center gap-4 p-4 bg-muted/40 rounded-xl border border-border">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-sky-700 flex items-center justify-center text-white text-2xl font-bold shadow-md">
                     {profileForm.fullName.charAt(0)}
                   </div>
@@ -581,7 +573,7 @@ export default function Settings() {
                         setSecurityForm((prev) => ({ ...prev, twoFactorEnabled: !prev.twoFactorEnabled }))
                       }
                       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                        securityForm.twoFactorEnabled ? 'bg-emerald-500' : 'bg-slate-700'
+                        securityForm.twoFactorEnabled ? 'bg-emerald-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                       }`}
                     >
                       <span
@@ -783,7 +775,7 @@ export default function Settings() {
                         onClick={() => handleAccentChange(col.id)}
                         className={`w-9 h-9 rounded-xl ${col.bg} flex items-center justify-center transition-all cursor-pointer shadow-sm ${
                           accentColor === col.id
-                            ? `ring-3 ring-white ring-offset-2 ${isDark ? 'ring-offset-slate-900' : 'ring-offset-white'} scale-110`
+                            ? `ring-3 ring-white ring-offset-2 ring-offset-background scale-110`
                             : 'opacity-80 hover:opacity-100'
                         }`}
                         title={col.name}
@@ -843,7 +835,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="p-6 divide-y divide-slate-800/60 dark:divide-slate-800">
+            <div className="p-6 divide-y divide-border">
               {/* Yangi bron */}
               <div className="py-4 first:pt-0 flex items-center justify-between">
                 <div>
@@ -856,7 +848,7 @@ export default function Settings() {
                   type="button"
                   onClick={() => setNotifications({ ...notifications, newBooking: !notifications.newBooking })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.newBooking ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.newBooking ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.newBooking ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -876,7 +868,7 @@ export default function Settings() {
                   onClick={() => setNotifications({ ...notifications, bookingCancel: !notifications.bookingCancel })}
                   aria-pressed={notifications.bookingCancel}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.bookingCancel ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.bookingCancel ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.bookingCancel ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -895,7 +887,7 @@ export default function Settings() {
                   type="button"
                   onClick={() => setNotifications({ ...notifications, checkInOut: !notifications.checkInOut })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.checkInOut ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.checkInOut ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.checkInOut ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -914,7 +906,7 @@ export default function Settings() {
                   type="button"
                   onClick={() => setNotifications({ ...notifications, roomStatus: !notifications.roomStatus })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.roomStatus ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.roomStatus ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.roomStatus ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -933,7 +925,7 @@ export default function Settings() {
                   type="button"
                   onClick={() => setNotifications({ ...notifications, financeAlert: !notifications.financeAlert })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.financeAlert ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.financeAlert ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.financeAlert ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -955,7 +947,7 @@ export default function Settings() {
                   type="button"
                   onClick={() => setNotifications({ ...notifications, soundAlert: !notifications.soundAlert })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.soundAlert ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.soundAlert ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.soundAlert ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -977,7 +969,7 @@ export default function Settings() {
                   type="button"
                   onClick={() => setNotifications({ ...notifications, telegramAlert: !notifications.telegramAlert })}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.telegramAlert ? 'bg-sky-500' : 'bg-slate-700'
+                    notifications.telegramAlert ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                   }`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.telegramAlert ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -1049,7 +1041,7 @@ export default function Settings() {
                       setScreenSettings({ ...screenSettings, kioskMode: !screenSettings.kioskMode })
                     }
                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      screenSettings.kioskMode ? 'bg-sky-500' : 'bg-slate-700'
+                      screenSettings.kioskMode ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
                     }`}
                   >
                     <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${screenSettings.kioskMode ? 'translate-x-5' : 'translate-x-0'}`} />

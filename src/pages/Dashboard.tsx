@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   CalendarDays,
@@ -175,7 +175,7 @@ export default function Dashboard() {
                 <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {formatCurrency(totalIncome || 128450000)}
                 </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="flex items-center font-semibold text-emerald-400">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +20.1%
@@ -199,7 +199,7 @@ export default function Dashboard() {
                 <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   {occupancyPercent}%
                 </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="flex items-center font-semibold text-foreground">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +4.2%
@@ -223,7 +223,7 @@ export default function Dashboard() {
                 <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
                   +{monthBookings || bookings.length}
                 </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="flex items-center font-semibold text-foreground">
                     <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
                     +18.5%
@@ -245,10 +245,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
-                  {todayCheckIns} <span className="text-sm font-normal text-slate-400">kelish</span> / {todayCheckOuts} <span className="text-sm font-normal text-slate-400">ketish</span>
+                  {todayCheckIns} <span className="text-sm font-normal text-muted-foreground">kelish</span> / {todayCheckOuts} <span className="text-sm font-normal text-muted-foreground">ketish</span>
                 </div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                  <Badge variant="outline" className="h-4 border-slate-600 bg-slate-800 text-[10px] px-1 font-normal text-slate-200">
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Badge variant="outline" className="h-4 border-border bg-muted text-[10px] px-1 font-normal text-foreground">
                     Faol
                   </Badge>
                   <span>98% kutib olish darajasi</span>
@@ -369,10 +369,10 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
                   {roomStatuses.map((item) => (
-                    <div key={item.label} className="flex items-center justify-between rounded-md p-1.5 text-xs hover:bg-[#1a1d20]/70">
-                      <span className="flex items-center gap-1.5 text-slate-300">
+                    <div key={item.label} className="flex items-center justify-between rounded-md p-1.5 text-xs hover:bg-muted/50">
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
                         <span className={`h-2.5 w-2.5 rounded-full ${item.dot}`} />
                         {item.label}
                       </span>
