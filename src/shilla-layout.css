@@ -504,7 +504,7 @@
 }
 /* Information-rich menus use headings and bulleted links in broad columns. */
 .shilla-nav-panel.is-grouped { padding: 34px 30px 38px; max-height: calc(100svh - 125px); overflow-y: auto; }
-.shilla-nav-groups { display: grid; max-width: 1540px; margin: 0 auto; gap: 36px; }
+.shilla-nav-groups { display: grid; width: 100%; max-width: 1120px; margin: 0 auto; padding-inline: 15px; gap: 36px; }
 .shilla-nav-group { min-width: 0; }
 .shilla-nav-group h3 { margin: 0 0 12px; font-size: 17px; line-height: 1.5; font-weight: 500; }
 .shilla-nav-group h3 > a, .shilla-nav-group h3 > button { font: inherit; color: #222; text-align: left; }
@@ -856,3 +856,19 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   .shilla-calendar-note > span { display: block; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .shilla-calendar-panel { animation: none; } }
+
+/* Align dropdown content with the centered desktop navigation. */
+@media (min-width: 768px) {
+  .shilla-site .shilla-nav-panel .shilla-nav-groups {
+    width: 100%;
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 15px;
+    box-sizing: border-box;
+  }
+  .shilla-site .shilla-nav-panel .shilla-nav-group {
+    width: fit-content;
+    max-width: 100%;
+    justify-self: center;
+  }
+}
