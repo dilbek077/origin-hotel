@@ -792,24 +792,45 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {ADVANTAGES.map((item, idx) => {
               const Icon = item.icon;
+              const isLocation = idx === 0;
               return (
                 <div
                   key={idx}
                   className={
                     isDark
-                      ? 'p-7 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 hover:shadow-2xl transition-all duration-300 group'
-                      : 'p-7 rounded-3xl bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300 group'
+                      ? 'p-7 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 hover:shadow-2xl transition-all duration-300 group cursor-pointer'
+                      : 'p-7 rounded-3xl bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300 group cursor-pointer'
                   }
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                    <Icon size={24} />
-                  </div>
-                  <h3 className={isDark ? 'font-bold text-lg text-white mb-2' : 'font-bold text-lg text-gray-900 mb-2'}>
-                    {item.title}
-                  </h3>
-                  <p className={isDark ? 'text-slate-400 text-sm leading-relaxed' : 'text-gray-500 text-sm leading-relaxed'}>
-                    {item.desc}
-                  </p>
+                  {isLocation ? (
+                    <Link
+                      to="/joylashuv"
+                      className="block h-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <Icon size={24} />
+                      </div>
+                      <h3 className="font-bold text-lg mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-slate-400 dark:text-slate-400 text-sm leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </Link>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 rounded-2xl bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <Icon size={24} />
+                      </div>
+                      <h3 className={isDark ? 'font-bold text-lg text-white mb-2' : 'font-bold text-lg text-gray-900 mb-2'}>
+                        {item.title}
+                      </h3>
+                      <p className={isDark ? 'text-slate-400 text-sm leading-relaxed' : 'text-gray-500 text-sm leading-relaxed'}>
+                        {item.desc}
+                      </p>
+                    </>
+                  )}
                 </div>
               );
             })}

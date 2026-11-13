@@ -85,7 +85,7 @@ button:not(:disabled), summary { cursor: pointer; }
   box-shadow: none;
 }
 .hotel-utility-bar {
-  max-width: 1240px;
+  max-width: 1320px;
   margin: auto;
   padding: 14px 30px 0;
   display: flex;
@@ -96,7 +96,7 @@ button:not(:disabled), summary { cursor: pointer; }
 }
 .hotel-utility-bar > div { display: flex; gap: 22px; }
 .hotel-utility-bar a:hover { color: #4e3b22; text-decoration: underline; }
-.hotel-marketing .marketing-header > div:nth-child(2) { height: 108px; max-width: 1240px; padding: 0 30px; }
+.hotel-marketing .marketing-header > div:nth-child(2) { height: 108px; max-width: 1320px; padding: 0 30px; }
 .hotel-marketing .marketing-header a,
 .hotel-marketing .marketing-header button { color: #584831; }
 .hotel-marketing .marketing-header > div:nth-child(2) > a { gap: 14px; }
@@ -113,7 +113,7 @@ button:not(:disabled), summary { cursor: pointer; }
 .hotel-marketing .hotel-hero > div[aria-hidden] { background: linear-gradient(90deg, #211d17aa, #211d1720); }
 .hotel-marketing .hotel-hero .hero-orbit { display: none; }
 .hotel-marketing .hotel-hero > div:last-child {
-  max-width: 1180px;
+  max-width: 1260px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -183,7 +183,7 @@ button:not(:disabled), summary { cursor: pointer; }
 .hotel-workspace aside button { border-radius: 0; }
 .hotel-workspace > div > header { height: 95px; flex-shrink: 0; padding: 0 34px; background: var(--card); border-bottom-color: var(--border); }
 .hotel-workspace > div > main { background: var(--background); }
-.hotel-workspace > div > main > div { max-width: 1600px; margin-inline: auto; padding: 34px; }
+.hotel-workspace > div > main > div { max-width: 1400px; margin-inline: auto; padding: 34px; }
 .hotel-workspace h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 30px; font-weight: 400; letter-spacing: -.02em; }
 .hotel-workspace [data-slot='card'] { border-radius: 0; box-shadow: none; border-color: var(--border); }
 .hotel-workspace [data-slot='card-title'] { font-family: Georgia, serif; font-size: 18px; font-weight: 400; }

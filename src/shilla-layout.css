@@ -33,7 +33,7 @@
 .shilla-language-options { position: absolute; right: 0; top: 30px; width: 155px; padding: 8px; background: white; border: 1px solid #ddd; box-shadow: 0 8px 20px #0001; z-index: 4; }
 .shilla-language-options button { display: block; width: 100%; padding: 10px; text-align: left; }
 .shilla-language-options button:hover, .shilla-language-options button[aria-pressed='true'] { background: #f2ecdf; }
-.shilla-primary-nav { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: 0 auto; padding: 0 15px; max-width: 1120px; }
+.shilla-primary-nav { min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 30px; margin: 0 auto; padding: 0 15px; max-width: 1240px; }
 .shilla-primary-nav > a { font-size: 17px; font-weight: 500; white-space: nowrap; color: #111; }
 .shilla-primary-nav > a:hover { color: #8c7550; }
 .shilla-primary-nav > a.shilla-nav-reserve { display: none; background: #302525; color: #fff; padding: 13px 28px; }
@@ -604,7 +604,7 @@ body:has(.hotel-overview-dialog) [data-slot='dialog-overlay'] { z-index: 100; ba
   z-index: 101;
   display: block;
   width: calc(100vw - 80px);
-  max-width: 1600px;
+  max-width: 1400px;
   height: min(794px, calc(100dvh - 80px));
   max-height: calc(100dvh - 80px);
   padding: 0;
