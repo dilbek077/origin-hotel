@@ -30,7 +30,7 @@ export default function LocationPage() {
       }`}
     >
       <header className="px-6 py-4 border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-20 backdrop-blur bg-white/80 dark:bg-[#0a0f13]/80">
-        <div className="max-w-7xl mx-auto flex items-center justify-end gap-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <button
             onClick={handleBack}
             aria-label="Orqaga qaytish"
