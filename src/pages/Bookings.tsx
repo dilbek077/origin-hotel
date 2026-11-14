@@ -4,7 +4,6 @@ import {
   Eye,
   Pencil,
   Trash2,
-  CalendarDays,
   Plus,
   Search,
   LogIn,
@@ -27,6 +26,10 @@ import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import Modal from "@/components/common/Modal";
 import { useTheme } from '@/theme';
 import { useTranslation } from '@/i18n';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 
 type FilterTab = "Barchasi" | BookingStatus;
 type ActionFilter = "Barchasi" | "Yashamoqda" | "Tasdiqlangan" | "Kutilmoqda";
@@ -152,76 +155,76 @@ export default function Bookings() {
 
   const getStatusBadge = (status: BookingStatus) => {
     const text = translateStatus(status);
-    let colorClass = "bg-gray-100 text-gray-700 border-gray-200 dark:bg-[#10171d] dark:text-slate-300 dark:border-[#1c252d]";
-    let dotClass = "bg-gray-500";
-
-    if (status === "Yashamoqda") {
-      colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30";
-      dotClass = "bg-blue-500";
-    } else if (status === "Tasdiqlangan") {
-      colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30";
-      dotClass = "bg-emerald-500";
-    } else if (status === "Kutilmoqda") {
-      colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30";
-      dotClass = "bg-amber-500";
-    } else if (status === "Bekor") {
-      colorClass = "bg-red-100 text-red-600 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30";
-      dotClass = "bg-red-500";
-    }
+    const statusStyles: Record<BookingStatus, { badge: string; dot: string }> = {
+      Yashamoqda: {
+        badge: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+        dot: "bg-sky-500",
+      },
+      Tasdiqlangan: {
+        badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+        dot: "bg-emerald-500",
+      },
+      Kutilmoqda: {
+        badge: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+        dot: "bg-amber-500",
+      },
+      Tugatilgan: {
+        badge: "border-muted-foreground/20 bg-muted text-muted-foreground",
+        dot: "bg-muted-foreground",
+      },
+      Bekor: {
+        badge: "border-destructive/30 bg-destructive/10 text-destructive",
+        dot: "bg-destructive",
+      },
+    };
+    const style = statusStyles[status];
 
     return (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${colorClass}`}>
-        <span className={`w-1.5 h-1.5 rounded-full ${dotClass}`} />
+      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${style.badge}`}>
+        <span className={`size-1.5 rounded-full ${style.dot}`} />
         {text}
       </span>
     );
   };
 
   return (
-    <div className={isDark ? "min-h-screen bg-[#05080b] p-6 text-slate-100" : "min-h-screen bg-gray-50 p-6 text-gray-900"}>
+    <div className="min-h-screen bg-background p-4 text-foreground sm:p-6">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {actionView ? (
-          <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             {t('nav.checkInOut')}
           </h1>
         ) : (
-          <div className="flex items-center gap-3">
-            <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-100 text-blue-600"}`}>
-              <CalendarDays className="h-6 w-6" />
-            </div>
-            <div>
-              <p className={`mb-1 text-[10px] font-bold uppercase tracking-[0.2em] ${isDark ? "text-blue-400" : "text-blue-600"}`}>
-                Bronlarni boshqarish
-              </p>
-              <h1 className={isDark ? "text-2xl font-bold text-white" : "text-2xl font-bold text-gray-900"}>
-                {t('nav.bookings')}
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-slate-400">
-                {`${t('bookings.total').replace('{n}', String(bookings.length))} (${t('status.living')}: ${countByStatus("Yashamoqda")})`}
-              </p>
-            </div>
+          <div>
+            <h1 className="text-[2.1rem] font-bold tracking-[-0.04em] text-foreground">
+              {t('nav.bookings')}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {`${t('bookings.total').replace('{n}', String(bookings.length))} (${t('status.living')}: ${countByStatus("Yashamoqda")})`}
+            </p>
           </div>
         )}
         {actionView ? (
           <div className="relative w-full sm:max-w-xs">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
+            <Input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder={t('bookings.actionSearchPlaceholder')}
               aria-label={t('bookings.actionSearchPlaceholder')}
-              className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="h-9 pl-9"
             />
           </div>
         ) : (
-          <button
+          <Button
+            type="button"
             onClick={handleOpenAdd}
-            className="flex cursor-pointer items-center gap-2 self-start rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 sm:self-auto"
+            className="self-start sm:self-auto"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="size-4" />
             {t('bookings.new')}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -238,26 +241,25 @@ export default function Bookings() {
               key={status}
               type="button"
               onClick={() => setActiveTab(status)}
-              className={`rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 ${
-                isDark ? "border-[#1c252d] bg-[#0a0f13] hover:bg-[#0d1419]" : "border-gray-200 bg-white hover:bg-gray-50"
-              } ${activeTab === status ? (isDark ? "ring-1 ring-blue-500/50" : "ring-1 ring-blue-300") : ""}`}
+              aria-pressed={activeTab === status}
+              className={`rounded-xl border bg-card p-4 text-left text-card-foreground shadow-sm transition-colors hover:bg-accent/40 ${
+                activeTab === status ? "border-primary/40 ring-1 ring-primary/20" : "border-border"
+              }`}
             >
               <div className="flex items-start justify-between gap-3">
-                <span className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>{label}</span>
-                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${
-                  tone === "blue" ? "bg-blue-500/10 text-blue-400" :
-                  tone === "emerald" ? "bg-emerald-500/10 text-emerald-400" :
-                  tone === "amber" ? "bg-amber-500/10 text-amber-400" :
-                  tone === "red" ? "bg-red-500/10 text-red-400" :
-                  isDark ? "bg-[#10171d] text-slate-300" : "bg-slate-100 text-slate-600"
+                <span className="text-xs font-medium text-muted-foreground">{label}</span>
+                <span className={`flex size-9 items-center justify-center rounded-lg ${
+                  tone === "blue" ? "bg-sky-500/10 text-sky-600 dark:text-sky-400" :
+                  tone === "emerald" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
+                  tone === "amber" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" :
+                  tone === "red" ? "bg-destructive/10 text-destructive" :
+                  "bg-muted text-muted-foreground"
                 }`}>
                   <Icon size={17} />
                 </span>
               </div>
-              <div className={`mt-3 text-2xl font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{countByStatus(status)}</div>
-              <div className={`mt-1 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
-                {subtitle}
-              </div>
+              <div className="mt-3 text-2xl font-semibold tracking-tight">{countByStatus(status)}</div>
+              <div className="mt-1 text-[11px] text-muted-foreground">{subtitle}</div>
             </button>
           ))}
         </div>
@@ -265,99 +267,79 @@ export default function Bookings() {
 
       {/* Filter Tabs */}
       {actionView ? (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {(["Barchasi", "Yashamoqda", "Tasdiqlangan", "Kutilmoqda"] as const).map((filter) => {
+        <Tabs
+          value={actionFilter}
+          onValueChange={(value) => setActionFilter(value as ActionFilter)}
+          className="mb-4"
+        >
+          <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1 sm:w-fit">
+            {(["Barchasi", "Yashamoqda", "Tasdiqlangan", "Kutilmoqda"] as const).map((filter) => {
             const active = actionFilter === filter;
             const label = filter === "Barchasi" ? t('common.all') : translateStatus(filter);
             const count = filter === "Barchasi"
               ? countByStatus("Yashamoqda") + countByStatus("Tasdiqlangan") + countByStatus("Kutilmoqda")
               : countByStatus(filter);
             return (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => setActionFilter(filter)}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
-                  active
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : isDark
-                      ? "border-[#1c252d] bg-[#0a0f13] text-slate-300 hover:border-slate-600"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-                }`}
-              >
+              <TabsTrigger key={filter} value={filter} className="h-8 flex-none rounded-lg px-3 text-xs">
                 {label}
-                <span className={active ? "font-bold text-white" : "font-semibold text-current"}>{count}</span>
-              </button>
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>{count}</span>
+              </TabsTrigger>
             );
           })}
-        </div>
+          </TabsList>
+        </Tabs>
       ) : (
-        <div className={`mb-5 flex flex-col gap-3 rounded-2xl border p-3 shadow-xs sm:flex-row sm:items-center sm:justify-between ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-gray-200 bg-white"}`}>
+        <div className="mb-5 flex flex-col gap-3 rounded-xl border border-border bg-card p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-1">
-          {TABS.map((tab) => {
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => setActiveTab(value as FilterTab)}
+            >
+              <TabsList className="h-auto w-full flex-wrap justify-start gap-1 rounded-lg bg-muted/60 p-1">
+                {TABS.map((tab) => {
           const count =
             tab === "Barchasi" ? bookings.length : countByStatus(tab as BookingStatus);
           const isActive = activeTab === tab;
           const label = tab === "Barchasi" ? t('common.all') : translateStatus(tab);
           return (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-xs"
-                  : isDark
-                  ? "text-slate-400 hover:text-white hover:bg-[#10171d]"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-              }`}
-            >
+            <TabsTrigger key={tab} value={tab} className="h-8 flex-none rounded-md px-3 text-xs">
               {label}
-              <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                  isActive
-                    ? "bg-blue-500 text-white"
-                    : isDark
-                    ? "bg-[#10171d] text-slate-300"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
+              <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${isActive ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
                 {count}
               </span>
-            </button>
+            </TabsTrigger>
           );
           })}
+              </TabsList>
+            </Tabs>
           </div>
           <div className="relative w-full sm:max-w-xs">
-            <Search className={`pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
-            <input
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder={t('bookings.actionSearchPlaceholder')}
               aria-label={t('bookings.actionSearchPlaceholder')}
-              className={`h-10 w-full rounded-xl border pl-10 pr-4 text-sm outline-none transition ${
-                isDark ? "border-[#1c252d] bg-[#05080b] text-slate-100 placeholder:text-slate-500 focus:border-slate-600" : "border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-blue-300"
-              }`}
+              className="h-9 pl-9"
             />
           </div>
         </div>
       )}
 
       {statusActionError && (
-        <div role="alert" className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
+        <div role="alert" className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {statusActionError}
         </div>
       )}
 
       {/* Table */}
-      <div className={isDark ? "bg-[#0a0f13] rounded-2xl shadow-sm border border-[#1c252d] overflow-hidden" : "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"}>
+      <Card className="gap-0 overflow-hidden rounded-xl border-border bg-card py-0 text-card-foreground shadow-sm">
         {actionView ? (
           <>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1050px] text-sm">
                 <thead>
-                  <tr className={isDark
-                    ? "border-b border-[#1c252d] bg-[#0d1419] text-left text-xs font-semibold text-slate-400"
-                    : "border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-500"}>
+                  <tr className="border-b border-border bg-muted/50 text-left text-xs font-semibold text-muted-foreground">
                     <th className="px-5 py-4">{t('dashboard.guest')}</th>
                     <th className="px-4 py-4">{t('dashboard.room')}</th>
                     <th className="px-4 py-4">{t('bookings.checkIn')}</th>
@@ -368,7 +350,7 @@ export default function Bookings() {
                     <th className="px-5 py-4 text-right">{t('common.actions')}</th>
                   </tr>
                 </thead>
-                <tbody className={`divide-y ${isDark ? "divide-[#1c252d]" : "divide-slate-200"}`}>
+                <tbody className="divide-y divide-border">
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="h-40 text-center text-sm text-muted-foreground">
@@ -381,11 +363,11 @@ export default function Bookings() {
                       return (
                         <tr
                           key={booking.id}
-                          className={`group transition-colors ${isDark ? "hover:bg-[#10171d]" : "hover:bg-blue-50/40"}`}
+                          className="group transition-colors hover:bg-muted/40"
                         >
                           <td className="whitespace-nowrap px-5 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700 dark:bg-blue-900/40 dark:text-sky-300">
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                                 {booking.guest.split(" ").map((part) => part[0]).slice(0, 2).join("")}
                               </div>
                               <span className="font-semibold text-foreground">{booking.guest}</span>
@@ -408,74 +390,86 @@ export default function Bookings() {
                             <div className="flex items-center justify-end gap-1.5">
                               {booking.status === "Kutilmoqda" && (
                                 <>
-                                  <button
+                                  <Button
                                     type="button"
+                                    variant="outline"
+                                    size="icon"
                                     onClick={() => updateBookingStatus(booking, "Tasdiqlangan")}
                                     title={translateStatus("Tasdiqlangan")}
                                     aria-label={`${booking.guest} — ${translateStatus("Tasdiqlangan")}`}
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
+                                    className="size-8 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
                                   >
-                                    <Check size={16} />
-                                  </button>
-                                  <button
+                                    <Check className="size-4" />
+                                  </Button>
+                                  <Button
                                     type="button"
+                                    variant="outline"
+                                    size="icon"
                                     onClick={() => updateBookingStatus(booking, "Bekor")}
                                     title={translateStatus("Bekor")}
                                     aria-label={`${booking.guest} — ${translateStatus("Bekor")}`}
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                                    className="size-8 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
                                   >
-                                    <X size={16} />
-                                  </button>
+                                    <X className="size-4" />
+                                  </Button>
                                 </>
                               )}
                               {booking.status === "Tasdiqlangan" && (
-                                <button
+                                <Button
                                   type="button"
                                   onClick={() => handleCheckIn(booking.id)}
-                                  className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
+                                  size="sm"
+                                  className="h-8"
                                 >
                                   <LogIn size={14} />
                                   {t('bookings.checkInAction')}
-                                </button>
+                                </Button>
                               )}
                               {booking.status === "Yashamoqda" && (
-                                <button
+                                <Button
                                   type="button"
                                   onClick={() => handleCheckOut(booking.id)}
-                                  className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
+                                  size="sm"
+                                  className="h-8"
                                 >
                                   <Check size={14} />
                                   {t('bookings.checkOutAction')}
-                                </button>
+                                </Button>
                               )}
                               {(booking.status === "Tugatilgan" || booking.status === "Bekor") && (
-                                <button
+                                <Button
                                   type="button"
+                                  variant="destructive"
+                                  size="sm"
                                   onClick={() => handleDelete(booking.id)}
-                                  className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-rose-50 px-3 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
+                                  className="h-8"
                                 >
                                   <Trash2 size={14} />
                                   {t('common.delete')}
-                                </button>
+                                </Button>
                               )}
-                              <button
+                              <Button
                                 type="button"
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => handleOpenEdit(booking)}
                                 title={t('common.edit')}
                                 aria-label={`${booking.guest} — ${t('common.edit')}`}
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground opacity-0 transition hover:bg-muted hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                                className="size-8 text-muted-foreground"
                               >
                                 <Pencil className="h-4 w-4" />
-                              </button>
-                              <button
+                              </Button>
+                              <Button
                                 type="button"
+                                variant="ghost"
+                                size="icon"
                                 onClick={() => setViewBooking(booking)}
                                 title={t('common.view')}
                                 aria-label={`${booking.guest} — ${t('common.view')}`}
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground opacity-0 transition hover:bg-muted hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                                className="size-8 text-muted-foreground"
                               >
                                 <Eye className="h-4 w-4" />
-                              </button>
+                              </Button>
                             </div>
                           </td>
                         </tr>
@@ -485,7 +479,7 @@ export default function Bookings() {
                 </tbody>
               </table>
             </div>
-            <div className={`flex flex-wrap items-center justify-between gap-3 border-t px-5 py-4 text-xs ${isDark ? "border-[#1c252d] text-slate-400" : "border-slate-200 text-slate-500"}`}>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-4 text-xs text-muted-foreground">
               <span>{t('bookings.total').replace('{n}', String(filtered.length))}</span>
               <span>
                 {t('status.confirmed')}: {countByStatus("Tasdiqlangan")} · {t('status.pending')}: {countByStatus("Kutilmoqda")} · {t('status.living')}: {countByStatus("Yashamoqda")}
@@ -497,7 +491,7 @@ export default function Bookings() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] text-xs">
             <thead>
-              <tr className={isDark ? "bg-[#0d1419] border-b border-[#1c252d] text-slate-300 text-xs font-semibold uppercase tracking-wider" : "bg-gray-50/80 border-b border-gray-100 text-gray-500 text-xs font-semibold uppercase tracking-wider"}>
+              <tr className="border-b border-border bg-muted/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <th className="px-3 py-3 text-left">{t('dashboard.guest')}</th>
                 <th className="px-2.5 py-3 text-left">{t('dashboard.room')}</th>
                 <th className="px-2.5 py-3 text-left">{t('bookings.checkIn')} — {t('bookings.checkOut')}</th>
@@ -508,7 +502,7 @@ export default function Bookings() {
                 <th className="px-3 py-3 text-right">{t('common.actions')}</th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${isDark ? "divide-[#1c252d]" : "divide-gray-50"}`}>
+            <tbody className="divide-y divide-border">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-gray-400 dark:text-slate-500">
@@ -519,114 +513,130 @@ export default function Bookings() {
                 filtered.map((booking) => (
                   <tr
                     key={booking.id}
-                    className={`group transition-colors ${isDark ? "hover:bg-[#10171d]" : "hover:bg-blue-50/30"}`}
+                    className="group transition-colors hover:bg-muted/40"
                   >
                     <td className="whitespace-nowrap px-3 py-3">
                       <div className="flex items-center gap-2">
-                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isDark ? "bg-blue-500/15" : "bg-blue-100"}`}>
-                          <span className={`text-xs font-bold ${isDark ? "text-sky-300" : "text-blue-700"}`}>
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                          <span className="text-xs font-bold text-primary">
                             {booking.guest.charAt(0)}
                           </span>
                         </div>
                         <div>
-                          <div className={isDark ? "font-semibold text-white" : "font-semibold text-gray-900"}>{booking.guest}</div>
-                          <div className={`mt-0.5 text-[11px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>OR-{String(booking.id).padStart(6, "0")}</div>
+                          <div className="font-semibold text-foreground">{booking.guest}</div>
+                          <div className="mt-0.5 text-[11px] text-muted-foreground">OR-{String(booking.id).padStart(6, "0")}</div>
                         </div>
                       </div>
                     </td>
-                    <td className={isDark ? "whitespace-nowrap px-2.5 py-3 font-semibold text-slate-300" : "whitespace-nowrap px-2.5 py-3 font-semibold text-gray-700"}>
+                    <td className="whitespace-nowrap px-2.5 py-3 font-semibold text-foreground">
                       {booking.room}
                     </td>
                     <td className="whitespace-nowrap px-2.5 py-3 text-[11px] font-medium text-gray-500 dark:text-slate-400">
                       {booking.checkIn} <span className="text-gray-400">→</span> {booking.checkOut}
                     </td>
                     <td className="whitespace-nowrap px-2.5 py-3">
-                      <span className={isDark ? "font-bold text-slate-200" : "font-bold text-gray-800"}>
+                      <span className="font-bold text-foreground">
                         {booking.nights}
                       </span>
-                      <span className="text-gray-400 dark:text-slate-500 ml-1 text-xs">{t('bookings.nights')}</span>
+                      <span className="ml-1 text-xs text-muted-foreground">{t('bookings.nights')}</span>
                     </td>
-                    <td className={`max-w-36 truncate px-2.5 py-3 text-[11px] ${isDark ? "text-slate-400" : "text-slate-500"}`} title={booking.notes || ""}>
+                    <td className="max-w-36 truncate px-2.5 py-3 text-[11px] text-muted-foreground" title={booking.notes || ""}>
                       {booking.notes || "—"}
                     </td>
                     <td className="whitespace-nowrap px-2.5 py-3">
                       {getStatusBadge(booking.status)}
                     </td>
-                    <td className={isDark ? "whitespace-nowrap px-2.5 py-3 text-right font-bold text-white" : "whitespace-nowrap px-2.5 py-3 text-right font-bold text-gray-900"}>
+                    <td className="whitespace-nowrap px-2.5 py-3 text-right font-bold text-foreground">
                       {formatPrice(booking.price)}
                     </td>
                     <td className="whitespace-nowrap px-3 py-3">
                       <div className="flex items-center justify-end gap-1.5">
                         {booking.status === "Kutilmoqda" && (
                           <>
-                          <button
+                          <Button
                             type="button"
+                            variant="outline"
+                            size="icon"
                             onClick={() => updateBookingStatus(booking, "Tasdiqlangan")}
                             title={translateStatus("Tasdiqlangan")}
                             aria-label={`${booking.guest} — ${translateStatus("Tasdiqlangan")}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100"
+                            className="size-8 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
                           >
-                            <Check size={16} />
-                          </button>
-                          <button
+                            <Check className="size-4" />
+                          </Button>
+                          <Button
                             type="button"
+                            variant="outline"
+                            size="icon"
                             onClick={() => updateBookingStatus(booking, "Bekor")}
                             title={translateStatus("Bekor")}
                             aria-label={`${booking.guest} — ${translateStatus("Bekor")}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 transition hover:bg-rose-100"
+                            className="size-8 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
                           >
-                            <X size={16} />
-                          </button>
+                            <X className="size-4" />
+                          </Button>
                           </>
                         )}
 
                         {booking.status === "Tasdiqlangan" && (
-                          <button
+                          <Button
                             type="button"
+                            size="sm"
                             onClick={() => handleCheckIn(booking.id)}
-                            className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
+                            className="h-8 shrink-0 whitespace-nowrap"
                           >
                             <LogIn size={14} />
                             {t('bookings.checkInAction')}
-                          </button>
+                          </Button>
                         )}
 
                         {booking.status === "Yashamoqda" && (
-                          <button
+                          <Button
                             type="button"
+                            size="sm"
                             onClick={() => handleCheckOut(booking.id)}
-                            className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition ${isDark ? "bg-[#30332f] text-slate-100 hover:bg-[#3b3f3a]" : "bg-slate-200 text-slate-700 hover:bg-slate-300"}`}
+                            className="h-8 shrink-0 whitespace-nowrap"
                           >
                             <Check size={14} />
                             {t('bookings.checkOutAction')}
-                          </button>
+                          </Button>
                         )}
 
                         {(booking.status === "Tugatilgan" || booking.status === "Bekor") && (
-                          <button
+                          <Button
                             type="button"
+                            variant="destructive"
+                            size="sm"
                             onClick={() => handleDelete(booking.id)}
-                            className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-rose-50 px-3 text-xs font-medium text-rose-600 transition hover:bg-rose-100"
+                            className="h-8 shrink-0 whitespace-nowrap"
                           >
                             <Trash2 size={14} />
                             {t('common.delete')}
-                          </button>
+                          </Button>
                         )}
 
-                        <button
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
                           onClick={() => setViewBooking(booking)}
                           title={t('common.view')}
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition focus-visible:opacity-100 group-hover:opacity-100 ${isDark ? "text-slate-400 hover:bg-[#202421] hover:text-white" : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"}`}
+                          aria-label={`${booking.guest} — ${t('common.view')}`}
+                          className="size-8 text-muted-foreground"
                         >
                           <Eye className="h-4 w-4" />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleOpenEdit(booking)}
                           title={t('common.edit')}
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition focus-visible:opacity-100 group-hover:opacity-100 ${isDark ? "text-slate-400 hover:bg-[#202421] hover:text-white" : "text-slate-500 hover:bg-amber-50 hover:text-amber-600"}`}
+                          aria-label={`${booking.guest} — ${t('common.edit')}`}
+                          className="size-8 text-muted-foreground"
                         >
                           <Pencil className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -637,28 +647,28 @@ export default function Bookings() {
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-3 border-t flex flex-wrap items-center justify-between gap-2 ${isDark ? "border-[#1c252d] bg-[#0a0f13]" : "border-gray-100 bg-gray-50/50"}`}>
-          <span className="text-xs text-gray-400 dark:text-slate-400 font-medium">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/20 px-6 py-3">
+          <span className="text-xs font-medium text-muted-foreground">
             {t('bookings.total').replace('{n}', String(filtered.length))}
           </span>
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-400 dark:text-slate-400">
+          <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              <span className="size-2 rounded-full bg-sky-500" />
               {t('status.living')}: {countByStatus("Yashamoqda")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              <span className="size-2 rounded-full bg-emerald-500" />
               {t('status.confirmed')}: {countByStatus("Tasdiqlangan")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="size-2 rounded-full bg-amber-500" />
               {t('status.pending')}: {countByStatus("Kutilmoqda")}
             </span>
           </div>
         </div>
           </>
         )}
-      </div>
+      </Card>
 
       {/* Add / Edit Modal */}
       <BookingModal

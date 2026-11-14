@@ -11,11 +11,9 @@ export const LANGUAGES = [
   { code: 'uz', label: 'O‘zbekcha' },
   { code: 'ru', label: 'Русский' },
   { code: 'en', label: 'English' },
-  { code: 'fr', label: 'Français' },
-  { code: 'de', label: 'Deutsch' },
 ] as const;
 
-export type LanguageCode = (typeof LANGUAGES)[number]['code'];
+export type LanguageCode = 'uz' | 'ru' | 'en' | 'fr' | 'de';
 
 export const translations: Record<string, Record<LanguageCode, string>> = {
   // Navigation
@@ -38,6 +36,20 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'nav.account': { uz: 'Hisob', ru: 'Аккаунт', en: 'Account', fr: 'Compte', de: 'Konto' },
   'nav.appearance': { uz: 'Ko‘rinish', ru: 'Внешний вид', en: 'Appearance', fr: 'Apparence', de: 'Erscheinungsbild' },
   'nav.notifications': { uz: 'Bildirishnomalar', ru: 'Уведомления', en: 'Notifications', fr: 'Notifications', de: 'Benachrichtigungen' },
+  'nav.screen': { uz: 'Ekran', ru: 'Экран', en: 'Display', fr: 'Affichage', de: 'Anzeige' },
+  'profile.description': { uz: 'Foydalanuvchi nomi va hisobingizni boshqaring.', ru: 'Управляйте именем пользователя и аккаунтом.', en: 'Update your username and manage your account.', fr: 'Mettez à jour votre nom d’utilisateur et gérez votre compte.', de: 'Aktualisieren Sie Ihren Benutzernamen und verwalten Sie Ihr Konto.' },
+  'profile.general': { uz: 'Umumiy', ru: 'Общие', en: 'General', fr: 'Général', de: 'Allgemein' },
+  'profile.edit': { uz: 'Profilni tahrirlash', ru: 'Редактировать профиль', en: 'Edit Profile', fr: 'Modifier le profil', de: 'Profil bearbeiten' },
+  'profile.personalInfo': { uz: 'Shaxsiy ma’lumotlar', ru: 'Личные данные', en: 'Profile', fr: 'Profil', de: 'Profil' },
+  'profile.account': { uz: 'Hisob', ru: 'Аккаунт', en: 'Account', fr: 'Compte', de: 'Konto' },
+  'profile.accountDescription': { uz: 'Hisobingiz bilan bog‘liq ma’lumotlar', ru: 'Информация вашей учетной записи', en: 'Details associated with your account', fr: 'Détails associés à votre compte', de: 'Details zu Ihrem Konto' },
+  'profile.security': { uz: 'Xavfsizlik', ru: 'Безопасность', en: 'Security', fr: 'Sécurité', de: 'Sicherheit' },
+  'profile.securityDescription': { uz: 'Hisobingizning ruxsat darajasi', ru: 'Уровень доступа вашей учетной записи', en: 'Your account access level', fr: 'Votre niveau d’accès au compte', de: 'Ihre Kontozugriffsebene' },
+  'profile.accessRole': { uz: 'Tizimga kirish huquqingiz:', ru: 'Ваш уровень доступа:', en: 'Your account access level:', fr: 'Votre niveau d’accès au compte :', de: 'Ihre Kontozugriffsebene:' },
+  'profile.accountEmail': { uz: 'Hisob emaili', ru: 'Электронная почта аккаунта', en: 'Account Email', fr: 'E-mail du compte', de: 'Konto-E-Mail' },
+  'profile.bio': { uz: 'O‘zingiz haqingizda', ru: 'О себе', en: 'About you', fr: 'À propos de vous', de: 'Über Sie' },
+  'profile.admin': { uz: 'Administrator', ru: 'Администратор', en: 'Administrator', fr: 'Administrateur', de: 'Administrator' },
+  'profile.staff': { uz: 'Xodim', ru: 'Сотрудник', en: 'Staff', fr: 'Personnel', de: 'Mitarbeiter' },
   'notifications.description': {
     uz: 'Tizim yangiliklari va eslatmalar shu yerda ko‘rinadi.',
     ru: 'Здесь будут отображаться новости системы и напоминания.',
@@ -278,6 +290,8 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'rooms.notFound': { uz: 'Xona topilmadi', ru: 'Номера не найдены', en: 'No rooms found', fr: 'Aucune chambre trouvée', de: 'Keine Zimmer gefunden' },
   'rooms.notFoundDesc': { uz: 'Qidiruv yoki filtr mezonlarini o‘zgartiring', ru: 'Измените параметры поиска или фильтра', en: 'Try changing search or filter parameters', fr: 'Modifiez vos critères de recherche ou de filtre', de: 'Such- oder Filterkriterien anpassen' },
   'rooms.number': { uz: 'Xona raqami', ru: 'Номер комнаты', en: 'Room Number', fr: 'Numéro de chambre', de: 'Zimmernummer' },
+  'rooms.modalTitleAdd': { uz: 'Yangi xona qo‘shish', ru: 'Добавить номер', en: 'Add Room', fr: 'Ajouter une chambre', de: 'Zimmer hinzufügen' },
+  'rooms.modalTitleEdit': { uz: 'Xonani tahrirlash', ru: 'Редактировать номер', en: 'Edit Room', fr: 'Modifier la chambre', de: 'Zimmer bearbeiten' },
   'rooms.type': { uz: 'Xona turi', ru: 'Тип номера', en: 'Room Type', fr: 'Type de chambre', de: 'Zimmertyp' },
   'rooms.price': { uz: 'Bir kecha narxi (so‘m)', ru: 'Цена за сутки (сум)', en: 'Price per night (UZS)', fr: 'Prix par nuit (UZS)', de: 'Preis pro Nacht (UZS)' },
   'rooms.capacity': { uz: 'Sig‘imi (masalan: 2 kishilik)', ru: 'Вместимость (напр. 2 чел.)', en: 'Capacity (e.g. 2 guests)', fr: 'Capacité (ex. 2 pers.)', de: 'Kapazität (z.B. 2 Pers.)' },
@@ -287,6 +301,8 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
 
   // Bookings Page
   'bookings.total': { uz: 'Jami {n} ta bron', ru: 'Всего {n} бронирований', en: 'Total {n} bookings', fr: '{n} réservations au total', de: 'Insgesamt {n} Buchungen' },
+  'bookings.modalTitleAdd': { uz: 'Yangi bron qo‘shish', ru: 'Добавить бронирование', en: 'Add Booking', fr: 'Ajouter une réservation', de: 'Buchung hinzufügen' },
+  'bookings.modalTitleEdit': { uz: 'Bronni tahrirlash', ru: 'Редактировать бронирование', en: 'Edit Booking', fr: 'Modifier la réservation', de: 'Buchung bearbeiten' },
   'bookings.new': { uz: 'Yangi bron qo‘shish', ru: 'Новое бронирование', en: 'Add Booking', fr: 'Ajouter une réservation', de: 'Buchung hinzufügen' },
   'bookings.searchPlaceholder': { uz: 'Bronlar bo‘yicha qidirish...', ru: 'Поиск по бронированиям...', en: 'Search bookings...', fr: 'Rechercher des réservations...', de: 'Buchungen durchsuchen...' },
   'bookings.actionSearchPlaceholder': { uz: 'Mehmon yoki xona raqami', ru: 'Имя гостя или номер комнаты', en: 'Guest or room number', fr: 'Nom du client ou numéro de chambre', de: 'Gast oder Zimmernummer' },
@@ -305,6 +321,8 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
 
   // Guests Page
   'guests.total': { uz: 'Jami {n} ta mehmon ro‘yxatda', ru: 'Всего {n} гостей в списке', en: 'Total {n} guests in directory', fr: '{n} invités enregistrés', de: 'Insgesamt {n} Gäste registriert' },
+  'guests.modalTitleAdd': { uz: 'Yangi mehmon qo‘shish', ru: 'Добавить гостя', en: 'Add Guest', fr: 'Ajouter un invité', de: 'Gast hinzufügen' },
+  'guests.modalTitleEdit': { uz: 'Mehmon ma’lumotlarini tahrirlash', ru: 'Редактировать данные гостя', en: 'Edit Guest', fr: 'Modifier les informations de l’invité', de: 'Gastdaten bearbeiten' },
   'guests.new': { uz: 'Yangi mehmon qo‘shish', ru: 'Добавить гостя', en: 'Add New Guest', fr: 'Ajouter un invité', de: 'Neuen Gast anlegen' },
   'guests.searchPlaceholder': { uz: 'Ism, telefon, passport yoki izoh bo‘yicha...', ru: 'По имени, телефону, паспорту или заметкам...', en: 'Search by name, phone, passport, or notes...', fr: 'Recherche par nom, téléphone, passeport ou note...', de: 'Suche nach Name, Telefon, Pass oder Notiz...' },
   'guests.name': { uz: 'F.I.O (Ism-Familiya)', ru: 'Ф.И.О.', en: 'Full Name', fr: 'Nom & Prénom', de: 'Vollständiger Name' },
@@ -313,6 +331,8 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'guests.detailsTitle': { uz: 'Mehmon ma’lumotlari', ru: 'Карточка гостя', en: 'Guest Profile', fr: 'Profil de l’invité', de: 'Gästeprofil' },
 
   // Finance Page
+  'finance.modalIncomeTitle': { uz: 'Kirim qo‘shish', ru: 'Добавить доход', en: 'Add Income', fr: 'Ajouter un revenu', de: 'Einnahme hinzufügen' },
+  'finance.modalExpenseTitle': { uz: 'Chiqim qo‘shish', ru: 'Добавить расход', en: 'Add Expense', fr: 'Ajouter une dépense', de: 'Ausgabe hinzufügen' },
   'finance.subtitle': { uz: 'Mehmonxonaning to‘liq moliyaviy hisob-kitoblari va kassa amallari', ru: 'Полный финансовый учет и кассовые операции отеля', en: 'Complete hotel financial records and cashflow operations', fr: 'Comptabilité financière et flux de trésorerie de l’hôtel', de: 'Vollständige Hotel-Finanzbuchhaltung und Kassenbewegungen' },
   'finance.addIncome': { uz: '+ Kirim qo‘shish', ru: '+ Добавить доход', en: '+ Add Income', fr: '+ Ajouter revenu', de: '+ Einnahme buchen' },
   'finance.addExpense': { uz: '- Chiqim qo‘shish', ru: '- Добавить расход', en: '- Add Expense', fr: '- Ajouter dépense', de: '- Ausgabe buchen' },

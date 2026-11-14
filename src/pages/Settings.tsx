@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
   Building2,
   Lock,
@@ -9,7 +8,6 @@ import {
   Globe,
   Moon,
   Sun,
-  UserCog,
   Palette,
   Bell,
   Monitor,
@@ -28,9 +26,7 @@ import { useTheme } from '@/theme';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import { NOTIFICATION_SETTINGS_CHANGED, readNotificationSettings } from '@/services/notificationSettings';
 
-type SettingsTab = 'profil' | 'hisob' | 'korinish' | 'bildirishnomalar' | 'ekran';
 type FontSize = 'sm' | 'base' | 'lg';
-const SETTINGS_TABS: SettingsTab[] = ['profil', 'bildirishnomalar'];
 
 const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
   sky: { primary: '#0284c7', foreground: '#ffffff' },
@@ -41,44 +37,8 @@ const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
 };
 
 export default function Settings() {
-  const { tab } = useParams<{ tab?: string }>();
-  const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const { t, locale, setLocale } = useTranslation();
-  // Active tab determination
-  const currentTab: SettingsTab = SETTINGS_TABS.includes(tab as SettingsTab)
-    ? (tab as SettingsTab)
-    : 'profil';
-
-  useEffect(() => {
-    if (tab && !SETTINGS_TABS.includes(tab as SettingsTab)) {
-      navigate('/admin/sozlamalar/profil', { replace: true });
-    }
-  }, [navigate, tab]);
-
-  const handleTabChange = (newTab: SettingsTab) => {
-    navigate(`/admin/sozlamalar/${newTab}`);
-  };
-
-  // ─── 1. Profil ma'lumotlari ──────────────────────────────────────────────────
-  const [profileForm, setProfileForm] = useState(() => {
-    const saved = localStorage.getItem('origin_profile_settings');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return {
-      fullName: 'Abdullayev Jasur',
-      username: localStorage.getItem('username') ?? 'admin',
-      role: localStorage.getItem('role') ?? 'ADMIN',
-      phone: '+998 90 123 45 67',
-      email: 'admin@originhotel.uz',
-      bio: "Origin Hotel boshqaruvchisi va administrator. Mehmonlar qabuli va servis sifatini nazorat qiladi.",
-    };
-  });
 
   const [hotelForm, setHotelForm] = useState(() => {
     const saved = localStorage.getItem('origin_hotel_settings');
@@ -179,8 +139,7 @@ export default function Settings() {
     setTimeout(() => setSaveSuccess(null), 2500);
   };
 
-  const handleProfileSave = () => {
-    localStorage.setItem('origin_profile_settings', JSON.stringify(profileForm));
+  const handleHotelSave = () => {
     localStorage.setItem('origin_hotel_settings', JSON.stringify(hotelForm));
     showSaveSuccess();
   };
@@ -229,10 +188,6 @@ export default function Settings() {
 
   const inputClass = 'w-full px-4 py-2.5 text-sm border border-border bg-background text-foreground rounded-xl outline-none focus:ring-2 focus:ring-sky-500 transition';
 
-  const tabsConfig = [
-    { id: 'profil' as const, label: t('nav.profile'), icon: UserCog, desc: "Shaxsiy profil va mehmonxona ma'lumotlari" },
-    { id: 'bildirishnomalar' as const, label: t('nav.notifications'), icon: Bell, desc: 'Ogohlantirishlar va kanallar' },
-  ];
   return (
     <div className="p-6 space-y-6 bg-background text-foreground min-h-screen">
       {/* Sahifa sarlavhasi va bildirishnoma tosti */}
@@ -246,9 +201,7 @@ export default function Settings() {
               {t('nav.settings')}
             </h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            {tabsConfig.find((tc) => tc.id === currentTab)?.desc}
-          </p>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">{t('settings.subtitle')}</p>
         </div>
 
         {saveSuccess && (
@@ -259,120 +212,10 @@ export default function Settings() {
         )}
       </div>
 
-      {/* 5 ta sub-tab navigation paneli (Sidebar bilan sinxron) */}
-      <div className="p-1.5 bg-card rounded-2xl border border-border flex flex-wrap gap-1 shadow-sm">
-        {tabsConfig.map((tabItem) => {
-          const isActive = currentTab === tabItem.id;
-          const IconComponent = tabItem.icon;
-          return (
-            <button
-              key={tabItem.id}
-              type="button"
-              onClick={() => handleTabChange(tabItem.id)}
-              aria-current={isActive ? 'page' : undefined}
-              className={[
-                'flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer flex-1 min-w-[130px] justify-center',
-                isActive
-                  ? isDark
-                    ? 'bg-slate-800 text-white shadow-sm ring-1 ring-white/10 font-semibold'
-                    : 'bg-sky-50 text-sky-900 shadow-sm ring-1 ring-sky-200 font-semibold'
-                  : isDark
-                    ? 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/70',
-              ].join(' ')}
-            >
-              <IconComponent size={17} className={isActive ? 'text-sky-500' : 'opacity-70'} />
-              <span>{tabItem.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ════════════════════ TAB 1: PROFIL ════════════════════ */}
-      {currentTab === 'profil' && (
+      {/* Mehmonxona ma'lumotlari */}
+      {(
         <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Shaxsiy profil kartasi */}
-            <div className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
-                    <UserCog size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">{t('settings.userInfo')}</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">{t('settings.userSub')}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-5">
-                {/* Avatar blok */}
-                <div className="flex items-center gap-4 p-4 bg-muted/40 rounded-xl border border-border">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-sky-700 flex items-center justify-center text-white text-2xl font-bold shadow-md">
-                    {profileForm.fullName.charAt(0)}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-base">{profileForm.fullName}</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-0.5">
-                      @{profileForm.username} • {profileForm.role}
-                    </p>
-                    <span className="inline-block mt-2 text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
-                      Faol foydalanuvchi
-                    </span>
-                  </div>
-                </div>
-
-                {/* To'liq ism */}
-                <div>
-                  <label className={labelClass}>{t('settings.fullName')}</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={profileForm.fullName}
-                      onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
-                      className={inputClass}
-                      placeholder="F.I.O"
-                    />
-                  </div>
-                </div>
-
-                {/* Telefon & Email */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>{t('settings.phone')}</label>
-                    <input
-                      type="tel"
-                      value={profileForm.phone}
-                      onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>{t('settings.email')}</label>
-                    <input
-                      type="email"
-                      value={profileForm.email}
-                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div>
-                  <label className={labelClass}>Qisqacha ma'lumot (Bio)</label>
-                  <textarea
-                    rows={3}
-                    value={profileForm.bio}
-                    onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
-                    className={inputClass}
-                    placeholder="O'zingiz haqingizda qisqacha ma'lumot..."
-                  />
-                </div>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 gap-6">
             {/* Mehmonxona ma'lumotlari */}
             <div className={cardClass}>
               <div className={cardHeaderClass}>
@@ -463,7 +306,7 @@ export default function Settings() {
           {/* Saqlash tugmasi */}
           <div className="flex justify-end">
             <button
-              onClick={handleProfileSave}
+              onClick={handleHotelSave}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 font-semibold shadow-md transition-all cursor-pointer"
             >
               <Save size={18} />
@@ -474,7 +317,7 @@ export default function Settings() {
       )}
 
       {/* ════════════════════ TAB 2: HISOB ════════════════════ */}
-      {currentTab === 'hisob' && (
+      {(
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Parolni o'zgartirish */}
@@ -629,7 +472,7 @@ export default function Settings() {
       )}
 
       {/* ════════════════════ TAB 3: KO'RINISH ════════════════════ */}
-      {currentTab === 'korinish' && (
+      {(
         <div className="space-y-6">
           {/* Mavzu rejimi: Kunduzgi / Tungi */}
           <div className={cardClass}>
@@ -820,7 +663,7 @@ export default function Settings() {
       )}
 
       {/* ════════════════════ TAB 4: BILDIRISHNOMALAR ════════════════════ */}
-      {currentTab === 'bildirishnomalar' && (
+      {(
         <div className="space-y-6">
           <div className={cardClass}>
             <div className={cardHeaderClass}>
@@ -991,7 +834,7 @@ export default function Settings() {
       )}
 
       {/* ════════════════════ TAB 5: EKRAN ════════════════════ */}
-      {currentTab === 'ekran' && (
+      {(
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* To'liq ekran & Kiosk rejimi */}

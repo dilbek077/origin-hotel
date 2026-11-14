@@ -6,8 +6,6 @@ import {
   Banknote,
   BarChart3,
   Settings,
-  UserCog,
-  Bell,
   // Staff uchun ham shu iconlar ishlatiladi
 } from "lucide-react"
 
@@ -44,16 +42,7 @@ export const SIDEBAR_MENU: SidebarMenu = {
     { title: "Bronlar",      path: "/admin/bronlar",    icon: CalendarCheck   },
     { title: "Moliya",       path: "/admin/moliya",     icon: Banknote        },
     { title: "Hisobotlar",   path: "/admin/hisobotlar", icon: BarChart3       },
-    {
-      title: "Sozlamalar",
-      path: "/admin/sozlamalar",
-      icon: Settings,
-      section: "Tizim",
-      children: [
-        { title: "Profil",            path: "/admin/sozlamalar/profil",            icon: UserCog },
-        { title: "Bildirishnomalar",  path: "/admin/sozlamalar/bildirishnomalar",  icon: Bell    },
-      ],
-    },
+    { title: "Sozlamalar", path: "/admin/sozlamalar", icon: Settings, section: "Tizim" },
   ],
 
   // 2. Xodim (Staff) — faqat asosiy modullar (moliya va hisobot yo'q)

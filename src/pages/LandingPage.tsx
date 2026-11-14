@@ -1,1155 +1,1030 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from '@/i18n';
-import { StorageService } from '@/services/storage';
-import { useTheme } from '@/theme';
-import {
-  Hotel,
-  Calendar,
-  Users,
-  MapPin,
-  Phone,
-  Mail,
-  Star,
-  CheckCircle2,
-  Wifi,
-  Coffee,
-  UtensilsCrossed,
-  ArrowRight,
-  Menu,
-  X,
-  Clock,
-  Car,
-  ChevronRight,
-  Eye,
-} from 'lucide-react';
+import { useState, useMemo, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "@/theme";
+import { StorageService } from "@/services/storage";
+import type { Room } from "@/types/room";
+import "@/origin-landing.css";
 
-import { ROOMS } from '@/data/roomsData';
-import type { Room } from '@/data/roomsData';
-import type { Room as StorageRoom } from '@/types/room';
+interface DisplayRoomItem {
+  id: number;
+  name: string;
+  type: string;
+  desc: string;
+  price: number;
+  capacity: string;
+  chips: string[];
+  tag: string;
+  colorA: string;
+  colorB: string;
+  imageUrl?: string;
+  roomNumbers: string[];
+  availableCount: number;
+  totalCount: number;
+}
 
-// Har bir xona turi uchun rasm va ma’lumotlar
-const ROOM_TYPE_META: Record<string, {
-  image: string;
-  features: string[];
-  description: string;
-  size: string;
-}> = {
+const ROOM_TYPE_METADATA: Record<
+  string,
+  {
+    name: string;
+    desc: string;
+    defaultPrice: number;
+    chips: string[];
+    tag: string;
+    colorA: string;
+    colorB: string;
+  }
+> = {
   Standart: {
-    image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
-    features: ['Tezkor Wi-Fi', 'Smart TV', 'Konditsioner', 'Bepul nonushta'],
-    description: "Sayohat va qisqa muddatli tashriflar uchun barcha qulayliklarga ega shinam xona.",
-    size: '28 m²',
+    name: "Standart",
+    desc: "Ikki kishilik qulay xona, shahar manzarasi.",
+    defaultPrice: 350000,
+    chips: ["22 m²", "Wi-Fi"],
+    tag: "Tejamkor",
+    colorA: "#334155",
+    colorB: "#64748b",
   },
   Deluxe: {
-    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
-    features: ['Panoramik oyna', 'Katta balkon', 'Mini-bar', 'Shved stoli nonushtasi'],
-    description: "Keng maydon, shahar panoramik manzarasi va mini-bar bilan jihozlangan lyuks xona.",
-    size: '42 m²',
+    name: "Deluxe",
+    desc: "Keng xona, ish stoli va mini-bar bilan.",
+    defaultPrice: 550000,
+    chips: ["34 m²", "King size", "Mini-bar"],
+    tag: "Ommabop",
+    colorA: "#1e293b",
+    colorB: "#c8a15a",
   },
   Suite: {
-    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
-    features: ['2 ta xona', 'Jakuzi vanna', 'Oshxona burchagi', 'VIP xizmat'],
-    description: "Oilaviy dam olish uchun alohida mehmonxona va yotoqxona qismlariga ega keng suit.",
-    size: '68 m²',
+    name: "Suite",
+    desc: "Alohida mehmonxona va yotoqxonali lyuks.",
+    defaultPrice: 900000,
+    chips: ["58 m²", "2 xonali", "Vanna"],
+    tag: "Premium",
+    colorA: "#0b1220",
+    colorB: "#8b6f3a",
   },
   President: {
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
-    features: ['Shaxsiy terras', 'Shaxsiy batler', 'Premium spa zonasi', 'Transfer bepul'],
-    description: "Eksklyuziv dizayn, yuqori darajadagi xavfsizlik va shaxsiy xizmat ko'rsatuvchi xodim.",
-    size: '120 m²',
+    name: "President",
+    desc: "Eng yuqori darajadagi hashamat, keng shahar panoramasi va maxsus VIP xizmat.",
+    defaultPrice: 1500000,
+    chips: ["85 m²", "King size", "VIP xizmat"],
+    tag: "Eksklyuziv",
+    colorA: "#0f172a",
+    colorB: "#b45309",
   },
 };
 
-const STATUS_CONFIG: Record<string, { bg: string; label: string }> = {
-  "Bo'sh":      { bg: 'bg-green-500',  label: "Bo'sh" },
-  'Band':        { bg: 'bg-red-500',    label: 'Band' },
-  'Tozalashda':  { bg: 'bg-yellow-500', label: 'Tozalashda' },
-  "Ta'mirda":   { bg: 'bg-orange-500', label: "Ta'mirda" },
-};
+interface ExtraService {
+  k: "b" | "t" | "l";
+  name: string;
+  price: number;
+  perNight: boolean;
+  desc: string;
+}
+
+const EXTRAS: ExtraService[] = [
+  { k: "b", name: "Nonushta", price: 60000, perNight: true, desc: "Har kecha, shved stoli" },
+  { k: "t", name: "Aeroport transferi", price: 120000, perNight: false, desc: "Bir martalik" },
+  { k: "l", name: "Kech chiqish (16:00)", price: 100000, perNight: false, desc: "Bir martalik" },
+];
+
+const fmt = (n: number) => n.toLocaleString("en-US");
+const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+const formatDateDisplay = (v: string) => v.split("-").reverse().join(".");
 
 export default function LandingPage() {
-  const { t, locale, translateRoomType } = useTranslation();
-  const { isDark } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [bookingModalRoom, setBookingModalRoom] = useState<Room | null>(null);
-  const [viewModalRoom, setViewModalRoom] = useState<Room | null>(null);
-  const [isBookingModalClosing, setIsBookingModalClosing] = useState(false);
-  const [isViewModalClosing, setIsViewModalClosing] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const bookingModalCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const viewModalCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { isDark, toggleTheme } = useTheme();
 
-  const openBookingModal = (room: Room) => {
-    if (bookingModalCloseTimer.current) clearTimeout(bookingModalCloseTimer.current);
-    bookingModalCloseTimer.current = null;
-    setIsBookingModalClosing(false);
-    setBookingModalRoom(room);
-  };
-
-  const closeBookingModal = () => {
-    if (!bookingModalRoom || bookingModalCloseTimer.current) return;
-    setIsBookingModalClosing(true);
-    bookingModalCloseTimer.current = setTimeout(() => {
-      setBookingModalRoom(null);
-      setIsBookingModalClosing(false);
-      bookingModalCloseTimer.current = null;
-    }, 180);
-  };
-
-  const openViewModal = (room: Room) => {
-    if (viewModalCloseTimer.current) clearTimeout(viewModalCloseTimer.current);
-    viewModalCloseTimer.current = null;
-    setIsViewModalClosing(false);
-    setViewModalRoom(room);
-  };
-
-  const closeViewModal = () => {
-    if (!viewModalRoom || viewModalCloseTimer.current) return;
-    setIsViewModalClosing(true);
-    viewModalCloseTimer.current = setTimeout(() => {
-      setViewModalRoom(null);
-      setIsViewModalClosing(false);
-      viewModalCloseTimer.current = null;
-    }, 180);
-  };
-
-  useEffect(() => () => {
-    if (bookingModalCloseTimer.current) clearTimeout(bookingModalCloseTimer.current);
-    if (viewModalCloseTimer.current) clearTimeout(viewModalCloseTimer.current);
-  }, []);
-  // StorageService dan real xonalar
-  const [allStorageRooms, setAllStorageRooms] = useState<StorageRoom[]>(() =>
-    StorageService.getRooms()
-  );
-
-  const [bookedRoomIds, setBookedRoomIds] = useState<number[]>(() => {
-    if (typeof window === 'undefined') return [];
-
-    try {
-      const saved = localStorage.getItem('origin-hotel-booked-rooms');
-      return saved ? (JSON.parse(saved) as number[]) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  // Quick search form state
-  const [searchCheckIn, setSearchCheckIn] = useState(() => new Date().toISOString().split('T')[0]);
-  const [searchCheckOut, setSearchCheckOut] = useState(() => new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0]);
-  const [searchGuests, setSearchGuests] = useState('2');
-
-  // Booking modal form state
-  const [guestName, setGuestName] = useState('');
-  const [guestPhone, setGuestPhone] = useState('');
-
-  // Storage o‘zgarishlarini kuzatish
-  useEffect(() => {
-    const handler = () => setAllStorageRooms(StorageService.getRooms());
-    window.addEventListener('origin-hotel-storage-change', handler);
-    return () => window.removeEventListener('origin-hotel-storage-change', handler);
-  }, []);
+  // Admin paneldagi xonalarni storage dan yuklash va o'zgarishlarni real-time kuzatish
+  const [rooms, setRooms] = useState<Room[]>(() => StorageService.getRooms());
 
   useEffect(() => {
-    localStorage.setItem('origin-hotel-booked-rooms', JSON.stringify(bookedRoomIds));
-  }, [bookedRoomIds]);
-
-  // StorageRoom -> enriched (rasm va tavsif qo‘shish)
-  const enrichedRooms = allStorageRooms.map((sr) => ({
-    ...sr,
-    ...(ROOM_TYPE_META[sr.type] ?? ROOM_TYPE_META['Standart']),
-  }));
-
-  // Kategoriya filtri
-  const filteredRooms =
-    activeCategory === 'all'
-      ? enrichedRooms
-      : enrichedRooms.filter((r) => r.type.toLowerCase() === activeCategory.toLowerCase());
-
-  // Batafsil ko‘rish uchun roomsData dan Room topi
-  const getRoomDetail = (type: string): Room => {
-    const catMap: Record<string, Room['category']> = {
-      Standart: 'standart', Deluxe: 'deluxe', Suite: 'suite', President: 'president',
+    const handleUpdate = () => {
+      setRooms(StorageService.getRooms());
     };
-    return ROOMS.find(r => r.category === catMap[type]) ?? ROOMS[0];
+    handleUpdate();
+    window.addEventListener("origin-hotel-storage-change", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("origin-hotel-storage-change", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
+
+  // Sanalar
+  const todayIso = useMemo(() => isoDate(new Date()), []);
+  const [checkIn, setCheckIn] = useState<string>(() => isoDate(new Date(Date.now() + 864e5)));
+  const [checkOut, setCheckOut] = useState<string>(() => isoDate(new Date(Date.now() + 3 * 864e5)));
+  const [guests, setGuests] = useState<string>("2 kishi");
+
+  // Admin paneldan bo'sh xonalar soni
+  const vacantCount = useMemo(() => {
+    return rooms.filter((r) => r.status === "Bo'sh").length;
+  }, [rooms]);
+
+  // Admin paneldagi xonalarga asoslangan dinamik xona turlari
+  const displayRooms: DisplayRoomItem[] = useMemo(() => {
+    const baseTypes = ["Standart", "Deluxe", "Suite", "President"];
+    const loadedTypes = Array.from(new Set(rooms.map((r) => r.type)));
+    const allTypes = Array.from(new Set([...baseTypes, ...loadedTypes]));
+
+    return allTypes
+      .map((typeName, idx) => {
+        const matchingRooms = rooms.filter((r) => r.type === typeName);
+        if (matchingRooms.length === 0) return null;
+
+        const meta = ROOM_TYPE_METADATA[typeName] || {
+          name: typeName,
+          desc: `${typeName} xonasi, zamonaviy qulayliklar bilan.`,
+          defaultPrice: 400000,
+          chips: ["Wi-Fi", "Qulay sharoit"],
+          tag: "Maxsus",
+          colorA: "#1e293b",
+          colorB: "#64748b",
+        };
+
+        const minPrice = Math.min(...matchingRooms.map((r) => r.pricePerNight));
+        const capacity = matchingRooms[0].capacity || "2 kishilik";
+        const imageRoom = matchingRooms.find((r) => r.imageUrl);
+        const imageUrl = imageRoom?.imageUrl;
+        const availableRooms = matchingRooms.filter((r) =>
+          StorageService.checkRoomAvailability(r.id, checkIn, checkOut)
+        );
+
+        const chips = [capacity, ...meta.chips];
+
+        return {
+          id: idx + 1,
+          name: typeName,
+          type: typeName,
+          desc: meta.desc,
+          price: minPrice,
+          capacity,
+          chips,
+          tag: meta.tag,
+          colorA: meta.colorA,
+          colorB: meta.colorB,
+          imageUrl,
+          roomNumbers: matchingRooms.map((r) => r.number),
+          availableCount: availableRooms.length,
+          totalCount: matchingRooms.length,
+        };
+      })
+      .filter(Boolean) as DisplayRoomItem[];
+  }, [rooms, checkIn, checkOut]);
+
+  // Modal holati
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRoomName, setSelectedRoomName] = useState<string | null>(null);
+  const [modalStep, setModalStep] = useState<number>(0);
+  const [selectedExtras, setSelectedExtras] = useState<Record<string, boolean>>({});
+  const [guestName, setGuestName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [payMethod, setPayMethod] = useState<"hotel" | "card">("hotel");
+  const [bookingCode, setBookingCode] = useState("");
+  const [formError, setFormError] = useState("");
+
+  const selectedRoom = useMemo(() => {
+    if (!selectedRoomName) return null;
+    return displayRooms.find((r) => r.name === selectedRoomName) || null;
+  }, [selectedRoomName, displayRooms]);
+
+  // Kechalar soni hisobi
+  const nightsCount = useMemo(() => {
+    if (!checkIn || !checkOut) return 0;
+    const diff = Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 864e5);
+    return Math.max(0, diff) || 0;
+  }, [checkIn, checkOut]);
+
+  // Jami narx hisobi
+  const calculateTotal = useMemo(() => {
+    if (!selectedRoom) return 0;
+    let total = selectedRoom.price * nightsCount;
+    EXTRAS.forEach((e) => {
+      if (selectedExtras[e.k]) {
+        total += e.price * (e.perNight ? nightsCount : 1);
+      }
+    });
+    return total;
+  }, [selectedRoom, nightsCount, selectedExtras]);
+
+  // Modalni ochish
+  const handleOpenBooking = (roomName: string) => {
+    setSelectedRoomName(roomName);
+    setSelectedExtras({});
+    setGuestName("");
+    setGuestPhone("");
+    setPayMethod("hotel");
+    setModalStep(0);
+    setFormError("");
+    setModalOpen(true);
+    document.body.style.overflow = "hidden";
   };
 
-  const handleQuickBookingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const element = document.getElementById('rooms-section');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  // Modalni yopish
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    document.body.style.overflow = "";
+  };
+
+  // ESC orqali yopish
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && modalOpen) {
+        handleCloseModal();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalOpen]);
+
+  // 1-bosqichdan 2-bosqichga o'tish
+  const handleNextToStep1 = () => {
+    if (nightsCount <= 0) return;
+    setModalStep(1);
+    setFormError("");
+  };
+
+  // Bronni tasdiqlash (2-bosqichdan 3-bosqichga)
+  const handleConfirmBooking = () => {
+    const trimmedName = guestName.trim();
+    const cleanPhone = guestPhone.replace(/\D/g, "");
+
+    if (trimmedName.length < 3) {
+      setFormError("Ism va familiyangizni kiriting.");
+      return;
     }
-  };
+    if (cleanPhone.length < 9) {
+      setFormError("Telefon raqamini to‘liq kiriting.");
+      return;
+    }
+    if (!selectedRoom) {
+      setFormError("Xona tanlanmagan.");
+      return;
+    }
 
-  const handleNameInput = (value: string) => {
-    const sanitized = value.replace(/[^a-zA-Z\u00C0-\u024F\u0400-\u04FF\s'-]/g, '');
-    setGuestName(sanitized);
-  };
+    // Tanlangan sanalarda bo'sh xonani topamiz
+    const allRooms = StorageService.getRooms();
+    const matchingRooms = allRooms.filter((r) => r.type === selectedRoom.name);
+    const availableRoom = matchingRooms.find((r) =>
+      StorageService.checkRoomAvailability(r.id, checkIn, checkOut)
+    );
 
-  const handlePhoneInput = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 12);
-    const formatted = digits ? `+${digits}` : '';
-    setGuestPhone(formatted);
-  };
+    if (!availableRoom) {
+      setFormError("Kechirasiz, tanlangan sanalarda ushbu turdagi bo‘sh xona qolmagan. Iltimos, boshqa sanani yoki boshqa xona turini tanlang.");
+      return;
+    }
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!guestName || !guestPhone || !bookingModalRoom) return;
-
-    setBookedRoomIds((prev) => Array.from(new Set([...prev, bookingModalRoom.id])));
-    setBookingSuccess(true);
+    const code = "OG-" + Math.floor(10000 + Math.random() * 89999);
+    setBookingCode(code);
 
     try {
-      const guest = StorageService.addGuest({
-        fullName: guestName,
-        phone: guestPhone,
-        passport: '',
-        notes: 'Veb-sayt orqali bron qilindi',
+      const guestsList = StorageService.getGuests();
+      const existingGuest = guestsList.find((g) => g.fullName.toLowerCase() === trimmedName.toLowerCase());
+
+      let guestId = existingGuest ? existingGuest.id : Date.now();
+      if (!existingGuest) {
+        StorageService.addGuest({
+          fullName: trimmedName,
+          phone: guestPhone.trim(),
+          passport: "AA" + Math.floor(1000000 + Math.random() * 8999999),
+          notes: `Saytdan bron: ${code}, ${payMethod === "card" ? "Karta" : "Mehmonxonada"}`,
+          address: "Toshkent shahri",
+          lastVisit: checkIn,
+        });
+      }
+
+      const res = StorageService.addBooking({
+        guestId: guestId,
+        guest: trimmedName,
+        roomId: availableRoom.id,
+        room: `${availableRoom.number} — ${availableRoom.type}`,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        nights: nightsCount,
+        price: calculateTotal,
+        status: "Kutilmoqda",
+        notes: `Saytdan avtomatik bron (${code}). Xona: ${availableRoom.number}. To'lov: ${payMethod === "card" ? "Karta orqali" : "Mehmonxonada"}. Tel: ${guestPhone.trim()}`,
       });
 
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const nextThreeDays = new Date();
-      nextThreeDays.setDate(nextThreeDays.getDate() + 3);
+      if (!res.success) {
+        setFormError(res.error || "Bron qilishda xatolik yuz berdi.");
+        return;
+      }
 
-      StorageService.addBooking({
-        guestId: guest.id,
-        guest: guest.fullName,
-        roomId: bookingModalRoom.id,
-        room: `#${bookingModalRoom.id}01 — ${bookingModalRoom.name}`,
-        checkIn: tomorrow.toISOString().split('T')[0],
-        checkOut: nextThreeDays.toISOString().split('T')[0],
-        nights: 2,
-        price: bookingModalRoom.price * 2,
-        status: 'Kutilmoqda',
-        notes: 'Sayt orqali yuborilgan yangi ariza',
-      });
-    } catch {
-      // Ignore if mock storage has duplicate
+      setModalStep(2);
+    } catch (err) {
+      console.warn("StorageService sync notice:", err);
+      setFormError("Bron qilishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.");
     }
-
-    setTimeout(() => {
-      setBookingSuccess(false);
-      closeBookingModal();
-      setGuestName('');
-      setGuestPhone('');
-    }, 2500);
   };
-
-  const ADVANTAGES = [
-    {
-      icon: MapPin,
-      title: t('landing.adv.1.title'),
-      desc: t('landing.adv.1.desc'),
-    },
-    {
-      icon: Coffee,
-      title: t('landing.adv.2.title'),
-      desc: t('landing.adv.2.desc'),
-    },
-    {
-      icon: Clock,
-      title: t('landing.adv.3.title'),
-      desc: t('landing.adv.3.desc'),
-    },
-    {
-      icon: Wifi,
-      title: t('landing.adv.4.title'),
-      desc: t('landing.adv.4.desc'),
-    },
-    {
-      icon: UtensilsCrossed,
-      title: t('landing.adv.5.title'),
-      desc: t('landing.adv.5.desc'),
-    },
-    {
-      icon: Car,
-      title: t('landing.adv.6.title'),
-      desc: t('landing.adv.6.desc'),
-    },
-  ];
-
-  const REVIEWS = [
-    {
-      name: 'Jasurbek Oripov',
-      city: 'Qarshi',
-      rating: 5,
-      text:
-        locale === 'uz'
-          ? 'Origin Hotelda 3 kun turdik. Xonalar juda toza, xodimlar samimiy va nonushta ajoyib darajada mazali edi. Keyingi safar ham albatta shu yerni tanlaymiz!'
-          : locale === 'ru'
-          ? 'Провели 3 дня в Origin Hotel. Номера невероятно чистые, персонал очень приветлив, а завтрак потрясающе вкусный. В следующий раз обязательно сюда!'
-          : locale === 'fr'
-          ? 'Nous avons passé 3 jours à l’Origin Hotel. Chambres impeccables, personnel chaleureux et petit-déjeuner exquis. Nous reviendrons sans hésiter !'
-          : locale === 'de'
-          ? 'Wir haben 3 Tage im Origin Hotel verbracht. Zimmer sehr sauber, Personal herzlich und Frühstück köstlich. Wir kommen definitiv wieder!'
-          : 'We stayed 3 days at Origin Hotel. The rooms were spotless, the staff very cordial, and breakfast delicious. We will certainly choose it next time!',
-      date: 'Oktyabr, 2026',
-    },
-    {
-      name: 'Dilnoza Karimova',
-      city: 'Samarqand',
-      rating: 5,
-      text:
-        locale === 'uz'
-          ? "Biznes safar uchun eng ma'qul joy. Internet juda tez, xona tinch va qulay. Resepshn xodimlari barcha savollarimga darhol yordam berishdi."
-          : locale === 'ru'
-          ? 'Идеальное место для деловой поездки. Интернет скоростной, номер тихий и комфортный. Сотрудники ресепшн моментально помогали по любым вопросам.'
-          : locale === 'fr'
-          ? 'Lieu idéal pour les voyages d’affaires. Connexion très rapide, chambre calme et confortable. La réception a répondu à toutes mes demandes.'
-          : locale === 'de'
-          ? 'Perfekter Ort für Geschäftsreisen. Schnelles Internet, ruhiges und komfortables Zimmer. Rezeption war immer hilfsbereit.'
-          : 'The best place for business travel. High-speed internet, quiet and cozy room. Front desk staff assisted promptly with everything.',
-      date: 'Sentyabr, 2026',
-    },
-    {
-      name: 'Alexey Morozov',
-      city: 'Moskva',
-      rating: 5,
-      text:
-        locale === 'uz'
-          ? 'Qarshi markazidagi ajoyib mehmonxona! Xonalar yangi, zamonaviy, matraslar nihoyatda qulay. Nonushta barcha kutganlarimizdan a’lo bo‘ldi. Tavsiya qilaman!'
-          : locale === 'ru'
-          ? 'Отличный отель в центре Карши! Номера новые, стильные, матрасы невероятно удобные. Завтрак превзошел все ожидания. Рекомендую 10/10!'
-          : locale === 'fr'
-          ? 'Superbe hôtel au centre de Karchi ! Chambres modernes, literie extrêmement confortable. Petit-déjeuner au-delà de nos attentes. Recommandé 10/10 !'
-          : locale === 'de'
-          ? 'Tolles Hotel im Zentrum von Karschi! Neue, stilvolle Zimmer, bequeme Matratzen. Frühstück hat alle Erwartungen übertroffen. 10/10 Empfehlung!'
-          : 'Excellent hotel in the center of Karshi! Rooms are brand new and stylish, mattresses incredibly comfortable. Breakfast exceeded all expectations. 10/10!',
-      date: 'Oktyabr, 2026',
-    },
-  ];
 
   return (
-    <div
-      className={
-        isDark
-          ? 'min-h-screen bg-slate-950 text-slate-100 font-sans transition-colors'
-          : 'min-h-screen bg-white text-gray-800 font-sans transition-colors'
-      }
-    >
-      {/* ─── Navigation Bar ────────────────────────────────────────────────────── */}
-      <nav
-        className={
-          isDark
-            ? 'sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-md transition-colors'
-            : 'sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs transition-colors'
-        }
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Hotel className="w-6 h-6" />
-            </div>
-            <div>
-              <span className={isDark ? 'text-2xl font-black tracking-tight text-white group-hover:text-sky-400 transition-colors' : 'text-2xl font-black tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors'}>
-                Origin Hotel
-              </span>
-              <p className="text-[10px] uppercase tracking-widest font-semibold text-blue-600 dark:text-sky-400">
-                {t('landing.tagline')}
-              </p>
-            </div>
-          </Link>
-
-          <div className={isDark ? 'hidden md:flex items-center gap-8 text-sm font-medium text-slate-300' : 'hidden md:flex items-center gap-8 text-sm font-medium text-gray-600'}>
-            <a href="#hero" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">{t('nav.home')}</a>
-            <a href="#rooms-section" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">{t('nav.rooms')}</a>
-            <a href="#advantages" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">{t('nav.advantages')}</a>
-            <a href="#reviews" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">{t('nav.reviews')}</a>
-            <a href="#contact" className="hover:text-blue-600 dark:hover:text-sky-400 transition-colors">{t('nav.contact')}</a>
-          </div>
-
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              to="/login"
-              className={
-                isDark
-                  ? 'text-sm font-semibold text-slate-300 hover:text-sky-400 px-4 py-2.5 rounded-xl hover:bg-slate-800 transition'
-                  : 'text-sm font-semibold text-gray-700 hover:text-blue-600 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition'
-              }
-            >
-              {t('nav.login')}
-            </Link>
-            <a
-              href="#rooms-section"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-blue-600/20 transition-all hover:shadow-lg active:scale-95"
-            >
-              {t('landing.hero.viewRooms')}
-            </a>
-          </div>
-
-          {/* Mobile hamburger */}
+    <div className="landing-page-root">
+      {/* HEADER */}
+      <header className="landing-header">
+        <div className="wrap nav">
+          <a className="logo" href="#top">
+            <i>O</i>Origin Hotel
+          </a>
+          <a className="l" href="#xonalar">
+            Xonalar
+          </a>
+          <a className="l" href="#qulayliklar">
+            Qulayliklar
+          </a>
+          <a className="l" href="#sharhlar">
+            Sharhlar
+          </a>
+          <a className="l" href="#manzil">
+            Manzil
+          </a>
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={
-              isDark
-                ? 'md:hidden p-2 text-slate-300 rounded-lg hover:bg-slate-800'
-                : 'md:hidden p-2 text-gray-600 rounded-lg hover:bg-gray-100'
-            }
+            className={`theme-toggle-btn ${isDark ? "theme-toggle-dark" : "theme-toggle-light"}`}
+            id="theme"
+            aria-label={isDark ? "Yorug‘ rejimga o‘tish" : "Qorong‘i rejimga o‘tish"}
+            onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
+            title={isDark ? "Yorug‘ rejim" : "Qorong‘i rejim"}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isDark ? (
+              <Sun size={19} strokeWidth={2.1} />
+            ) : (
+              <Moon size={19} strokeWidth={2.1} />
+            )}
+          </button>
+          <Link to="/login" className="login-btn" title="Admin panelga kirish">
+            Kirish
+          </Link>
+          <button
+            className="btn"
+            onClick={() => {
+              const el = document.getElementById("xonalar");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Band qilish
           </button>
         </div>
+      </header>
 
-        {/* Mobile menu dropdown */}
-        {mobileMenuOpen && (
-          <div className={isDark ? 'md:hidden border-b border-slate-800 bg-slate-900 px-4 py-5 space-y-3' : 'md:hidden border-b border-gray-100 bg-white px-4 py-5 space-y-3'}>
-            <a
-              href="#hero"
-              onClick={() => setMobileMenuOpen(false)}
-              className={isDark ? 'block text-slate-200 py-2 font-medium' : 'block text-gray-700 py-2 font-medium'}
-            >
-              {t('nav.home')}
-            </a>
-            <a
-              href="#rooms-section"
-              onClick={() => setMobileMenuOpen(false)}
-              className={isDark ? 'block text-slate-200 py-2 font-medium' : 'block text-gray-700 py-2 font-medium'}
-            >
-              {t('nav.rooms')}
-            </a>
-            <a
-              href="#advantages"
-              onClick={() => setMobileMenuOpen(false)}
-              className={isDark ? 'block text-slate-200 py-2 font-medium' : 'block text-gray-700 py-2 font-medium'}
-            >
-              {t('nav.advantages')}
-            </a>
-            <a
-              href="#reviews"
-              onClick={() => setMobileMenuOpen(false)}
-              className={isDark ? 'block text-slate-200 py-2 font-medium' : 'block text-gray-700 py-2 font-medium'}
-            >
-              {t('nav.reviews')}
-            </a>
-            <a
-              href="#contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className={isDark ? 'block text-slate-200 py-2 font-medium' : 'block text-gray-700 py-2 font-medium'}
-            >
-              {t('nav.contact')}
-            </a>
-            <div className="pt-4 border-t border-gray-100 flex flex-col gap-2">
-              <Link
-                to="/login"
-                className={
-                  isDark
-                    ? 'w-full text-center py-2.5 border border-slate-700 rounded-xl text-sm font-semibold text-slate-200'
-                    : 'w-full text-center py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-800'
-                }
-              >
-                {t('nav.login')}
-              </Link>
-              <a
-                href="#rooms-section"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-md"
-              >
-                {t('landing.hero.viewRooms')}
-              </a>
+      {/* MAIN CONTENT */}
+      <main id="top">
+        {/* HERO SECTION */}
+        <div className="landing-hero">
+          <div className="ph" role="img" aria-label="Origin Hotel binosi"></div>
+          <div className="wrap">
+            <div>
+              <div className="badge">
+                <b>★ 4.9</b> 1 200 dan ortiq mehmon bahosi
+              </div>
+              <h1 className="serif">
+                Shahar markazidagi <em>sokin</em> oromgoh
+              </h1>
+              <p>
+                Toshkentning yuragida zamonaviy xonalar, shinam nonushta va 24 soat ishlaydigan qabulxona. Xush
+                kelibsiz.
+              </p>
+              <div className="cta">
+                <a className="btn" href="#xonalar">
+                  Xonalarni ko‘rish
+                </a>
+                <a className="btn o" href="#manzil">
+                  Manzilni ko‘rish
+                </a>
+              </div>
             </div>
-          </div>
-        )}
-      </nav>
-
-      {/* ─── Hero Section ──────────────────────────────────────────────────────── */}
-      <section
-        id="hero"
-        className={
-          isDark
-            ? 'relative pt-12 pb-24 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950'
-            : 'relative pt-12 pb-24 overflow-hidden bg-gradient-to-b from-blue-50/60 via-white to-white'
-        }
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Title */}
-            <h1 className={isDark ? 'text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15] mb-6' : 'text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-[1.15] mb-6'}>
-              {t('landing.hero.title')}
-            </h1>
-
-            {/* Description */}
-            <p className={isDark ? 'text-lg text-slate-300 leading-relaxed mb-8 max-w-2xl mx-auto' : 'text-lg text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto'}>
-              {t('landing.hero.subtitle')}
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
-              <a
-                href="#rooms-section"
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-7 py-3.5 rounded-xl font-bold text-base shadow-lg shadow-blue-500/25 transition-all hover:scale-102"
-              >
-                <span>{t('landing.hero.viewRooms')}</span>
-                <ArrowRight size={18} />
-              </a>
-              <a
-                href="#advantages"
-                className={
-                  isDark
-                    ? 'inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 px-7 py-3.5 rounded-xl font-bold text-base transition-all shadow-xs'
-                    : 'inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 px-7 py-3.5 rounded-xl font-bold text-base transition-all shadow-xs'
-                }
-              >
-                <span>{t('landing.hero.whyUs')}</span>
-              </a>
-            </div>
-          </div>
-
-          {/* Quick Booking Widget Card */}
-          <div
-            className={
-              isDark
-                ? 'bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-800 max-w-5xl mx-auto'
-                : 'bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-gray-200/70 border border-gray-100 max-w-5xl mx-auto'
-            }
-          >
-            <form onSubmit={handleQuickBookingSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Check in */}
-              <div>
-                <label className={isDark ? 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5' : 'block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5'}>
-                  <Calendar size={14} className="text-blue-500" />
-                  {t('landing.quick.checkIn')}
-                </label>
-                <input
-                  type="date"
-                  value={searchCheckIn}
-                  onChange={(e) => setSearchCheckIn(e.target.value)}
-                  className={
-                    isDark
-                      ? 'w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      : 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  }
+            <div className="tw">
+              <div className="fl">
+                <b>{vacantCount} ta bo‘sh xona</b>
+                <span>Bugun uchun</span>
+              </div>
+              <svg className="tower" viewBox="0 0 400 460" aria-hidden="true">
+                <defs>
+                  <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="#2a3b66" />
+                    <stop offset="1" stopColor="#101a33" />
+                  </linearGradient>
+                </defs>
+                <rect x="40" y="130" width="130" height="300" rx="8" fill="url(#g1)" />
+                <rect
+                  x="150"
+                  y="40"
+                  width="150"
+                  height="390"
+                  rx="10"
+                  fill="url(#g1)"
+                  stroke="rgba(255,255,255,.15)"
                 />
-              </div>
-
-              {/* Check out */}
-              <div>
-                <label className={isDark ? 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5' : 'block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5'}>
-                  <Calendar size={14} className="text-blue-500" />
-                  {t('landing.quick.checkOut')}
-                </label>
-                <input
-                  type="date"
-                  value={searchCheckOut}
-                  onChange={(e) => setSearchCheckOut(e.target.value)}
-                  className={
-                    isDark
-                      ? 'w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      : 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  }
-                />
-              </div>
-
-              {/* Guests count */}
-              <div>
-                <label className={isDark ? 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5' : 'block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5'}>
-                  <Users size={14} className="text-blue-500" />
-                  {t('landing.quick.guests')}
-                </label>
-                <select
-                  value={searchGuests}
-                  onChange={(e) => setSearchGuests(e.target.value)}
-                  className={
-                    isDark
-                      ? 'w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      : 'w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  }
-                >
-                  <option value="1" className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>{t('landing.quick.guests1')}</option>
-                  <option value="2" className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>{t('landing.quick.guests2')}</option>
-                  <option value="3" className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>{t('landing.quick.guests3')}</option>
-                  <option value="4" className={isDark ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}>{t('landing.quick.guests4')}</option>
-                </select>
-              </div>
-
-              {/* Submit button */}
-              <div className="flex items-end">
-                <button
-                  type="submit"
-                  className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 h-[42px] cursor-pointer"
-                >
-                  <span>{t('landing.quick.availableRooms')}</span>
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Quick stats counter */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 max-w-4xl mx-auto text-center">
-            <div className={isDark ? 'p-4 rounded-2xl bg-slate-900/80 border border-slate-800' : 'p-4 rounded-2xl bg-white border border-gray-100 shadow-xs'}>
-              <p className="text-3xl font-black text-blue-500">120+</p>
-              <p className={isDark ? 'text-xs font-medium text-slate-400 mt-1' : 'text-xs font-medium text-gray-500 mt-1'}>{t('landing.stats.rooms')}</p>
-            </div>
-            <div className={isDark ? 'p-4 rounded-2xl bg-slate-900/80 border border-slate-800' : 'p-4 rounded-2xl bg-white border border-gray-100 shadow-xs'}>
-              <p className="text-3xl font-black text-blue-500">15,000+</p>
-              <p className={isDark ? 'text-xs font-medium text-slate-400 mt-1' : 'text-xs font-medium text-gray-500 mt-1'}>{t('landing.stats.guests')}</p>
-            </div>
-            <div className={isDark ? 'p-4 rounded-2xl bg-slate-900/80 border border-slate-800' : 'p-4 rounded-2xl bg-white border border-gray-100 shadow-xs'}>
-              <p className="text-3xl font-black text-blue-500">4.9 / 5</p>
-              <p className={isDark ? 'text-xs font-medium text-slate-400 mt-1' : 'text-xs font-medium text-gray-500 mt-1'}>{t('landing.stats.rating')}</p>
-            </div>
-            <div className={isDark ? 'p-4 rounded-2xl bg-slate-900/80 border border-slate-800' : 'p-4 rounded-2xl bg-white border border-gray-100 shadow-xs'}>
-              <p className="text-3xl font-black text-blue-500">24 / 7</p>
-              <p className={isDark ? 'text-xs font-medium text-slate-400 mt-1' : 'text-xs font-medium text-gray-500 mt-1'}>{t('landing.stats.security')}</p>
+                <rect x="290" y="190" width="80" height="240" rx="8" fill="url(#g1)" />
+                <g fill="#c8a15a" opacity=".9">
+                  <rect x="170" y="70" width="16" height="22" rx="3" />
+                  <rect x="204" y="70" width="16" height="22" rx="3" />
+                  <rect x="238" y="110" width="16" height="22" rx="3" />
+                  <rect x="272" y="70" width="16" height="22" rx="3" />
+                  <rect x="170" y="150" width="16" height="22" rx="3" />
+                  <rect x="204" y="190" width="16" height="22" rx="3" />
+                  <rect x="272" y="230" width="16" height="22" rx="3" />
+                  <rect x="238" y="270" width="16" height="22" rx="3" />
+                  <rect x="170" y="310" width="16" height="22" rx="3" />
+                  <rect x="60" y="170" width="14" height="20" rx="3" />
+                  <rect x="100" y="250" width="14" height="20" rx="3" />
+                  <rect x="310" y="230" width="14" height="20" rx="3" />
+                </g>
+                <g fill="rgba(255,255,255,.14)">
+                  <rect x="170" y="110" width="16" height="22" rx="3" />
+                  <rect x="238" y="70" width="16" height="22" rx="3" />
+                  <rect x="204" y="150" width="16" height="22" rx="3" />
+                  <rect x="272" y="150" width="16" height="22" rx="3" />
+                  <rect x="238" y="190" width="16" height="22" rx="3" />
+                  <rect x="170" y="230" width="16" height="22" rx="3" />
+                  <rect x="204" y="270" width="16" height="22" rx="3" />
+                  <rect x="60" y="210" width="14" height="20" rx="3" />
+                  <rect x="100" y="170" width="14" height="20" rx="3" />
+                  <rect x="340" y="270" width="14" height="20" rx="3" />
+                </g>
+                <rect x="205" y="370" width="40" height="60" rx="6" fill="#c8a15a" />
+                <rect x="0" y="430" width="400" height="3" fill="rgba(255,255,255,.2)" />
+              </svg>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ─── Rooms Section ─────────────────────────────────────────────────────── */}
-      <section
-        id="rooms-section"
-        className={isDark ? 'py-20 bg-slate-950 transition-colors' : 'py-20 bg-gray-50 transition-colors'}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-sky-400">
-                {t('landing.rooms.badge')}
-              </span>
-              <h2 className={isDark ? 'text-3xl sm:text-4xl font-black text-white mt-1' : 'text-3xl sm:text-4xl font-black text-gray-900 mt-1'}>
-                {t('landing.rooms.title')}
-              </h2>
-              <p className={isDark ? 'text-slate-400 text-sm mt-2 max-w-xl' : 'text-gray-500 text-sm mt-2 max-w-xl'}>
-                {t('landing.rooms.subtitle')}
-              </p>
-            </div>
-
-            {/* Category filter tabs */}
-            <div
-              className={
-                isDark
-                  ? 'flex flex-wrap gap-2 mt-6 md:mt-0 bg-slate-900 p-1.5 rounded-2xl border border-slate-800'
-                  : 'flex flex-wrap gap-2 mt-6 md:mt-0 bg-white p-1.5 rounded-2xl border border-gray-200'
-              }
-            >
-              {[
-                { id: 'all', label: t('common.all') },
-                { id: 'Standart', label: t('roomType.standart') },
-                { id: 'Deluxe', label: t('roomType.deluxe') },
-                { id: 'Suite', label: t('roomType.suite') },
-                { id: 'President', label: t('roomType.president') },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveCategory(tab.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    activeCategory === tab.id
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : isDark
-                      ? 'text-slate-400 hover:text-white hover:bg-slate-800'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
+        {/* SEARCH PANEL */}
+        <div className="wrap search">
+          <div className="panel">
+            <div className="sg">
+              <div>
+                <label htmlFor="checkin-date">Kelish sanasi</label>
+                <input
+                  type="date"
+                  id="checkin-date"
+                  min={todayIso}
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="checkout-date">Ketish sanasi</label>
+                <input
+                  type="date"
+                  id="checkout-date"
+                  min={checkIn || todayIso}
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="guests-select">Mehmonlar</label>
+                <select
+                  id="guests-select"
+                  value={guests}
+                  onChange={(e) => setGuests(e.target.value)}
                 >
-                  {tab.label}
-                </button>
+                  <option value="1 kishi">1 kishi</option>
+                  <option value="2 kishi">2 kishi</option>
+                  <option value="3 kishi">3 kishi</option>
+                  <option value="4 kishi">4 kishi</option>
+                </select>
+              </div>
+              <button
+                className="btn dk"
+                onClick={() => {
+                  const el = document.getElementById("xonalar");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                Xonalarni ko‘rish
+              </button>
+            </div>
+            <div className="info">
+              {nightsCount > 0 ? (
+                <>
+                  Tanlangan sana: <b>{nightsCount} kecha</b>, {guests}. Narxlar quyidagi kartalarda hisoblandi.
+                </>
+              ) : (
+                "Ketish sanasi kelish sanasidan keyin bo‘lishi kerak."
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* XONALAR SECTION */}
+        <section id="xonalar">
+          <div className="wrap">
+            <div className="h">
+              <h2 className="serif">Sizga mos xonani tanlang</h2>
+              <p>Narxlar bir kecha uchun, barcha soliqlar bilan. Xonani tanlang va bir necha soniyada onlayn band qiling.</p>
+            </div>
+            <div className="rooms">
+              {displayRooms.map((room) => (
+                <article key={room.name} className="room">
+                  <div className="pic">
+                    {room.imageUrl ? (
+                      <img src={room.imageUrl} alt={room.name} />
+                    ) : (
+                      <svg viewBox="0 0 400 210" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                        <defs>
+                          <linearGradient id={`scene-grad-${room.name}`} x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stopColor={room.colorA} />
+                            <stop offset="1" stopColor={room.colorB} />
+                          </linearGradient>
+                        </defs>
+                        <rect width="400" height="210" fill={`url(#scene-grad-${room.name})`} />
+                        <rect x="250" y="30" width="110" height="90" rx="6" fill="rgba(255,255,255,.18)" />
+                        <path d="M305 30v90M250 75h110" stroke="rgba(255,255,255,.4)" strokeWidth="3" />
+                        <rect x="40" y="110" width="220" height="60" rx="10" fill="#f8fafc" />
+                        <rect x="40" y="100" width="40" height="35" rx="8" fill="#e2e8f0" />
+                        <rect x="90" y="100" width="40" height="35" rx="8" fill="#e2e8f0" />
+                        <rect x="40" y="140" width="220" height="40" rx="8" fill="rgba(15,23,42,.55)" />
+                        <rect x="30" y="170" width="12" height="22" fill="#0b1220" />
+                        <rect x="258" y="170" width="12" height="22" fill="#0b1220" />
+                        <rect x="0" y="192" width="400" height="18" fill="rgba(0,0,0,.25)" />
+                      </svg>
+                    )}
+                    <span className="tag">{room.tag}</span>
+                    <span className={`avail-tag ${room.availableCount > 0 ? "ok" : "busy"}`}>
+                      {room.availableCount > 0 ? `${room.availableCount} ta bo‘sh` : "Band"}
+                    </span>
+                  </div>
+                  <div className="rb">
+                    <h3>{room.name}</h3>
+                    <p>{room.desc}</p>
+                    <div className="chips">
+                      {room.chips.map((c) => (
+                        <span key={c}>{c}</span>
+                      ))}
+                    </div>
+                    <div className="rf">
+                      <div className="price">
+                        {fmt(room.price)} so‘m
+                        <small>
+                          {nightsCount > 0
+                            ? `${nightsCount} kecha: ${fmt(room.price * nightsCount)} so‘m`
+                            : "bir kecha uchun"}
+                        </small>
+                      </div>
+                      <button className="btn dk" onClick={() => handleOpenBooking(room.name)}>
+                        Band qilish
+                      </button>
+                    </div>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
+        </section>
 
-          {/* Rooms Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredRooms.map((room) => {
-              const isBooked = bookedRoomIds.includes(room.id);
-              const statusCfg = STATUS_CONFIG[room.status] ?? { bg: 'bg-gray-500', label: room.status };
-              const isAvailable = room.status === "Bo'sh";
-
-              return (
-                <div
-                  key={room.id}
-                  className={
-                    isDark
-                      ? 'bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 shadow-sm hover:shadow-2xl hover:border-slate-700 transition-all duration-300 flex flex-col group'
-                      : 'bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group'
-                  }
-                >
-                  {/* Room Image */}
-                  <div className="relative h-56 overflow-hidden">
-                    <img
-                      src={room.image}
-                      alt={room.type}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    {/* Xona raqami badge */}
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      <span className="px-2.5 py-1 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-bold">
-                        #{room.number}
-                      </span>
-                      {/* Holat badge */}
-                      <span className={`px-2.5 py-1 ${statusCfg.bg} text-white rounded-lg text-xs font-bold`}>
-                        {statusCfg.label}
-                      </span>
-                    </div>
-                    <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 backdrop-blur-sm text-white rounded-lg text-xs font-medium">
-                      {room.size} • {room.capacity}
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3 className={isDark ? 'font-bold text-lg text-white group-hover:text-sky-400 transition-colors' : 'font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors'}>
-                        {room.type} Xona #{room.number}
-                      </h3>
-                      <p className={isDark ? 'text-slate-400 text-xs mt-1.5 line-clamp-2 leading-relaxed' : 'text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed'}>
-                        {room.description}
-                      </p>
-
-                      {/* Features pill */}
-                      <div className="flex flex-wrap gap-1.5 mt-4">
-                        {room.features.map((feat, idx) => (
-                          <span
-                            key={idx}
-                            className={
-                              isDark
-                                ? 'px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md text-[11px] font-medium'
-                                : 'px-2 py-0.5 bg-gray-100 text-gray-600 rounded-md text-[11px] font-medium'
-                            }
-                          >
-                            {feat}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Price & Action */}
-                    <div className={`pt-4 mt-4 border-t flex flex-col gap-3 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-[11px] text-gray-400 dark:text-slate-500 font-medium">{t('common.perNight')}</p>
-                          <p className={isDark ? 'text-base font-black text-white' : 'text-base font-black text-gray-900'}>
-                            {room.pricePerNight.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'en-US')} <span className="text-xs font-normal text-gray-400">{t('common.currency')}</span>
-                          </p>
-                        </div>
-                        <span className={isDark ? 'text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-sky-300 border border-slate-700' : 'text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-gray-50 text-gray-600 border border-gray-200/60'}>
-                          {translateRoomType(room.type)}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openViewModal(getRoomDetail(room.type))}
-                          className={
-                            isDark
-                              ? 'w-full py-2.5 px-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-sky-300 border border-slate-700 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center'
-                              : 'w-full py-2.5 px-2 bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-bold transition-all shadow-xs hover:shadow flex items-center justify-center gap-1.5 cursor-pointer text-center'
-                          }
-                        >
-                          <Eye size={15} className="shrink-0" />
-                          <span className="truncate">{t('landing.rooms.view')}</span>
-                        </button>
-
-                        {isBooked || !isAvailable ? (
-                          <button
-                            disabled
-                            className="w-full py-2.5 px-2 bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 rounded-xl text-xs font-bold transition shadow-xs cursor-not-allowed flex items-center justify-center text-center"
-                          >
-                            {isBooked ? t('landing.rooms.booked') : room.status}
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const detail = getRoomDetail(room.type);
-                              openBookingModal({ ...detail, id: room.id, price: room.pricePerNight });
-                            }}
-                            className="w-full py-2.5 px-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 hover:shadow flex items-center justify-center text-center cursor-pointer"
-                          >
-                            {t('landing.rooms.book')}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+        {/* QULAYLIKLAR SECTION */}
+        <section id="qulayliklar" className="dark">
+          <div className="wrap">
+            <div className="h">
+              <h2 className="serif">Qulayliklar</h2>
+              <p>Qulay turar joy uchun kerakli hamma narsa bir joyda.</p>
+            </div>
+            <div className="feat">
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a6 6 0 0 1 8 0M12 19h.01" />
+                </svg>
+                <h3>Tezkor Wi-Fi</h3>
+                <p>Barcha xonalarda bepul va barqaror internet.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 3v8M10 3v8M6 7h4M8 11v10M17 3c-2 2-2 6 0 8v10" />
+                </svg>
+                <h3>Nonushta</h3>
+                <p>Har kuni 07:00 dan 10:30 gacha shved stoli.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 16l2-8h14l2 8M5 16v3M19 16v3M7 12h10" />
+                </svg>
+                <h3>Transfer</h3>
+                <p>Aeroport va vokzaldan olib ketamiz.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z" />
+                </svg>
+                <h3>Xavfsizlik</h3>
+                <p>Kuzatuv va xonadagi seyf har doim ishlaydi.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-5h4v5" />
+                </svg>
+                <h3>Yig‘ilish zali</h3>
+                <p>20 kishigacha, proyektor va ovoz tizimi bilan.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 8v4l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
+                </svg>
+                <h3>24/7 qabulxona</h3>
+                <p>Istalgan vaqtda ro‘yxatdan o‘tish mumkin.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 17h14M7 17V7h10v10M9 21h6" />
+                </svg>
+                <h3>Avtoturargoh</h3>
+                <p>Mehmonlar uchun bepul va qo‘riqlanadigan.</p>
+              </div>
+              <div className="f">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 14c3-4 5 4 8 0s5 4 8 0M4 8c3-4 5 4 8 0s5 4 8 0" />
+                </svg>
+                <h3>Spa va sauna</h3>
+                <p>Ish kunidan keyin dam olish uchun.</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ─── Advantages Section ────────────────────────────────────────────────── */}
-      <section
-        id="advantages"
-        className={isDark ? 'py-20 bg-slate-900/50 transition-colors' : 'py-20 bg-white transition-colors'}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className={isDark ? 'text-3xl sm:text-4xl font-black text-white' : 'text-3xl sm:text-4xl font-black text-gray-900'}>
-              {t('landing.adv.title')}
-            </h2>
-            <p className={isDark ? 'text-slate-400 text-sm mt-2' : 'text-gray-500 text-sm mt-2'}>
-              {t('landing.adv.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {ADVANTAGES.map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={idx}
-                  className={
-                    isDark
-                      ? 'p-7 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 hover:shadow-2xl transition-all duration-300 group'
-                      : 'p-7 rounded-3xl bg-gray-50/80 hover:bg-white border border-gray-100 hover:border-blue-100 hover:shadow-xl transition-all duration-300 group'
-                  }
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                    <Icon size={24} />
-                  </div>
-                  <h3 className={isDark ? 'font-bold text-lg text-white mb-2' : 'font-bold text-lg text-gray-900 mb-2'}>
-                    {item.title}
-                  </h3>
-                  <p className={isDark ? 'text-slate-400 text-sm leading-relaxed' : 'text-gray-500 text-sm leading-relaxed'}>
-                    {item.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Reviews Section ───────────────────────────────────────────────────── */}
-      <section
-        id="reviews"
-        className={isDark ? 'py-20 bg-slate-950 transition-colors' : 'py-20 bg-white transition-colors'}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className={isDark ? 'text-3xl sm:text-4xl font-black text-white' : 'text-3xl sm:text-4xl font-black text-gray-900'}>
-              {t('landing.reviews.title')}
-            </h2>
-            <p className={isDark ? 'text-slate-400 text-sm mt-2' : 'text-gray-500 text-sm mt-2'}>
-              {t('landing.reviews.subtitle')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {REVIEWS.map((review, idx) => (
-              <div
-                key={idx}
-                className={
-                  isDark
-                    ? 'p-7 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between'
-                    : 'p-7 rounded-3xl bg-gray-50 border border-gray-100 flex flex-col justify-between'
-                }
-              >
-                <div>
-                  <div className="flex items-center gap-1 text-amber-400 mb-4">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} size={16} className="fill-amber-400" />
-                    ))}
-                  </div>
-                  <p className={isDark ? 'text-slate-300 text-sm leading-relaxed italic' : 'text-gray-700 text-sm leading-relaxed italic'}>
-                    "{review.text}"
-                  </p>
-                </div>
-
-                <div className={`pt-6 mt-6 border-t flex items-center justify-between ${isDark ? 'border-slate-800' : 'border-gray-200/60'}`}>
+        {/* SHARHLAR SECTION */}
+        <section id="sharhlar">
+          <div className="wrap">
+            <div className="h">
+              <h2 className="serif">Mehmonlar nima deydi</h2>
+              <p>Haqiqiy mehmonlarimizning fikrlari.</p>
+            </div>
+            <div className="rev">
+              <div className="rv">
+                <div className="st">★★★★★</div>
+                <p>Xona juda toza va tinch edi. Qabulxona xodimlari hamma narsada yordam berishdi.</p>
+                <div className="who">
+                  <i>JA</i>
                   <div>
-                    <h4 className={isDark ? 'font-bold text-sm text-white' : 'font-bold text-sm text-gray-900'}>{review.name}</h4>
-                    <p className="text-xs text-gray-400">{review.city}</p>
+                    Jasur Aliyev<span>Biznes safar</span>
                   </div>
-                  <span className="text-[11px] font-medium text-gray-400">{review.date}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA Banner ────────────────────────────────────────────────────────── */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <h2 className="text-3xl sm:text-4xl font-black mb-4">
-            {t('landing.cta.title')}
-          </h2>
-          <p className="text-blue-100 text-base max-w-2xl mx-auto mb-8">
-            {t('landing.cta.subtitle')}
-          </p>
-          <a
-            href="#rooms-section"
-            className="inline-flex items-center gap-2 keep-white !bg-white !text-blue-600 hover:!bg-blue-50 font-black px-8 py-4 rounded-xl shadow-lg transition-all hover:scale-105"
-          >
-            <span>{t('landing.cta.btn')}</span>
-            <ArrowRight size={18} />
-          </a>
-        </div>
-      </section>
-
-      {/* ─── Footer & Contact ──────────────────────────────────────────────────── */}
-      <footer id="contact" className="bg-slate-950 text-gray-300 pt-16 pb-12 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-            {/* About */}
-            <div className="md:col-span-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-                  <Hotel size={22} />
+              <div className="rv">
+                <div className="st">★★★★★</div>
+                <p>Nonushta mazali, joylashuv ajoyib. Metroga besh daqiqa. Yana kelamiz.</p>
+                <div className="who">
+                  <i>MK</i>
+                  <div>
+                    Malika Karimova<span>Oilaviy dam olish</span>
+                  </div>
                 </div>
-                <span className="text-2xl font-black text-white">Origin Hotel</span>
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                {t('landing.footer.about')}
-              </p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
-                {t('landing.footer.quickLinks')}
-              </h4>
-              <ul className="space-y-2 text-xs">
-                <li><a href="#hero" className="hover:text-white transition">{t('nav.home')}</a></li>
-                <li><a href="#rooms-section" className="hover:text-white transition">{t('nav.rooms')}</a></li>
-                <li><a href="#advantages" className="hover:text-white transition">{t('nav.advantages')}</a></li>
-                <li><a href="#reviews" className="hover:text-white transition">{t('nav.reviews')}</a></li>
-              </ul>
-            </div>
-
-            {/* Management login */}
-            <div>
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
-                {t('landing.footer.management')}
-              </h4>
-              <p className="text-xs text-gray-400 mb-3">
-                {t('landing.footer.managementDesc')}
-              </p>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition"
-              >
-                <span>{t('landing.footer.managementBtn')}</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
-                {t('nav.contact')}
-              </h4>
-              <div className="space-y-2.5 text-xs text-gray-400">
-                <p className="flex items-start gap-2.5">
-                  <MapPin size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>Amir Temur shoh ko‘chasi 15, Yunusobod tumani, Qarshi</span>
-                </p>
-                <p className="flex items-center gap-2.5">
-                  <Phone size={16} className="text-blue-500 flex-shrink-0" />
-                  <span className="font-mono text-gray-200">+998 (71) 200-00-00</span>
-                </p>
-                <p className="flex items-center gap-2.5">
-                  <Mail size={16} className="text-blue-500 flex-shrink-0" />
-                  <span>info@originhotel.uz</span>
-                </p>
+              <div className="rv">
+                <div className="st">★★★★★</div>
+                <p>Suite xonasi rasmdagidan ham yaxshi chiqdi. Transfer vaqtida kutib oldi.</p>
+                <div className="who">
+                  <i>SU</i>
+                  <div>
+                    Sardor Ulug‘bekov<span>Mehmon</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </section>
 
-          <div className="pt-8 border-t border-slate-800 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© 2026 Origin Hotel Qarshi. {t('login.footer')}</p>
-            <div className="flex gap-6 text-gray-400">
-              <a href="#" className="hover:text-white transition">{t('landing.footer.privacy')}</a>
-              <a href="#" className="hover:text-white transition">{t('landing.footer.terms')}</a>
+        {/* MANZIL SECTION */}
+        <section id="manzil" style={{ paddingTop: 0 }}>
+          <div className="wrap">
+            <div className="h">
+              <h2 className="serif">Bizni toping</h2>
+              <p>Shahar markazida, asosiy diqqatga sazovor joylarga yaqin.</p>
             </div>
+            <div className="loc">
+              <div className="card">
+                <h3>Origin Hotel</h3>
+                <div className="li">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                  </svg>
+                  <div>
+                    Toshkent, Amir Temur ko‘chasi, 15
+                    <span>Mustaqillik maydoniga 300 m</span>
+                  </div>
+                </div>
+                <div className="li">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+                  </svg>
+                  <div>
+                    <a href="tel:+998712000000">+998 71 200 00 00</a>
+                    <span>Har kuni, 24 soat</span>
+                  </div>
+                </div>
+                <div className="li">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 6h16v12H4zM4 7l8 6 8-6" />
+                  </svg>
+                  <div>
+                    info@originhotel.uz
+                    <span>24 soat ichida javob beramiz</span>
+                  </div>
+                </div>
+                <div className="li">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 8v4l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
+                  </svg>
+                  <div>
+                    Kelish 14:00, ketish 12:00
+                    <span>Erta kelish so‘rov bo‘yicha</span>
+                  </div>
+                </div>
+              </div>
+              <div className="map">
+                <svg viewBox="0 0 700 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                  <rect width="700" height="460" fill="var(--map1)" />
+                  <path
+                    d="M0 360 C150 330 230 400 380 370 S600 300 700 330 V460 H0Z"
+                    fill="var(--water)"
+                  />
+                  <rect x="470" y="40" width="190" height="130" rx="22" fill="var(--park)" />
+                  <rect x="40" y="250" width="150" height="90" rx="18" fill="var(--park)" />
+                  <g stroke="var(--map2)" strokeWidth="16" fill="none" strokeLinecap="round">
+                    <path d="M-10 200H710" />
+                    <path d="M300 -10V470" />
+                    <path d="M-10 90L710 150" />
+                    <path d="M130 -10L220 470" />
+                    <path d="M520 -10L430 470" />
+                  </g>
+                  <g stroke="#fff" strokeOpacity=".5" strokeWidth="2" fill="none" strokeDasharray="10 12">
+                    <path d="M-10 200H710" />
+                    <path d="M300 -10V470" />
+                  </g>
+                  <g fill="var(--map2)">
+                    <rect x="330" y="215" width="70" height="50" rx="8" />
+                    <rect x="215" y="215" width="70" height="50" rx="8" />
+                    <rect x="330" y="110" width="80" height="70" rx="8" />
+                    <rect x="215" y="120" width="70" height="60" rx="8" />
+                    <rect x="560" y="215" width="100" height="60" rx="8" />
+                  </g>
+                </svg>
+                <div className="pin">
+                  <b>Origin Hotel</b>
+                  <i></i>
+                </div>
+                <a
+                  className="btn dk mb"
+                  href="https://www.google.com/maps/search/?api=1&query=Amir+Temur+ko%CA%BBchasi+Tashkent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Xaritada ochish
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="landing-footer">
+        <div className="wrap">
+          <div className="fg">
+            <div>
+              <a className="logo" href="#top" style={{ display: "flex", color: "#fff", padding: 0 }}>
+                <i>O</i>Origin Hotel
+              </a>
+              <p>
+                Toshkent markazidagi zamonaviy mehmonxona. Qulay xonalar, shinam nonushta va 24 soat ishlaydigan
+                qabulxona.
+              </p>
+            </div>
+            <div>
+              <h4>Sahifalar</h4>
+              <a href="#xonalar">Xonalar</a>
+              <a href="#qulayliklar">Qulayliklar</a>
+              <a href="#sharhlar">Sharhlar</a>
+              <a href="#manzil">Manzil</a>
+            </div>
+            <div>
+              <h4>Ish vaqti</h4>
+              <span>Qabulxona: 24 soat</span>
+              <span>Kelish: 14:00</span>
+              <span>Ketish: 12:00</span>
+              <span>Nonushta: 07:00–10:30</span>
+            </div>
+            <div>
+              <h4>Aloqa</h4>
+              <a href="tel:+998712000000">+998 71 200 00 00</a>
+              <a href="mailto:info@originhotel.uz">info@originhotel.uz</a>
+              <span>Toshkent, Amir Temur ko‘chasi, 15</span>
+            </div>
+          </div>
+          <div className="fb">
+            <span>© 2026 Origin Hotel. Barcha huquqlar himoyalangan.</span>
+            <span>Toshkent, O‘zbekiston</span>
           </div>
         </div>
       </footer>
 
-      {/* ─── Room Details Modal ────────────────────────────────────────────────── */}
-      {viewModalRoom && (
+      {/* MODAL (BAND QILISH / BOOKING) */}
+      {modalOpen && selectedRoom && (
         <div
-          data-state={isViewModalClosing ? 'closed' : 'open'}
-          className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeViewModal();
+          className="ov"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseModal();
           }}
         >
-          <div data-state={isViewModalClosing ? 'closed' : 'open'} className={isDark ? 'landing-modal-content bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative' : 'landing-modal-content bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative'}>
-            <button
-              onClick={closeViewModal}
-              className={isDark ? 'absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer' : 'absolute top-5 right-5 text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer'}
-            >
-              <X size={20} />
+          <div className="md" role="dialog" aria-modal="true" aria-labelledby="mt">
+            <button className="x" aria-label="Yopish" onClick={handleCloseModal}>
+              ✕
             </button>
-            <img src={viewModalRoom.image} alt={viewModalRoom.name} className="w-full h-52 object-cover rounded-2xl mb-4" />
-            <h3 className={isDark ? 'text-xl font-bold text-white' : 'text-xl font-bold text-gray-900'}>{viewModalRoom.name}</h3>
-            <p className={isDark ? 'text-slate-400 text-xs mt-1' : 'text-gray-500 text-xs mt-1'}>{viewModalRoom.fullDescription || viewModalRoom.description}</p>
-            <div className="grid grid-cols-2 gap-3 my-4 text-xs">
-              <div className={isDark ? 'p-2.5 rounded-xl bg-slate-800 text-slate-300' : 'p-2.5 rounded-xl bg-gray-50 text-gray-700'}>
-                <strong>{t('common.floor')}:</strong> {viewModalRoom.floor}
-              </div>
-              <div className={isDark ? 'p-2.5 rounded-xl bg-slate-800 text-slate-300' : 'p-2.5 rounded-xl bg-gray-50 text-gray-700'}>
-                <strong>{t('rooms.capacity')}:</strong> {viewModalRoom.capacity}
-              </div>
-              <div className={isDark ? 'p-2.5 rounded-xl bg-slate-800 text-slate-300' : 'p-2.5 rounded-xl bg-gray-50 text-gray-700'}>
-                <strong>{t('common.perNight')}:</strong> {viewModalRoom.price.toLocaleString()} {t('common.currency')}
-              </div>
-              <div className={isDark ? 'p-2.5 rounded-xl bg-slate-800 text-slate-300' : 'p-2.5 rounded-xl bg-gray-50 text-gray-700'}>
-                <strong>{t('common.category')}:</strong> {translateRoomType(viewModalRoom.categoryLabel)}
-              </div>
+
+            <div className="stp" id="stp">
+              <span className={modalStep >= 0 ? "on" : ""}>Xulosa</span>
+              <span className={modalStep >= 1 ? "on" : ""}>Ma’lumotlar</span>
+              <span className={modalStep >= 2 ? "on" : ""}>Tasdiq</span>
             </div>
-            <button
-              onClick={() => {
-                const target = viewModalRoom;
-                closeViewModal();
-                openBookingModal(target);
-              }}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition cursor-pointer"
-            >
-              {t('landing.rooms.book')}
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* ─── Room Booking Modal ─────────────────────────────────────────────────── */}
-      {bookingModalRoom && (
-        <div
-          data-state={isBookingModalClosing ? 'closed' : 'open'}
-          className="landing-modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeBookingModal();
-          }}
-        >
-          <div
-            data-state={isBookingModalClosing ? 'closed' : 'open'}
-            className={
-              isDark
-                ? 'landing-modal-content bg-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-slate-800'
-                : 'landing-modal-content bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative'
-            }
-          >
-            <button
-              onClick={closeBookingModal}
-              className={
-                isDark
-                  ? 'absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 cursor-pointer'
-                  : 'absolute top-5 right-5 text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer'
-              }
-            >
-              <X size={20} />
-            </button>
-
-            {bookingSuccess ? (
-              <div className="text-center py-6">
-                <div className="w-16 h-16 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 size={36} />
-                </div>
-                <h3 className={isDark ? 'text-xl font-black text-white mb-2' : 'text-xl font-black text-gray-900 mb-2'}>
-                  {t('landing.modal.success')}
-                </h3>
-                <p className={isDark ? 'text-xs text-slate-400 leading-relaxed' : 'text-xs text-gray-500 leading-relaxed'}>
-                  {t('landing.modal.successMsg')}
-                </p>
-              </div>
-            ) : (
+            {/* STEP 0: XULOSA */}
+            {modalStep === 0 && (
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-sky-400">
-                  {t('landing.modal.bookTitle')}
-                </span>
-                <h3 className={isDark ? 'text-xl font-black text-white mt-1 mb-2' : 'text-xl font-black text-gray-900 mt-1 mb-2'}>
-                  {bookingModalRoom.name}
-                </h3>
-                <p className={isDark ? 'text-xs text-slate-400 mb-2' : 'text-xs text-gray-500 mb-2'}>
-                  {t('common.perNight')}: <strong className={isDark ? 'text-white' : 'text-gray-900'}>{bookingModalRoom.price.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'en-US')} {t('common.currency')}</strong>
-                </p>
-                {bookedRoomIds.includes(bookingModalRoom.id) && (
-                  <p className="text-xs text-red-500 font-semibold mb-4">
-                    {t('landing.modal.alreadyBooked')}
+                {nightsCount <= 0 ? (
+                  <div>
+                    <h3 id="mt">Sanalarni tekshiring</h3>
+                    <p className="mm">
+                      Ketish sanasi kelish sanasidan keyin bo‘lishi kerak. Sahifa tepasidagi qidiruv panelida sanalarni
+                      to‘g‘rilang.
+                    </p>
+                    <button className="btn dk w" onClick={handleCloseModal}>
+                      Tushunarli
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <h3 id="mt">{selectedRoom.name} xonasi</h3>
+                    <div className="sm">
+                      <div>
+                        <span>Kelish</span>
+                        <b>{formatDateDisplay(checkIn)}</b>
+                      </div>
+                      <div>
+                        <span>Ketish</span>
+                        <b>{formatDateDisplay(checkOut)}</b>
+                      </div>
+                      <div>
+                        <span>Mehmonlar</span>
+                        <b>{guests}</b>
+                      </div>
+                    </div>
+
+                    <h4>Qo‘shimcha xizmatlar</h4>
+                    {EXTRAS.map((extra) => (
+                      <label key={extra.k} className="ex">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedExtras[extra.k]}
+                          onChange={(e) =>
+                            setSelectedExtras((prev) => ({
+                              ...prev,
+                              [extra.k]: e.target.checked,
+                            }))
+                          }
+                        />
+                        <div>
+                          {extra.name}
+                          <span>{extra.desc}</span>
+                        </div>
+                        <b>+{fmt(extra.price)}</b>
+                      </label>
+                    ))}
+
+                    <div className="tt">
+                      <span>
+                        {nightsCount} kecha × {fmt(selectedRoom.price)} so‘m + xizmatlar
+                      </span>
+                      <b>{fmt(calculateTotal)} so‘m</b>
+                    </div>
+
+                    <button className="btn dk w" onClick={handleNextToStep1}>
+                      Davom etish
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* STEP 1: MA'LUMOTLAR */}
+            {modalStep === 1 && (
+              <div>
+                <h3 id="mt">Ma’lumotlaringiz</h3>
+                <div className="fld">
+                  <label htmlFor="bn">Ism va familiya</label>
+                  <input
+                    id="bn"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder="Masalan, Aliyev Jasur"
+                    autoComplete="name"
+                  />
+                </div>
+                <div className="fld">
+                  <label htmlFor="bp">Telefon raqami</label>
+                  <input
+                    id="bp"
+                    type="tel"
+                    value={guestPhone}
+                    onChange={(e) => setGuestPhone(e.target.value)}
+                    placeholder="+998 90 123 45 67"
+                    autoComplete="tel"
+                  />
+                </div>
+                <label>To‘lov usuli</label>
+                <div className="pay">
+                  <button
+                    type="button"
+                    className={payMethod === "hotel" ? "on" : ""}
+                    onClick={() => setPayMethod("hotel")}
+                  >
+                    Mehmonxonada to‘layman
+                  </button>
+                  <button
+                    type="button"
+                    className={payMethod === "card" ? "on" : ""}
+                    onClick={() => setPayMethod("card")}
+                  >
+                    Karta orqali
+                  </button>
+                </div>
+
+                {formError && (
+                  <p className="err" role="alert">
+                    {formError}
                   </p>
                 )}
 
-                <form onSubmit={handleBookingSubmit} className="space-y-4">
+                <div className="tt" style={{ marginTop: 0 }}>
+                  <span>Jami</span>
+                  <b>{fmt(calculateTotal)} so‘m</b>
+                </div>
+
+                <button className="btn dk w" onClick={handleConfirmBooking}>
+                  Bronni tasdiqlash
+                </button>
+                <button className="btn w sec" onClick={() => setModalStep(0)}>
+                  Orqaga
+                </button>
+              </div>
+            )}
+
+            {/* STEP 2: TASDIQ */}
+            {modalStep === 2 && (
+              <div>
+                <div className="okc">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                </div>
+                <h3 id="mt">Bron qabul qilindi</h3>
+                <p className="mm" style={{ marginTop: -6 }}>
+                  Bron raqami: <span className="code">{bookingCode}</span>
+                </p>
+
+                <div className="rw">
+                  <span>Xona</span>
+                  <b>{selectedRoom.name}</b>
+                </div>
+                <div className="rw">
+                  <span>Sanalar</span>
+                  <b>
+                    {formatDateDisplay(checkIn)} — {formatDateDisplay(checkOut)}
+                  </b>
+                </div>
+                <div className="rw">
+                  <span>To‘lov</span>
+                  <b>{payMethod === "card" ? "Karta (havola yuboriladi)" : "Mehmonxonada"}</b>
+                </div>
+                <div className="rw">
+                  <span>Jami</span>
+                  <b>{fmt(calculateTotal)} so‘m</b>
+                </div>
+
+                <div className="adm">
+                  <i>
+                    {guestName
+                      .trim()
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase() || "OK"}
+                  </i>
                   <div>
-                    <label className={isDark ? 'block text-xs font-semibold text-slate-300 mb-1' : 'block text-xs font-semibold text-gray-700 mb-1'}>
-                      {t('landing.modal.name')}
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Jasur Aliyev"
-                      value={guestName}
-                      onChange={(e) => handleNameInput(e.target.value)}
-                      className={
-                        isDark
-                          ? 'w-full px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                          : 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      }
-                      inputMode="text"
-                      autoComplete="name"
-                    />
+                    <b>{guestName.trim()}</b>
+                    <span>
+                      {selectedRoom.name} · {nightsCount} kecha · admin panelga tushdi
+                    </span>
                   </div>
+                  <span className="pill">Kutilmoqda</span>
+                </div>
 
-                  <div>
-                    <label className={isDark ? 'block text-xs font-semibold text-slate-300 mb-1' : 'block text-xs font-semibold text-gray-700 mb-1'}>
-                      {t('landing.modal.phone')}
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+998901234567"
-                      value={guestPhone}
-                      onChange={(e) => handlePhoneInput(e.target.value)}
-                      className={
-                        isDark
-                          ? 'w-full px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                          : 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                      }
-                      inputMode="numeric"
-                      pattern="\+[0-9]*"
-                      maxLength={14}
-                      autoComplete="tel"
-                    />
-                  </div>
+                <p className="mm" style={{ fontSize: 14 }}>
+                  Administrator bronni tasdiqlaydi va 15 daqiqa ichida {guestPhone} raqamiga qo‘ng‘iroq qiladi.
+                </p>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={isDark ? 'block text-xs font-semibold text-slate-300 mb-1' : 'block text-xs font-semibold text-gray-700 mb-1'}>
-                        {t('landing.quick.checkIn')}
-                      </label>
-                      <input
-                        type="date"
-                        defaultValue={searchCheckIn}
-                        className={
-                          isDark
-                            ? 'w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-xs text-white'
-                            : 'w-full px-3 py-2 rounded-xl border border-gray-200 text-xs text-gray-700'
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label className={isDark ? 'block text-xs font-semibold text-slate-300 mb-1' : 'block text-xs font-semibold text-gray-700 mb-1'}>
-                        {t('landing.quick.checkOut')}
-                      </label>
-                      <input
-                        type="date"
-                        defaultValue={searchCheckOut}
-                        className={
-                          isDark
-                            ? 'w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-xs text-white'
-                            : 'w-full px-3 py-2 rounded-xl border border-gray-200 text-xs text-gray-700'
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={bookedRoomIds.includes(bookingModalRoom.id)}
-                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition mt-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    {bookedRoomIds.includes(bookingModalRoom.id) ? t('landing.rooms.booked') : t('landing.modal.confirm')}
-                  </button>
-                </form>
+                <button className="btn dk w" onClick={handleCloseModal}>
+                  Yopish
+                </button>
               </div>
             )}
           </div>
