@@ -241,11 +241,6 @@ export default function LandingPage() {
 
   const ADVANTAGES = [
     {
-      icon: MapPin,
-      title: t('landing.adv.1.title'),
-      desc: t('landing.adv.1.desc'),
-    },
-    {
       icon: Coffee,
       title: t('landing.adv.2.title'),
       desc: t('landing.adv.2.desc'),
