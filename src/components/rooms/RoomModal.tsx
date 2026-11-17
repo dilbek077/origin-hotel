@@ -3,6 +3,7 @@ import { ImagePlus, Trash2 } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import type { Room, RoomStatus, RoomType } from "@/types/room";
 import { useTranslation } from "@/i18n";
+import { Button } from "@/components/ui/button";
 
 interface RoomModalProps {
   isOpen: boolean;
@@ -165,7 +166,6 @@ export default function RoomModal({
   const labelClass = "mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400";
   const inputClass = "w-full h-11 rounded-xl border border-slate-700 bg-[#0e1215] px-3.5 text-sm text-white placeholder:text-slate-500 focus:border-slate-500 focus:outline-none";
   const actionButtonClass = "rounded-xl border border-slate-700 bg-[#141b1f] px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-800";
-  const submitButtonClass = "rounded-xl bg-[#dfe0e4] px-4 py-2.5 text-sm font-semibold text-[#101418] transition hover:bg-white";
 
   return (
     <Modal
@@ -298,9 +298,9 @@ export default function RoomModal({
             <button type="button" onClick={onClose} className={actionButtonClass}>
               {t('common.cancel')}
             </button>
-            <button type="submit" className={submitButtonClass}>
+            <Button type="submit">
               {t('common.save')}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

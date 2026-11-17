@@ -147,7 +147,7 @@ export default function Dashboard() {
               <Download className="h-4 w-4" />
               <span>Yuklab olish</span>
             </Button>
-            <Button size="sm" onClick={() => setBookingModalOpen(true)} className="h-9 gap-1.5 border border-border bg-muted text-foreground shadow-sm hover:bg-muted/80">
+            <Button size="sm" onClick={() => setBookingModalOpen(true)} className="h-9 gap-1.5">
               <PlusCircle className="h-4 w-4" />
               <span>Yangi bron</span>
             </Button>

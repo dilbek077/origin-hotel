@@ -7,6 +7,7 @@ import Modal from "@/components/common/Modal";
 import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import { useTheme } from '@/theme';
 import { useTranslation } from '@/i18n';
+import { Button } from "@/components/ui/button";
 
 const STATUS_OPTIONS = ["Barchasi", "Bo'sh", "Band", "Tozalashda", "Ta'mirda"] as const;
 
@@ -145,21 +146,22 @@ export default function Rooms() {
       <div className={panelShell}>
         <div className={`mb-0 flex items-center justify-between gap-4 border-b px-6 py-5 ${headerBorder}`}>
           <div>
-            <h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-slate-900"}`}>Xonalar</h1>
-            <p className={`mt-2 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+            <h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-slate-900"}`}>
+              {t('nav.rooms')}
+            </h1>
+            <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Qavatlar, narxlar va xonalar holatini bir joyda boshqaring.
             </p>
           </div>
 
-          <button
+          <Button
+            type="button"
             onClick={handleOpenAdd}
-            className={isDark
-              ? "inline-flex items-center gap-2 rounded-xl border border-[#1c252d] bg-[#10171d] px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-slate-500 hover:bg-[#121d26]"
-              : "inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-200"}
+            className="self-start sm:self-auto"
           >
-            <Plus size={16} />
+            <Plus className="size-4" />
             Xona qo‘shish
-          </button>
+          </Button>
         </div>
 
         <div className="p-5 sm:p-6">

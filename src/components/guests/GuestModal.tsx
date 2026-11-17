@@ -3,6 +3,7 @@ import Modal from "@/components/common/Modal";
 import type { Guest } from "@/types/guest";
 import { useTranslation } from "@/i18n";
 import { useTheme } from "@/theme";
+import { Button } from "@/components/ui/button";
 
 interface GuestModalProps {
   isOpen: boolean;
@@ -169,12 +170,11 @@ export default function GuestModal({
           >
             {t('common.cancel')}
           </button>
-          <button
+          <Button
             type="submit"
-            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
             {t('common.save')}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

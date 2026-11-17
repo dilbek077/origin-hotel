@@ -25,6 +25,7 @@ const AdminBookingsPage   = lazyWithRetry(() => import("@/pages/Bookings"))
 const AdminFinancePage    = lazyWithRetry(() => import("@/pages/Finance"))
 const AdminReportsPage    = lazyWithRetry(() => import("@/pages/Reports"))
 const AdminSettingsPage   = lazyWithRetry(() => import("@/pages/Settings"))
+const UserProfilePage     = lazyWithRetry(() => import("@/pages/Profile"))
 
 // Xodim sahifalari (Staff — cheklangan ruxsat)
 const StaffDashboardPage  = lazyWithRetry(() => import("@/pages/Dashboard"))
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
                 element: withSuspense(AdminReportsPage, "Hisobotlar yuklanmoqda..."),
               },
               {
+                path: "/admin/profil",
+                element: withSuspense(UserProfilePage, "Profil yuklanmoqda..."),
+              },
+              {
                 path: "/admin/sozlamalar",
                 element: withSuspense(AdminSettingsPage, "Sozlamalar yuklanmoqda..."),
               },
@@ -121,6 +126,10 @@ const router = createBrowserRouter([
               {
                 path: "/staff",
                 element: withSuspense(StaffDashboardPage, "Dashboard yuklanmoqda..."),
+              },
+              {
+                path: "/staff/profil",
+                element: withSuspense(UserProfilePage, "Profil yuklanmoqda..."),
               },
               {
                 path: "/staff/xonalar",

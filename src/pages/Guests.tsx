@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useTheme } from "@/theme";
 import { useTranslation } from "@/i18n";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -46,6 +47,7 @@ function downloadGuestsCsv(guests: Guest[]) {
 }
 
 export default function Guests() {
+  const { isDark } = useTheme();
   const { t } = useTranslation();
   const [guests, setGuests] = useState<Guest[]>(() => StorageService.getGuests());
   const [search, setSearch] = useState("");
@@ -151,16 +153,14 @@ export default function Guests() {
 
   return (
     <main className="min-h-screen space-y-6 bg-background p-4 text-foreground sm:p-6 lg:p-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-              Origin Hotel
-            </span>
-            <span className="text-xs text-muted-foreground">/ {t("nav.guests")}</span>
-          </div>
-          <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{t("nav.guests")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Mehmonlar ro‘yxati va aloqa ma’lumotlarini boshqaring</p>
+          <h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-gray-900"}`}>
+            {t("nav.guests")}
+          </h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
+            Mehmonlar ro'yxati va aloqa ma'lumotlarini boshqaring
+          </p>
         </div>
         <Button onClick={handleOpenAdd} className="gap-2 self-start sm:self-auto">
           <UserPlus className="h-4 w-4" />

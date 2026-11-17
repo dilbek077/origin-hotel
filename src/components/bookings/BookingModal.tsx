@@ -5,6 +5,7 @@ import type { Room } from "@/types/room";
 import type { Guest } from "@/types/guest";
 import { useTranslation } from "@/i18n";
 import { useTheme } from "@/theme";
+import { Button } from "@/components/ui/button";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -273,12 +274,11 @@ export default function BookingModal({
           >
             {t('common.cancel')}
           </button>
-          <button
+          <Button
             type="submit"
-            className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition cursor-pointer"
           >
             {initialData ? t('common.save') : t('landing.rooms.book')}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>
