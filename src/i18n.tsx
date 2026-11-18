@@ -32,6 +32,8 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'nav.language': { uz: 'Tilni tanlang', ru: 'Выберите язык', en: 'Choose language', fr: 'Choisir la langue', de: 'Sprache wählen' },
   'nav.settings': { uz: 'Sozlamalar', ru: 'Настройки', en: 'Settings', fr: 'Paramètres', de: 'Einstellungen' },
   'nav.system': { uz: 'Tizim', ru: 'Система', en: 'System', fr: 'Système', de: 'System' },
+  'common.back': { uz: 'Orqaga', ru: 'Назад', en: 'Back', fr: 'Retour', de: 'Zurück' },
+  'common.backTo': { uz: 'Orqaga qaytish', ru: 'Вернуться назад', en: 'Go back', fr: 'Retour arrière', de: 'Zurückkehren' },
   'nav.profile': { uz: 'Profil', ru: 'Профиль', en: 'Profile', fr: 'Profil', de: 'Profil' },
   'nav.account': { uz: 'Hisob', ru: 'Аккаунт', en: 'Account', fr: 'Compte', de: 'Konto' },
   'nav.appearance': { uz: 'Ko‘rinish', ru: 'Внешний вид', en: 'Appearance', fr: 'Apparence', de: 'Erscheinungsbild' },
@@ -256,6 +258,20 @@ export const translations: Record<string, Record<LanguageCode, string>> = {
   'landing.modal.phone': { uz: 'Telefon raqamingiz', ru: 'Номер телефона', en: 'Phone number', fr: 'Numéro de téléphone', de: 'Telefonnummer' },
   'landing.modal.confirm': { uz: 'Buyurtmani tasdiqlash', ru: 'Подтвердить бронь', en: 'Confirm Reservation', fr: 'Confirmer la réservation', de: 'Buchung bestätigen' },
   'landing.modal.alreadyBooked': { uz: 'Bu xona allaqachon band qilingan. Boshqa xona tanlang.', ru: 'Этот номер уже забронирован. Выберите другой номер.', en: 'This room is already booked. Please choose another one.', fr: 'Cette chambre est déjà occupée. Veuillez en choisir une autre.', de: 'Dieses Zimmer ist bereits gebucht. Bitte wählen Sie ein anderes.' },
+
+  // Location page
+  'location.title': { uz: 'Markaziy joylashuv', ru: 'Центральное расположение', en: 'Central Location', fr: 'Emplacement central', de: 'Zentrale Lage' },
+  'location.subtitle': { uz: 'Qarshi markazida, metro, restoranlar va diqqatga sazovor joylarga bir necha qadam.', ru: 'В центре Карши, в шаговой доступности от ресторанов и достопримечательностей.', en: 'In the center of Karshi, steps away from restaurants and attractions.', fr: 'Au cœur de Karchi, à quelques pas des restaurants et sites touristiques.', de: 'Im Zentrum von Karschi, wenige Schritte von Restaurants und Sehenswürdigkeiten entfernt.' },
+  'location.addressLabel': { uz: 'Manzil', ru: 'Адрес', en: 'Address', fr: 'Adresse', de: 'Adresse' },
+  'location.workingHoursLabel': { uz: 'Ish vaqti', ru: 'Часы работы', en: 'Working hours', fr: 'Horaires', de: 'Öffnungszeiten' },
+  'location.phoneLabel': { uz: 'Telefon', ru: 'Телефон', en: 'Phone', fr: 'Téléphone', de: 'Telefon' },
+  'location.emailLabel': { uz: 'Elektron pochta', ru: 'Электронная почта', en: 'Email', fr: 'E-mail', de: 'E-Mail' },
+  'location.openInMaps': { uz: 'Xaritada ochish', ru: 'Открыть на карте', en: 'Open in Maps', fr: 'Ouvrir sur la carte', de: 'Auf Karte öffnen' },
+  'location.directionsTitle': { uz: 'Qancha yetkazib beriladi', ru: 'Как проехать', en: 'Getting here', fr: 'Accès', de: 'Anreise' },
+  'location.directionsDesc': { uz: 'Origin Hotel Qarshi markazida, Amir Temur shoh ko‘chasida joylashgan. Metro stansiyasi, restoranlar va tarixiy joylarga yaqin masofada.', ru: 'Отель Origin расположен в центре Карши, на улице Амира Темура. Близко к станции метро, ресторанам и историческим местам.', en: 'Origin Hotel is located in central Karshi on Amir Temur Street. Close to the metro station, restaurants, and historical sites.', fr: "L'hôtel Origin est situé au cœur de Karchi, rue Amir Temur. Proche de la station de métro, des restaurants et des sites historiques.", de: 'Das Origin Hotel liegt im Zentrum von Karschi, an der Amir-Temur-Straße. In der Nähe von U-Bahnhof, Restaurants und historischen Stätten.' },
+  'location.direction1': { uz: 'Qarshi aeroportidan taksi yoki avtobus bilan 15-20 daqiqa.', ru: 'От аэропорта Карши на такси или автобусе 15–20 минут.', en: 'From Karshi airport by taxi or bus 15–20 minutes.', fr: "Depuis l'aéroport de Karchi en taxi ou bus 15–20 minutes.", de: 'Vom Flughafen Karschi mit Taxi oder Bus 15–20 Minuten.' },
+  'location.direction2': { uz: 'Qarshi demir yo‘l stansiyasidan yurak bilan 5 daqiqa masofada.', ru: 'В 5 минутах ходьбы от железнодорожной станции Карши.', en: '5 minutes walking distance from Karshi railway station.', fr: 'À 5 minutes à pied de la gare de Karchi.', de: '5 Gehminuten vom Bahnhof Karschi entfernt.' },
+  'location.direction3': { uz: 'Markaziy maydon va hamkor restoranlaridan yaqin.', ru: 'Рядом с центральной площадью и партнерскими ресторанами.', en: 'Close to the central square and partner restaurants.', fr: 'Proche de la place centrale et des restaurants partenaires.', de: 'In der Nähe des zentralen Platzes und der Partnerrestaurants.' },
 
   // Dashboard
   'dashboard.today': { uz: 'Bugun:', ru: 'Сегодня:', en: 'Today:', fr: 'Aujourd’hui :', de: 'Heute:' },
