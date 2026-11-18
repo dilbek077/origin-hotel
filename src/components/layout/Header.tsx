@@ -177,7 +177,7 @@ export default function Header() {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between px-6 bg-card border-b border-border transition-colors">
+    <header className="relative z-50 flex h-16 items-center justify-between px-6 bg-card border-b border-border transition-colors">
       {/* Left: Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="min-w-0">
         <ol className="flex min-w-0 items-center gap-2 text-sm">
@@ -411,7 +411,7 @@ export default function Header() {
                 type="button"
                 role="menuitem"
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex w-full items-center gap-2 rounded-md bg-red-500/10 px-3 py-2.5 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-500/15 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:text-red-400 dark:hover:bg-red-500/20 dark:hover:text-red-300"
               >
                 <LogOut size={15} />
                 <span>{t('nav.logout')}</span>

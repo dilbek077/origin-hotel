@@ -20,8 +20,7 @@ import { LANGUAGES, useTranslation } from '@/i18n';
 import { MOCK_USERS, authenticateMockUser, type MockUser } from '@/services/mockAuth';
 import { useTheme } from '@/theme';
 
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1800&q=85';
+const HERO_IMAGE = '/origin-hotel-hero.jpg';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -103,27 +102,23 @@ export default function LoginPage() {
     }
   };
 
-  const inputClass = `h-12 w-full rounded-lg border pl-11 pr-4 text-sm outline-none transition focus:border-sky-600 focus:ring-2 focus:ring-sky-600/15 ${
+  const inputClass = `h-12 w-full rounded-lg border pl-11 pr-4 text-sm outline-none transition focus:border-[#c8a15a] focus:ring-2 focus:ring-[#c8a15a]/20 ${
     isDark
-      ? 'border-slate-700 bg-slate-900 text-white placeholder:text-slate-500'
-      : 'border-slate-200 bg-white text-slate-900 placeholder:text-slate-400'
+      ? 'border-[#303a3e] bg-[#10181d] text-white placeholder:text-slate-500'
+      : 'border-[#ddd7cb] bg-white text-slate-900 placeholder:text-slate-400'
   }`;
 
   return (
-    <main className={`hotel-login login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0a1628]' : 'bg-[#f4f7f0]'}`}>
-      <section className={`relative flex min-h-[340px] flex-col justify-between overflow-hidden px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-16 ${
-        isDark
-          ? 'bg-gradient-to-br from-[#082f49] via-[#075985] to-[#0369a1]'
-          : 'bg-gradient-to-br from-[#075985] via-[#0369a1] to-[#0284c7]'
-      }`}>
+    <main className={`hotel-login login-page-enter min-h-screen transition-colors duration-300 md:grid md:grid-cols-2 xl:grid-cols-[56%_44%] ${isDark ? 'bg-[#0d1418]' : 'bg-[#f4f1e9]'}`}>
+      <section className="relative flex min-h-[340px] flex-col justify-between overflow-hidden bg-[#111820] px-7 py-7 text-white sm:min-h-[400px] sm:px-12 sm:py-10 md:min-h-screen md:px-8 md:py-12 lg:px-14 xl:px-16">
         <img
           src={HERO_IMAGE}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-luminosity"
+          className="absolute inset-0 h-full w-full object-cover opacity-65"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2342]/70 via-sky-900/40 to-slate-950/70" />
-        <div className="absolute -top-28 -right-20 h-96 w-96 rounded-full bg-sky-300/15 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-20 -left-28 h-80 w-80 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-slate-950/20 to-black/65" />
+        <div className="absolute -top-28 -right-20 h-96 w-96 rounded-full bg-[#c8a15a]/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-20 -left-28 h-80 w-80 rounded-full bg-[#f4d28a]/10 blur-3xl pointer-events-none" />
         <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:44px_44px] pointer-events-none" />
 
         <a href="/" className="relative z-10 inline-flex w-fit items-center gap-3">
@@ -161,7 +156,7 @@ export default function LoginPage() {
         </div>
       </section>
 
-      <section className={`relative flex min-h-[620px] items-center justify-center px-5 py-14 sm:px-10 md:min-h-screen md:px-6 lg:px-12 ${isDark ? 'bg-slate-950' : 'bg-[#fbfcfe]'}`}>
+      <section className={`relative flex min-h-[620px] items-center justify-center px-5 py-14 sm:px-10 md:min-h-screen md:px-6 lg:px-12 ${isDark ? 'bg-[#0d1418]' : 'bg-[#f7f5ef]'}`}>
         <div className="absolute right-6 top-6 flex items-center gap-2 sm:right-10 sm:top-8">
           <button
             type="button"
@@ -193,7 +188,7 @@ export default function LoginPage() {
               aria-label={t('common.language')}
               aria-haspopup="listbox"
               aria-expanded={languageMenuOpen && !languageMenuClosing}
-              className={`flex h-9 items-center gap-2 rounded-lg border px-2.5 text-xs outline-none transition focus-visible:ring-2 focus-visible:ring-sky-500 ${
+              className={`flex h-9 items-center gap-2 rounded-lg border px-2.5 text-xs outline-none transition focus-visible:ring-2 focus-visible:ring-[#c8a15a] ${
                 isDark
                   ? 'border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800'
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
@@ -230,8 +225,8 @@ export default function LoginPage() {
                       className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-sm transition ${
                         isSelected
                           ? isDark
-                            ? 'bg-sky-500/15 font-medium text-sky-300'
-                            : 'bg-blue-600 font-medium text-white'
+                            ? 'bg-[#c8a15a]/20 font-medium text-[#f4d28a]'
+                            : 'bg-[#c8a15a] font-medium text-[#172016]'
                           : isDark
                             ? 'text-slate-300 hover:bg-slate-800'
                             : 'text-slate-700 hover:bg-slate-100'
@@ -249,7 +244,7 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md pt-8">
           <div className={`rounded-2xl border p-6 shadow-[0_12px_40px_rgba(15,35,64,0.07)] sm:p-8 ${
-            isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200/80 bg-white'
+            isDark ? 'border-[#263138] bg-[#151e23]' : 'border-[#e7e0d3] bg-white'
           }`}>
             <div className="mb-7">
               <h2 className={`font-serif text-2xl font-semibold sm:text-[28px] ${
@@ -330,7 +325,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#0c1d32] px-4 text-sm font-semibold text-white transition hover:bg-[#173657] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-sky-700 dark:hover:bg-sky-600"
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#c8a15a] px-4 text-sm font-semibold text-[#172016] transition hover:bg-[#d6b36a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c8a15a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? `${t('login.submit')}...` : t('login.submit')}
                 {!loading && <ArrowRight className="h-4 w-4" />}
@@ -353,8 +348,8 @@ export default function LoginPage() {
                     onClick={() => fillCredentials(user)}
                     className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-xs transition ${
                       isDark
-                        ? 'border-slate-700 text-slate-200 hover:border-sky-700 hover:bg-slate-800'
-                        : 'border-slate-200 text-slate-700 hover:border-sky-300 hover:bg-sky-50/60'
+                        ? 'border-slate-700 text-slate-200 hover:border-[#c8a15a] hover:bg-[#c8a15a]/10'
+                        : 'border-slate-200 text-slate-700 hover:border-[#c8a15a] hover:bg-[#c8a15a]/10'
                     }`}
                   >
                     <span>
@@ -363,7 +358,7 @@ export default function LoginPage() {
                         @{user.username} · {user.roleName}
                       </span>
                     </span>
-                    <span className="font-medium text-primary">{t('login.submit')}</span>
+                    <span className="font-medium text-[#a77b32] dark:text-[#d6b36a]">{t('login.submit')}</span>
                   </button>
                 ))}
               </div>

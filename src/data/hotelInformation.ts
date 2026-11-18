@@ -34,7 +34,7 @@ export const HOTEL_INFORMATION: Record<HotelInfoKey, HotelInformation> = {
   parking: {
     title: 'Bepul parking',
     description: 'Bepul parking — Origin Hotel’ning mavjud qulayliklaridan biri.',
-    items: ['Avtomobil bilan tashrif buyuruvchi mehmonlar uchun parking', 'Manzil: Amir Temur shoh ko‘chasi 15, Toshkent'],
+    items: ['Avtomobil bilan tashrif buyuruvchi mehmonlar uchun parking', 'Manzil: Amir Temur ko‘chasi 15, Qarshi'],
   },
   transfer: {
     title: 'Aeroport transferi',
@@ -44,6 +44,6 @@ export const HOTEL_INFORMATION: Record<HotelInfoKey, HotelInformation> = {
   reception: {
     title: 'Qabulxona: 24/7',
     description: 'Origin Hotel qabulxonasi kechayu kunduz, haftasiga 7 kun ishlaydi.',
-    items: ['Telefon: +998 71 200 20 20', 'Email: reservations@originhotel.uz', 'Manzil: Amir Temur shoh ko‘chasi 15, Toshkent 100000'],
+    items: ['Telefon: +998 71 200 20 20', 'Email: reservations@originhotel.uz', 'Manzil: Amir Temur ko‘chasi 15, Qarshi'],
   },
 };
