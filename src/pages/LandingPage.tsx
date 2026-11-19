@@ -912,40 +912,23 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="map" data-reveal>
-                <svg viewBox="0 0 700 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-                  <rect width="700" height="460" fill="var(--map1)" />
-                  <path
-                    d="M0 360 C150 330 230 400 380 370 S600 300 700 330 V460 H0Z"
-                    fill="var(--water)"
-                  />
-                  <rect x="470" y="40" width="190" height="130" rx="22" fill="var(--park)" />
-                  <rect x="40" y="250" width="150" height="90" rx="18" fill="var(--park)" />
-                  <g stroke="var(--map2)" strokeWidth="16" fill="none" strokeLinecap="round">
-                    <path d="M-10 200H710" />
-                    <path d="M300 -10V470" />
-                    <path d="M-10 90L710 150" />
-                    <path d="M130 -10L220 470" />
-                    <path d="M520 -10L430 470" />
-                  </g>
-                  <g stroke="#fff" strokeOpacity=".5" strokeWidth="2" fill="none" strokeDasharray="10 12">
-                    <path d="M-10 200H710" />
-                    <path d="M300 -10V470" />
-                  </g>
-                  <g fill="var(--map2)">
-                    <rect x="330" y="215" width="70" height="50" rx="8" />
-                    <rect x="215" y="215" width="70" height="50" rx="8" />
-                    <rect x="330" y="110" width="80" height="70" rx="8" />
-                    <rect x="215" y="120" width="70" height="60" rx="8" />
-                    <rect x="560" y="215" width="100" height="60" rx="8" />
-                  </g>
-                </svg>
-                <div className="pin">
-                  <b>Origin Hotel</b>
-                  <i></i>
+                <iframe
+                  title="Origin Hotel joylashuvi"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=65.7915%2C38.8415%2C65.8002%2C38.8470&amp;layer=mapnik&amp;marker=38.8442376%2C65.7958525"
+                  aria-label="OpenStreetMap xaritasida Origin Hotel, Qarshi"
+                />
+                <div className="map-label">
+                  <i aria-hidden="true" />
+                  <span>
+                    <b>Origin Hotel</b>
+                    <small>Qarshi markazi</small>
+                  </span>
                 </div>
                 <a
                   className="btn dk mb"
-                  href="https://www.google.com/maps/search/?api=1&query=Origin+Hotel%2C+Amir+Temur+ko%27chasi+15%2C+Qarshi%2C+Uzbekistan"
+                  href="https://www.google.com/maps/place/Origin+Hotel/@38.8442221,65.7958732,19.38z/data=!4m6!3m5!1s0x3f4ea7000943d029:0xb6072f27825eea07!8m2!3d38.8442376!4d65.7958525!16s%2Fg%2F11zwqnh0w1"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Origin Hotel, Qarshi manzilini Google Maps’da ochish"

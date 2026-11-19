@@ -21,7 +21,7 @@ export default function LocationPage() {
   };
 
   const googleMapsUrl =
-    'https://www.google.com/maps/search/?api=1&query=Amir+Temur+shoh+ko%27chasi+15+Yunusobod+tumani+Qarshi';
+    'https://www.google.com/maps/place/Origin+Hotel/@38.8442221,65.7958732,19.38z/data=!4m6!3m5!1s0x3f4ea7000943d029:0xb6072f27825eea07!8m2!3d38.8442376!4d65.7958525!16s%2Fg%2F11zwqnh0w1';
 
   return (
     <div
@@ -113,18 +113,23 @@ export default function LocationPage() {
             </div>
           </div>
 
-          <div className="mt-4 rounded-[24px] overflow-hidden border border-gray-200 dark:border-slate-700 shadow-lg">
+          <div className="relative mt-4 h-[420px] overflow-hidden rounded-[24px] border border-[#c8a15a]/30 shadow-xl ring-1 ring-black/5">
             <iframe
-              title="Hotel location"
+              title="Origin Hotel joylashuvi"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=65.7780%2C38.8540%2C65.7960%2C38.8630&amp;layer=mapnik"
-              width="100%"
-              height="420"
-              style={{ border: 0 }}
+              src="https://www.openstreetmap.org/export/embed.html?bbox=65.7915%2C38.8415%2C65.8002%2C38.8470&amp;layer=mapnik&amp;marker=38.8442376%2C65.7958525"
+              className="absolute inset-0 h-full w-full border-0"
               allowFullScreen
               aria-label="OpenStreetMap hotel location"
             />
+            <div className="absolute left-4 top-4 z-10 flex items-center gap-2.5 rounded-xl border border-white/70 bg-white/95 px-3.5 py-2.5 shadow-lg backdrop-blur dark:border-slate-700/80 dark:bg-slate-900/95">
+              <MapPin size={17} className="text-[#a77b32] dark:text-[#d6b36a]" aria-hidden="true" />
+              <span>
+                <span className="block text-xs font-semibold text-slate-900 dark:text-white">Origin Hotel</span>
+                <span className="mt-0.5 block text-[11px] text-slate-500 dark:text-slate-400">Qarshi markazi</span>
+              </span>
+            </div>
           </div>
 
           <div className="mt-6 text-center">
@@ -135,7 +140,7 @@ export default function LocationPage() {
               href={googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-sm bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/30 transition-all"
+              className="inline-flex items-center gap-2 rounded-2xl bg-[#c8a15a] px-8 py-4 text-sm font-bold text-slate-950 shadow-xl shadow-[#c8a15a]/20 transition-all hover:bg-[#d6b36a]"
             >
               <ExternalLink size={20} /> {t('location.openInMaps')}
             </a>
