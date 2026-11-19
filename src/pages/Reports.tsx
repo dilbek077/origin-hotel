@@ -415,104 +415,96 @@ export default function Reports() {
       {/* 4 Core Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Jami Kirim */}
-        <Card className="border-border bg-card shadow-sm transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-5 pt-5">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-xs font-medium text-muted-foreground">
               {t('reports.periodIncome')}
-            </CardTitle>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-foreground">
-              <TrendingUp className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 pt-0">
-            <div className="text-2xl font-bold tracking-tight text-foreground">
-              {formatCurrency(periodIncome)}
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
-                + {t('status.income')}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                {filteredTransactions.filter(tx => tx.type === 'income').length} ta amal
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </span>
+            <span className="flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <TrendingUp size={17} />
+            </span>
+          </div>
+          <div className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+            {formatCurrency(periodIncome)}
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+            <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
+              + {t('status.income')}
+            </Badge>
+            <span>
+              {filteredTransactions.filter(tx => tx.type === 'income').length} ta amal
+            </span>
+          </div>
+        </div>
 
         {/* Jami Chiqim */}
-        <Card className="border-border bg-card shadow-sm transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-5 pt-5">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-xs font-medium text-muted-foreground">
               {t('reports.periodExpense')}
-            </CardTitle>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-foreground">
-              <TrendingDown className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 pt-0">
-            <div className="text-2xl font-bold tracking-tight text-foreground">
-              {formatCurrency(periodExpense)}
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
-                – {t('status.expense')}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                {filteredTransactions.filter(tx => tx.type === 'expense').length} ta amal
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </span>
+            <span className="flex size-9 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+              <TrendingDown size={17} />
+            </span>
+          </div>
+          <div className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+            {formatCurrency(periodExpense)}
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+            <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
+              – {t('status.expense')}
+            </Badge>
+            <span>
+              {filteredTransactions.filter(tx => tx.type === 'expense').length} ta amal
+            </span>
+          </div>
+        </div>
 
         {/* Sof Natija */}
-        <Card className="border-border bg-card shadow-sm transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-5 pt-5">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-xs font-medium text-muted-foreground">
               {t('reports.periodNet')}
-            </CardTitle>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-foreground">
-              <DollarSign className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 pt-0">
-            <div className="text-2xl font-bold tracking-tight text-foreground">
-              {periodNet < 0 ? `–${formatCurrency(Math.abs(periodNet))}` : formatCurrency(periodNet)}
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
-                {t('finance.netProfit')}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                Kirim − chiqim
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </span>
+            <span className="flex size-9 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400">
+              <DollarSign size={17} />
+            </span>
+          </div>
+          <div className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+            {periodNet < 0 ? `–${formatCurrency(Math.abs(periodNet))}` : formatCurrency(periodNet)}
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+            <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
+              {t('finance.netProfit')}
+            </Badge>
+            <span>
+              Kirim − chiqim
+            </span>
+          </div>
+        </div>
 
         {/* Bandlik Ko'rsatkichi */}
-        <Card className="border-border bg-card shadow-sm transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-5 pt-5">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-start justify-between gap-3">
+            <span className="text-xs font-medium text-muted-foreground">
               {t('reports.occupancy')}
-            </CardTitle>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted text-foreground">
-              <Percent className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 pt-0">
-            <div className="text-2xl font-bold tracking-tight text-foreground">
-              {occupancyRate}%
-            </div>
-            <div className="mt-2 flex items-center justify-between">
-              <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
-                {occupiedRoomsCount} / {totalRoomsCount} xona
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                Hozirgi bandlik
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+            </span>
+            <span className="flex size-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <Percent size={17} />
+            </span>
+          </div>
+          <div className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+            {occupancyRate}%
+          </div>
+          <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+            <Badge variant="secondary" className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-md">
+              {occupiedRoomsCount} / {totalRoomsCount} xona
+            </Badge>
+            <span>
+              Hozirgi bandlik
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Categories Breakdown */}

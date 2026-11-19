@@ -9,6 +9,7 @@ interface ModalProps {
   children: React.ReactNode;
   maxWidth?: string;
   variant?: "auto" | "dark";
+  bodyClassName?: string;
 }
 
 export default function Modal({
@@ -18,6 +19,7 @@ export default function Modal({
   children,
   maxWidth = "max-w-lg",
   variant = "auto",
+  bodyClassName = "p-6",
 }: ModalProps) {
   const { isDark } = useTheme();
   const isDarkMode = variant === "dark" || (variant === "auto" && isDark);
@@ -123,7 +125,7 @@ export default function Modal({
         </div>
 
         {/* Body */}
-        <div className="p-0 overflow-y-auto overscroll-contain">{children}</div>
+        <div className={`overflow-y-auto overscroll-contain ${bodyClassName}`}>{children}</div>
       </div>
     </div>
   );

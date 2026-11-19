@@ -175,8 +175,7 @@ export default function RoomModal({
       maxWidth="max-w-[620px]"
       variant="dark"
     >
-      <div className="bg-[#11181d] px-5 pb-5 pt-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300">
               {error}
@@ -294,7 +293,7 @@ export default function RoomModal({
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
             <button type="button" onClick={onClose} className={actionButtonClass}>
               {t('common.cancel')}
             </button>
@@ -303,7 +302,6 @@ export default function RoomModal({
             </Button>
           </div>
         </form>
-      </div>
     </Modal>
   );
 }
