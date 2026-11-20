@@ -1,27 +1,5 @@
-import { useState, useEffect } from 'react';
-import {
-  Building2,
-  Lock,
-  KeyRound,
-  Save,
-  CheckCircle2,
-  Globe,
-  Moon,
-  Sun,
-  Palette,
-  Bell,
-  Monitor,
-  Shield,
-  Smartphone,
-  Laptop,
-  Maximize2,
-  Minimize2,
-  RefreshCw,
-  Volume2,
-  Send,
-  Sparkles,
-  Check,
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Building2, Check, CheckCircle2, Palette, Bell, Save, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/theme';
 import { LANGUAGES, useTranslation } from '@/i18n';
 import { NOTIFICATION_SETTINGS_CHANGED, readNotificationSettings } from '@/services/notificationSettings';
@@ -30,7 +8,7 @@ type FontSize = 'sm' | 'base' | 'lg';
 
 const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
   sky: { primary: '#0284c7', foreground: '#ffffff' },
-  blue: { primary: '#0284c7', foreground: '#ffffff' },
+  blue: { primary: '#2563eb', foreground: '#ffffff' },
   emerald: { primary: '#10b981', foreground: '#ffffff' },
   purple: { primary: '#a855f7', foreground: '#ffffff' },
   amber: { primary: '#f59e0b', foreground: '#111827' },
@@ -39,6 +17,7 @@ const ACCENT_COLORS: Record<string, { primary: string; foreground: string }> = {
 export default function Settings() {
   const { isDark, toggleTheme } = useTheme();
   const { t, locale, setLocale } = useTranslation();
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   const [hotelForm, setHotelForm] = useState(() => {
     const saved = localStorage.getItem('origin_hotel_settings');
@@ -46,7 +25,7 @@ export default function Settings() {
       try {
         return JSON.parse(saved);
       } catch {
-        // fallback
+        // Use the defaults below.
       }
     }
     return {
@@ -59,918 +38,245 @@ export default function Settings() {
     };
   });
 
-  // ─── 2. Hisob & Xavfsizlik ───────────────────────────────────────────────────
-  const [securityForm, setSecurityForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-    twoFactorEnabled: false,
-  });
-
-  // ─── 3. Ko'rinish sozlamalari ────────────────────────────────────────────────
-  const [accentColor, setAccentColor] = useState(() => {
-    return localStorage.getItem('origin_accent_color') || 'sky';
-  });
-
+  const [accentColor, setAccentColor] = useState(
+    () => localStorage.getItem('origin_accent_color') || 'sky',
+  );
   const [fontSize, setFontSize] = useState<FontSize>(() => {
     const saved = localStorage.getItem('origin_font_size');
     return saved === 'sm' || saved === 'lg' ? saved : 'base';
   });
-
-  // ─── 4. Bildirishnomalar sozlamalari ─────────────────────────────────────────
   const [notifications, setNotifications] = useState(readNotificationSettings);
-
-  // ─── 5. Ekran sozlamalari ────────────────────────────────────────────────────
-  const [screenSettings, setScreenSettings] = useState(() => {
-    const saved = localStorage.getItem('origin_screen_settings');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // fallback
-      }
-    }
-    return {
-      autoRefreshInterval: '30',
-      kioskMode: false,
-      zoomLevel: '100',
-      defaultView: 'dashboard',
-    };
-  });
-
-  const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
-
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    applyVisualSettings(accentColor, fontSize);
   }, []);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    const accent = ACCENT_COLORS[accentColor] ?? ACCENT_COLORS.sky;
-    const fontSizes: Record<FontSize, string> = { sm: '13px', base: '14px', lg: '16px' };
-    root.style.setProperty('--primary', accent.primary);
-    root.style.setProperty('--ring', accent.primary);
-    root.style.setProperty('--primary-foreground', accent.foreground);
-    root.style.fontSize = fontSizes[fontSize];
-    root.style.zoom = `${screenSettings.zoomLevel}%`;
-  }, [accentColor, fontSize, screenSettings.zoomLevel]);
-
-  const toggleFullscreen = async () => {
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch (err) {
-      console.error('Fullscreen xatosi:', err);
-    }
+  const applyVisualSettings = (color: string, size: FontSize) => {
+    const accent = ACCENT_COLORS[color] ?? ACCENT_COLORS.sky;
+    const sizes: Record<FontSize, string> = { sm: '13px', base: '14px', lg: '16px' };
+    document.documentElement.style.setProperty('--primary', accent.primary);
+    document.documentElement.style.setProperty('--ring', accent.primary);
+    document.documentElement.style.setProperty('--primary-foreground', accent.foreground);
+    document.documentElement.style.fontSize = sizes[size];
   };
-
-  // Toast / Save holatlari
-  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   const showSaveSuccess = (message = t('common.saved')) => {
     setSaveSuccess(message);
-    setTimeout(() => setSaveSuccess(null), 2500);
-  };
-
-  const handleHotelSave = () => {
-    localStorage.setItem('origin_hotel_settings', JSON.stringify(hotelForm));
-    showSaveSuccess();
-  };
-
-  const handleSecuritySave = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSecurityForm((prev) => ({
-      ...prev,
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    }));
-    showSaveSuccess('Xavfsizlik sozlamalari yangilandi!');
-  };
-
-  const handleNotificationsSave = () => {
-    localStorage.setItem('origin_notifications', JSON.stringify(notifications));
-    window.dispatchEvent(new Event(NOTIFICATION_SETTINGS_CHANGED));
-    showSaveSuccess('Bildirishnoma sozlamalari saqlandi!');
-  };
-
-  const handleScreenSave = () => {
-    localStorage.setItem('origin_screen_settings', JSON.stringify(screenSettings));
-    document.documentElement.style.zoom = `${screenSettings.zoomLevel}%`;
-    showSaveSuccess('Ekran sozlamalari saqlandi!');
+    window.setTimeout(() => setSaveSuccess(null), 2500);
   };
 
   const handleAccentChange = (color: string) => {
     setAccentColor(color);
     localStorage.setItem('origin_accent_color', color);
-    showSaveSuccess('Mavzu rangi tanlandi!');
+    applyVisualSettings(color, fontSize);
   };
 
   const handleFontSizeChange = (size: FontSize) => {
     setFontSize(size);
     localStorage.setItem('origin_font_size', size);
-    showSaveSuccess('Shrift o‘lchami yangilandi!');
+    applyVisualSettings(accentColor, size);
   };
 
-  // Styling helper classes (semantic tokens — work in both light and dark mode automatically)
-  const cardClass = 'bg-card text-card-foreground rounded-2xl border border-border shadow-sm overflow-hidden';
+  const handleHotelSave = () => {
+    localStorage.setItem('origin_hotel_settings', JSON.stringify(hotelForm));
+    window.dispatchEvent(new Event('origin-hotel-storage-change'));
+    showSaveSuccess('Mehmonxona ma’lumotlari saqlandi');
+  };
 
-  const cardHeaderClass = 'px-6 py-4 border-b border-border flex items-center justify-between';
+  const handleNotificationsSave = () => {
+    localStorage.setItem('origin_notifications', JSON.stringify(notifications));
+    window.dispatchEvent(new Event(NOTIFICATION_SETTINGS_CHANGED));
+    showSaveSuccess('Bildirishnoma sozlamalari saqlandi');
+  };
 
-  const labelClass = 'block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5';
+  const cardClass = 'overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm';
+  const cardHeaderClass = 'flex items-center gap-3 border-b border-border px-6 py-4';
+  const labelClass = 'mb-2 block text-sm font-medium text-foreground';
+  const inputClass = 'h-12 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground outline-none transition focus:ring-2 focus:ring-sky-500';
 
-  const inputClass = 'w-full px-4 py-2.5 text-sm border border-border bg-background text-foreground rounded-xl outline-none focus:ring-2 focus:ring-sky-500 transition';
+  const toggleNotification = (key: keyof typeof notifications) => {
+    setNotifications((current) => ({ ...current, [key]: !current[key] }));
+  };
+
+  const notificationRows = [
+    { key: 'newBooking' as const, title: 'Yangi bron', description: 'Mehmon yoki xodim yangi bron qolganda' },
+    { key: 'bookingCancel' as const, title: 'Bron bekor qilindi', description: 'Bron bekor qilinganda' },
+    { key: 'checkInOut' as const, title: 'Kelish va ketish', description: 'Mehmon kelishi yoki ketishi tasdiqlanganda' },
+    { key: 'roomStatus' as const, title: 'Xona holati', description: 'Xona band, bo‘sh yoki tozalash holatiga o‘tganida' },
+    { key: 'financeAlert' as const, title: 'Moliya hodisalari', description: 'Kirim yoki chiqim kiritilganda' },
+    { key: 'soundAlert' as const, title: 'Ovozli signal', description: 'Muhim bildirishnoma uchun qisqa ovoz' },
+  ];
 
   return (
-    <div className="p-6 space-y-6 bg-background text-foreground min-h-screen">
-      {/* Sahifa sarlavhasi va bildirishnoma tosti */}
+    <div className="min-h-screen space-y-6 bg-background p-6 text-foreground">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20">
-              {t('nav.system')}
-            </span>
-            <h1 className="text-2xl font-bold text-foreground">
-              {t('nav.settings')}
-            </h1>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">{t('settings.subtitle')}</p>
+          <h1 className="text-2xl font-bold">{t('nav.settings')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Mehmonxona ma’lumotlari va tizim ko‘rinishini boshqarish</p>
         </div>
-
         {saveSuccess && (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-medium animate-fadeIn">
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400">
             <CheckCircle2 size={18} />
-            <span>{saveSuccess}</span>
+            {saveSuccess}
           </div>
         )}
       </div>
 
-      {/* Mehmonxona ma'lumotlari */}
-      {(
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(380px,0.65fr)]">
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            {/* Mehmonxona ma'lumotlari */}
-            <div className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center">
-                    <Building2 size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">{t('settings.hotelInfo')}</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">{t('settings.hotelSub')}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-5">
-                {/* Hotel Name */}
-                <div>
-                  <label className={labelClass}>{t('settings.hotelName')}</label>
-                  <input
-                    type="text"
-                    value={hotelForm.name}
-                    onChange={(e) => setHotelForm({ ...hotelForm, name: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                {/* Address */}
-                <div>
-                  <label className={labelClass}>{t('settings.address')}</label>
-                  <input
-                    type="text"
-                    value={hotelForm.address}
-                    onChange={(e) => setHotelForm({ ...hotelForm, address: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-
-                {/* Hotel Phone & Email */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Aloqa telefoni</label>
-                    <input
-                      type="tel"
-                      value={hotelForm.phone}
-                      onChange={(e) => setHotelForm({ ...hotelForm, phone: e.target.value })}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Aloqa emaili</label>
-                    <input
-                      type="email"
-                      value={hotelForm.email}
-                      onChange={(e) => setHotelForm({ ...hotelForm, email: e.target.value })}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-
-                {/* Web sayt & Yulduz darajasi */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Veb-sayt</label>
-                    <input
-                      type="url"
-                      value={hotelForm.website}
-                      onChange={(e) => setHotelForm({ ...hotelForm, website: e.target.value })}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Yulduzlar toifasi</label>
-                    <select
-                      value={hotelForm.stars}
-                      onChange={(e) => setHotelForm({ ...hotelForm, stars: e.target.value })}
-                      className={inputClass}
-                    >
-                      <option value="5">⭐⭐⭐⭐⭐ 5 Yulduz (Luxury)</option>
-                      <option value="4">⭐⭐⭐⭐ 4 Yulduz (Premium)</option>
-                      <option value="3">⭐⭐⭐ 3 Yulduz (Standart)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Saqlash tugmasi */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleHotelSave}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 font-semibold shadow-md transition-all cursor-pointer"
-            >
-              <Save size={18} />
-              <span>{t('common.save')}</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ════════════════════ TAB 2: HISOB ════════════════════ */}
-      {(
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Parolni o'zgartirish */}
-            <form onSubmit={handleSecuritySave} className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                    <Lock size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">Parolni yangilash</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">Hisobingizga kirish maxfiyligini ta'minlang</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <div>
-                  <label className={labelClass}>{t('settings.currentPassword')}</label>
-                  <div className="relative">
-                    <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="password"
-                      required
-                      value={securityForm.currentPassword}
-                      onChange={(e) => setSecurityForm({ ...securityForm, currentPassword: e.target.value })}
-                      className={`${inputClass} pl-10`}
-                      placeholder="••••••••"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className={labelClass}>{t('settings.newPassword')}</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="password"
-                      required
-                      value={securityForm.newPassword}
-                      onChange={(e) => setSecurityForm({ ...securityForm, newPassword: e.target.value })}
-                      className={`${inputClass} pl-10`}
-                      placeholder="••••••••"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">{t('settings.passwordHint')}</p>
-                </div>
-
-                <div>
-                  <label className={labelClass}>Yangi parolni tasdiqlash</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="password"
-                      required
-                      value={securityForm.confirmPassword}
-                      onChange={(e) => setSecurityForm({ ...securityForm, confirmPassword: e.target.value })}
-                      className={`${inputClass} pl-10`}
-                      placeholder="••••••••"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 font-semibold shadow-md transition cursor-pointer"
-                  >
-                    <Save size={18} />
-                    <span>Parolni saqlash</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-
-            {/* Xavfsizlik & Faol Sessiyalar */}
-            <div className="space-y-6">
-              {/* Ikki bosqichli autentifikatsiya (2FA) */}
-              <div className={cardClass}>
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                        <Shield size={22} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-base">Ikki bosqichli tasdiqlash (2FA)</h3>
-                        <p className="text-xs text-gray-400 dark:text-slate-400 mt-0.5">
-                          Tizimga kirishda SMS yoki Authenticator ilovasi kodi so‘raladi
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSecurityForm((prev) => ({ ...prev, twoFactorEnabled: !prev.twoFactorEnabled }))
-                      }
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                        securityForm.twoFactorEnabled ? 'bg-emerald-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          securityForm.twoFactorEnabled ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Faol qurilmalar */}
-              <div className={cardClass}>
-                <div className={cardHeaderClass}>
-                  <h3 className="font-semibold text-sm">Faol sessiyalar va qurilmalar</h3>
-                  <span className="text-xs text-emerald-400 font-medium">2 ta qurilma faol</span>
-                </div>
-
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
-                    <div className="flex items-center gap-3">
-                      <Laptop className="text-sky-400" size={20} />
-                      <div>
-                        <p className="text-sm font-medium">Windows 11 • Chrome brauzeri</p>
-                        <p className="text-xs text-gray-400 dark:text-slate-500">Qarshi, O‘zbekiston • Hozir faol</p>
-                      </div>
-                    </div>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">Joriy</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
-                    <div className="flex items-center gap-3">
-                      <Smartphone className="text-purple-400" size={20} />
-                      <div>
-                        <p className="text-sm font-medium">iPhone 15 Pro • Mobil Safari</p>
-                        <p className="text-xs text-gray-400 dark:text-slate-500">Qarshi, O‘zbekiston • 2 soat oldin</p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => showSaveSuccess('Qurilma sessiyasi to‘xtatildi')}
-                      className="text-xs text-red-400 hover:text-red-300 font-medium cursor-pointer"
-                    >
-                      Chiqarish
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ════════════════════ TAB 3: KO'RINISH ════════════════════ */}
-      {(
-        <div className="space-y-6">
-          {/* Mavzu rejimi: Kunduzgi / Tungi */}
-          <div className={cardClass}>
+          <section className={cardClass}>
             <div className={cardHeaderClass}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                  <Palette size={20} />
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold">Tizim mavzusi (Theme)</h2>
-                  <p className="text-xs text-gray-400 dark:text-slate-500">Kunduzgi yoki tungi interfeys rejimini tanlang</p>
-                </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-500">
+                <Building2 size={20} />
+              </div>
+              <div>
+                <h2 className="font-semibold">{t('settings.hotelInfo')}</h2>
+                <p className="text-xs text-muted-foreground">{t('settings.hotelSub')}</p>
               </div>
             </div>
-
-            <div className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Light mode card */}
-                <button
-                  type="button"
-                  onClick={(event) =>
-                    isDark && toggleTheme({ x: event.clientX, y: event.clientY })
-                  }
-                  aria-pressed={!isDark}
-                  className={`w-full p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                    !isDark
-                      ? 'border-sky-500 bg-sky-50/50 shadow-sm'
-                      : 'border-slate-800 bg-slate-800/40 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-                      <Sun size={20} />
-                    </div>
-                    {!isDark && <Check className="text-sky-600" size={20} />}
-                  </div>
-                  <h3 className="font-semibold text-sm">Kunduzgi rejim (Light)</h3>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                    Yorug‘ muhitda ishlash uchun toza oq va havorang dizayn
-                  </p>
-                </button>
-
-                {/* Dark mode card */}
-                <button
-                  type="button"
-                  onClick={(event) =>
-                    !isDark && toggleTheme({ x: event.clientX, y: event.clientY })
-                  }
-                  aria-pressed={isDark}
-                  className={`w-full p-5 rounded-2xl border-2 text-left transition-all cursor-pointer ${
-                    isDark
-                      ? 'border-sky-500 bg-slate-800/90 shadow-sm'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-900/40 text-indigo-400 flex items-center justify-center">
-                      <Moon size={20} />
-                    </div>
-                    {isDark && <Check className="text-sky-400" size={20} />}
-                  </div>
-                  <h3 className="font-semibold text-sm">Tungi rejim (Dark)</h3>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                    Ko‘zga qulay, kam energiya sarflaydigan qorong‘u fon
-                  </p>
-                </button>
+            <div className="grid gap-5 p-6 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label className={labelClass}>{t('settings.hotelName')}</label>
+                <input value={hotelForm.name} onChange={(event) => setHotelForm({ ...hotelForm, name: event.target.value })} className={inputClass} />
+              </div>
+              <div className="sm:col-span-2">
+                <label className={labelClass}>{t('settings.address')}</label>
+                <input value={hotelForm.address} onChange={(event) => setHotelForm({ ...hotelForm, address: event.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Aloqa telefoni</label>
+                <input type="tel" value={hotelForm.phone} onChange={(event) => setHotelForm({ ...hotelForm, phone: event.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Aloqa emaili</label>
+                <input type="email" value={hotelForm.email} onChange={(event) => setHotelForm({ ...hotelForm, email: event.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Veb-sayt</label>
+                <input type="url" value={hotelForm.website} onChange={(event) => setHotelForm({ ...hotelForm, website: event.target.value })} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Mehmonxona toifasi</label>
+                <select value={hotelForm.stars} onChange={(event) => setHotelForm({ ...hotelForm, stars: event.target.value })} className={inputClass}>
+                  <option value="5">5 yulduz — Luxury</option>
+                  <option value="4">4 yulduz — Premium</option>
+                  <option value="3">3 yulduz — Standart</option>
+                </select>
               </div>
             </div>
-          </div>
-
-          {/* Til va Aksent ranglar */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Til tanlash */}
-            <div className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                    <Globe size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">{t('common.language')}</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">Tizim menyulari va hisobotlari tili</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-2.5">
-                {LANGUAGES.map((lang) => {
-                  const isSelected = locale === lang.code;
-                  return (
-                    <button
-                      type="button"
-                      key={lang.code}
-                      onClick={() => setLocale(lang.code)}
-                      aria-pressed={isSelected}
-                      className={`flex w-full items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
-                        isSelected
-                          ? isDark
-                            ? 'border-sky-500 bg-sky-500/10 text-white font-semibold'
-                            : 'border-sky-500 bg-sky-50 text-sky-900 font-semibold'
-                          : isDark
-                            ? 'border-slate-800 bg-slate-800/30 text-slate-300 hover:bg-slate-800/70'
-                            : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span className="text-sm">{lang.label}</span>
-                      {isSelected && <Check size={18} className="text-sky-400" />}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="flex justify-end border-t border-border px-6 py-4">
+              <button type="button" onClick={handleHotelSave} className="flex items-center gap-2 rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600">
+                <Save size={17} />
+                Saqlash
+              </button>
             </div>
+          </section>
 
-            {/* Aksent ranglar va Shrift */}
-            <div className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                    <Sparkles size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">Aksent va Shrift sozlamalari</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">Vizual tugmalar va shrift o'lchami</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-6">
-                {/* Aksent ranglar */}
-                <div>
-                  <label className={labelClass}>Aksent rangi</label>
-                  <div className="flex items-center gap-3 mt-2">
-                    {[
-                      { id: 'sky', bg: 'bg-sky-500', name: 'Sky Cyan' },
-                      { id: 'blue', bg: 'bg-blue-600', name: 'Ocean Blue' },
-                      { id: 'emerald', bg: 'bg-emerald-500', name: 'Emerald' },
-                      { id: 'purple', bg: 'bg-purple-500', name: 'Purple' },
-                      { id: 'amber', bg: 'bg-amber-500', name: 'Amber' },
-                    ].map((col) => (
-                      <button
-                        key={col.id}
-                        type="button"
-                        onClick={() => handleAccentChange(col.id)}
-                        className={`w-9 h-9 rounded-xl ${col.bg} flex items-center justify-center transition-all cursor-pointer shadow-sm ${
-                          accentColor === col.id
-                            ? `ring-3 ring-white ring-offset-2 ring-offset-background scale-110`
-                            : 'opacity-80 hover:opacity-100'
-                        }`}
-                        title={col.name}
-                        aria-label={`${col.name} aksent rangini tanlash`}
-                        aria-pressed={accentColor === col.id}
-                      >
-                        {accentColor === col.id && <Check size={16} className="text-white" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Shrift o'lchami */}
-                <div>
-                  <label className={labelClass}>Shrift o‘lchami</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {([
-                      { id: 'sm', label: 'Ixcham (13px)' },
-                      { id: 'base', label: 'Standart (14px)' },
-                      { id: 'lg', label: 'Katta (16px)' },
-                    ] as const).map((f) => (
-                      <button
-                        key={f.id}
-                        type="button"
-                        onClick={() => handleFontSizeChange(f.id)}
-                        aria-pressed={fontSize === f.id}
-                        className={`py-2 px-3 rounded-xl text-xs font-semibold border transition cursor-pointer ${
-                          fontSize === f.id
-                            ? 'border-sky-500 bg-sky-500/15 text-sky-400'
-                            : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        {f.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ════════════════════ TAB 4: BILDIRISHNOMALAR ════════════════════ */}
-      {(
-        <div className="space-y-6">
-          <div className={cardClass}>
+          <section className={cardClass}>
             <div className={cardHeaderClass}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                  <Bell size={20} />
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold">Tizim bildirishnomalari turlari</h2>
-                  <p className="text-xs text-gray-400 dark:text-slate-500">Qaysi hodisalar bo‘yicha ogohlantirish olishni belgilang</p>
-                </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+                <Palette size={20} />
+              </div>
+              <div>
+                <h2 className="font-semibold">Ko‘rinish</h2>
+                <p className="text-xs text-muted-foreground">Mavzu, til, rang va shrift</p>
               </div>
             </div>
-
-            <div className="p-6 divide-y divide-border">
-              {/* Yangi bron */}
-              <div className="py-4 first:pt-0 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">Yangi bron qilinganda ogohlantirish</p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Mehmon saytdan yoki administrator orqali yangi bron kiritganda darhol xabar keladi
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, newBooking: !notifications.newBooking })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.newBooking ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.newBooking ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-
-              {/* Bron bekor qilinishi */}
-              <div className="py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">Bron bekor qilinganda ogohlantirish</p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Bron bekor qilinganda tizim bildirishnomasini ko‘rsatish
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, bookingCancel: !notifications.bookingCancel })}
-                  aria-pressed={notifications.bookingCancel}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.bookingCancel ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.bookingCancel ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-
-              {/* Check-in / Check-out */}
-              <div className="py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">Mehmon kelishi (Check-in) va ketishi (Check-out)</p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Bugungi kutilayotgan kelish va ketish vaqtlari haqida eslatma berish
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, checkInOut: !notifications.checkInOut })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.checkInOut ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.checkInOut ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-
-              {/* Xona holati */}
-              <div className="py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">Xona tozalash va texnik ta'mir holati</p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Xona tozalashga topshirilganda yoki ta'mirdan bo'shatilganda
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, roomStatus: !notifications.roomStatus })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.roomStatus ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.roomStatus ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-
-              {/* Moliya kassa ogohlantirishlari */}
-              <div className="py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm">Moliya va kassa chiqimlari ogohlantirishlari</p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Katta summadagi chiqim yoki kunlik kassa yakunlanganda bildirishnoma
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, financeAlert: !notifications.financeAlert })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.financeAlert ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.financeAlert ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-
-              {/* Ovozli signal */}
-              <div className="py-4 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm flex items-center gap-2">
-                    <Volume2 size={16} className="text-sky-400" />
-                    Ovozli xabarlar (Audio alert)
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Yangi hodisa yuz berganda qisqa audio signal yangraydi
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, soundAlert: !notifications.soundAlert })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.soundAlert ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.soundAlert ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-
-              {/* Telegram bot integratsiyasi */}
-              <div className="py-4 last:pb-0 flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-sm flex items-center gap-2">
-                    <Send size={16} className="text-sky-400" />
-                    Telegram Bot orqali bildirishnomalar
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
-                    Barcha tezkor yangiliklar maxsus Telegram kanal/botiga yuboriladi
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifications({ ...notifications, telegramAlert: !notifications.telegramAlert })}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    notifications.telegramAlert ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${notifications.telegramAlert ? 'translate-x-5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleNotificationsSave}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 font-semibold shadow-md transition-all cursor-pointer"
-            >
-              <Save size={18} />
-              <span>{t('common.save')}</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ════════════════════ TAB 5: EKRAN ════════════════════ */}
-      {(
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* To'liq ekran & Kiosk rejimi */}
-            <div className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center">
-                    <Monitor size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">Displey va Ekran rejimi</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">Resepshn va monitor boshqaruvi</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-5">
-                {/* Fullscreen tugmasi */}
-                <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700 flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-sm">To‘liq ekran rejimi (Fullscreen)</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-0.5">
-                      Brauzer panellari yashirilib, butun monitor band qilinadi (F11)
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={toggleFullscreen}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 text-xs font-semibold cursor-pointer transition"
-                  >
-                    {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-                    <span>{isFullscreen ? 'Chiqish' : 'To‘liq ekran'}</span>
+            <div className="grid gap-6 p-6 lg:grid-cols-2">
+              <div>
+                <label className={labelClass}>Tizim mavzusi</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button type="button" onClick={(event) => isDark && toggleTheme({ x: event.clientX, y: event.clientY })} className={`flex h-20 items-center gap-3 rounded-xl border p-4 text-left ${!isDark ? 'border-sky-500 bg-sky-50' : 'border-border'}`}>
+                    <Sun size={20} className="text-amber-500" />
+                    <span className="text-sm font-semibold">Yorug‘</span>
+                  </button>
+                  <button type="button" onClick={(event) => !isDark && toggleTheme({ x: event.clientX, y: event.clientY })} className={`flex h-20 items-center gap-3 rounded-xl border p-4 text-left ${isDark ? 'border-sky-500 bg-sky-500/10' : 'border-border'}`}>
+                    <Moon size={20} className="text-indigo-500" />
+                    <span className="text-sm font-semibold">Tungi</span>
                   </button>
                 </div>
+              </div>
 
-                {/* Resepshn Kiosk rejimi */}
-                <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700 flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-sm">Resepshn Kiosk rejimi</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-400 mt-0.5">
-                      Katta ekranda doimiy xonalar va mehmonlar holatini ko‘rsatish
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setScreenSettings({ ...screenSettings, kioskMode: !screenSettings.kioskMode })
-                    }
-                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                      screenSettings.kioskMode ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out ${screenSettings.kioskMode ? 'translate-x-5' : 'translate-x-0'}`} />
-                  </button>
+              <div>
+                <label className={labelClass}>Tizim tili</label>
+                <div className="space-y-2">
+                  {LANGUAGES.map((language) => (
+                    <button key={language.code} type="button" onClick={() => setLocale(language.code)} className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-sm ${locale === language.code ? 'border-sky-500 bg-sky-500/10 font-semibold' : 'border-border'}`}>
+                      {language.label}
+                      {locale === language.code && <Check size={17} className="text-sky-500" />}
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                {/* Ekran masshtabi */}
-                <div>
-                  <label className={labelClass}>Ekran masshtabi (Zoom)</label>
-                  <select
-                    value={screenSettings.zoomLevel}
-                    onChange={(e) => setScreenSettings({ ...screenSettings, zoomLevel: e.target.value })}
-                    className={inputClass}
-                  >
-                    <option value="90">90% - Ko‘proq ma'lumot sig‘dirish</option>
-                    <option value="100">100% - Standart o‘lcham (Tavsiya etiladi)</option>
-                    <option value="110">110% - Katta monitorlar uchun</option>
-                    <option value="125">125% - Yirik shrift va elementlar</option>
-                  </select>
+              <div>
+                <label className={labelClass}>Aksent rangi</label>
+                <div className="flex gap-3">
+                  {Object.entries(ACCENT_COLORS).map(([id, color]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      title={id}
+                      onClick={() => handleAccentChange(id)}
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${accentColor === id ? 'ring-2 ring-foreground ring-offset-2 ring-offset-background' : ''}`}
+                      style={{ backgroundColor: color.primary, color: color.foreground }}
+                    >
+                      {accentColor === id && <Check size={17} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className={labelClass}>Shrift o‘lchami</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {([['sm', 'Ixcham'], ['base', 'Standart'], ['lg', 'Katta']] as const).map(([size, label]) => (
+                    <button key={size} type="button" onClick={() => handleFontSizeChange(size)} className={`rounded-xl border px-3 py-3 text-xs font-semibold ${fontSize === size ? 'border-sky-500 bg-sky-500/10 text-sky-600' : 'border-border'}`}>
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
+          </section>
+        </div>
 
-            {/* Avtomatik yangilanish & Bosh sahifa */}
-            <div className={cardClass}>
-              <div className={cardHeaderClass}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                    <RefreshCw size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-semibold">Ma'lumotlarni yangilash va bosh sahifa</h2>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">Avto-yangilanish va dastlabki ko‘rinish</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-5">
-                {/* Auto Refresh */}
-                <div>
-                  <label className={labelClass}>Avtomatik yangilanish intervali</label>
-                  <select
-                    value={screenSettings.autoRefreshInterval}
-                    onChange={(e) =>
-                      setScreenSettings({ ...screenSettings, autoRefreshInterval: e.target.value })
-                    }
-                    className={inputClass}
-                  >
-                    <option value="30">Har 30 soniyada (Tezkor yangilanish)</option>
-                    <option value="60">Har 1 daqiqada (Tavsiya etiladi)</option>
-                    <option value="300">Har 5 daqiqada</option>
-                    <option value="0">O‘chirilgan (Faqat qo‘lda yangilash)</option>
-                  </select>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
-                    Bronlar va xona statuslari server bilan avtomatik sinxronlanadi
-                  </p>
-                </div>
-
-                {/* Default View */}
-                <div>
-                  <label className={labelClass}>Tizimga kirgandagi standart sahifa</label>
-                  <select
-                    value={screenSettings.defaultView}
-                    onChange={(e) => setScreenSettings({ ...screenSettings, defaultView: e.target.value })}
-                    className={inputClass}
-                  >
-                    <option value="dashboard">Dashboard (Asosiy ko‘rsatkichlar)</option>
-                    <option value="rooms">Xonalar holati (Xonalar kartasi)</option>
-                    <option value="bookings">Bronlar ro‘yxati</option>
-                  </select>
-                </div>
-              </div>
+        <section className={cardClass}>
+          <div className={cardHeaderClass}>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500">
+              <Bell size={20} />
+            </div>
+            <div>
+              <h2 className="font-semibold">Bildirishnomalar</h2>
+              <p className="text-xs text-muted-foreground">Muhim hodisalar uchun</p>
             </div>
           </div>
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleScreenSave}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 font-semibold shadow-md transition-all cursor-pointer"
-            >
-              <Save size={18} />
-              <span>{t('common.save')}</span>
+          <div className="divide-y divide-border px-6">
+            {notificationRows.map((row) => (
+              <div key={row.key} className="flex items-center justify-between gap-4 py-5">
+                <div>
+                  <p className="text-sm font-medium">{row.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{row.description}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={notifications[row.key] as boolean}
+                  onClick={() => toggleNotification(row.key)}
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition ${notifications[row.key] ? 'bg-sky-500' : isDark ? 'bg-slate-700' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${notifications[row.key] ? 'left-5' : 'left-0.5'}`} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end border-t border-border px-6 py-4">
+            <button type="button" onClick={handleNotificationsSave} className="flex items-center gap-2 rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-600">
+              <Save size={17} />
+              Saqlash
             </button>
           </div>
-        </div>
-      )}
+        </section>
+      </div>
     </div>
   );
 }

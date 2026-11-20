@@ -3,7 +3,14 @@ import { ImagePlus, Trash2 } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import type { Room, RoomStatus, RoomType } from "@/types/room";
 import { useTranslation } from "@/i18n";
+import { useTheme } from "@/theme";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface RoomModalProps {
   isOpen: boolean;
@@ -22,6 +29,7 @@ export default function RoomModal({
   initialData,
 }: RoomModalProps) {
   const { t, translateStatus, translateRoomType } = useTranslation();
+  const { isDark } = useTheme();
   const [number, setNumber] = useState("");
   const [type, setType] = useState<RoomType>("Standart");
   const [pricePerNight, setPricePerNight] = useState<number>(350000);
@@ -163,21 +171,14 @@ export default function RoomModal({
     }
   };
 
-  const labelClass = "mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400";
-  const inputClass = "w-full h-11 rounded-xl border border-slate-700 bg-[#0e1215] px-3.5 text-sm text-white placeholder:text-slate-500 focus:border-slate-500 focus:outline-none";
-  const actionButtonClass = "rounded-xl border border-slate-700 bg-[#141b1f] px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-800";
+  const labelClass = `mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] ${isDark ? "text-slate-400" : "text-slate-500"}`;
+  const inputClass = `w-full h-11 rounded-xl border px-3.5 text-sm focus:outline-none ${isDark ? "border-slate-700 bg-[#0e1215] text-white placeholder:text-slate-500 focus:border-slate-500" : "border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-slate-400"}`;
+  const actionButtonClass = `rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${isDark ? "border-slate-700 bg-[#141b1f] text-slate-200 hover:bg-slate-800" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-100"}`;
 
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={initialData ? t('rooms.modalTitleEdit') : t('rooms.modalTitleAdd')}
-      maxWidth="max-w-[620px]"
-      variant="dark"
-    >
+  const form = (
       <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-300">
+            <div className={`rounded-xl border px-3 py-2 text-xs font-medium ${isDark ? "border-red-500/30 bg-red-500/10 text-red-300" : "border-red-300 bg-red-50 text-red-700"}`}>
               {error}
             </div>
           )}
@@ -217,7 +218,7 @@ export default function RoomModal({
                 className={inputClass}
               >
                 {ROOM_TYPES.map((tItem) => (
-                  <option key={tItem} value={tItem} className="bg-[#111315] text-white">
+                  <option key={tItem} value={tItem} className={isDark ? "bg-[#111315] text-white" : "bg-white text-slate-900"}>
                     {translateRoomType(tItem)}
                   </option>
                 ))}
@@ -232,7 +233,7 @@ export default function RoomModal({
                 className={inputClass}
               >
                 {ROOM_STATUSES.map((s) => (
-                  <option key={s} value={s} className="bg-[#111315] text-white">
+                  <option key={s} value={s} className={isDark ? "bg-[#111315] text-white" : "bg-white text-slate-900"}>
                     {translateStatus(s)}
                   </option>
                 ))}
@@ -268,7 +269,7 @@ export default function RoomModal({
           <div>
             <label className={labelClass}>Xona rasmi</label>
             {imageUrl ? (
-              <div className="relative overflow-hidden rounded-xl border border-slate-700">
+              <div className={`relative overflow-hidden rounded-xl border ${isDark ? "border-slate-700" : "border-slate-300"}`}>
                 <img src={imageUrl} alt="Xona rasmi" className="h-48 w-full object-cover" />
                 <button
                   type="button"
@@ -280,7 +281,7 @@ export default function RoomModal({
                 </button>
               </div>
             ) : (
-              <label className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-700 bg-[#0e1215] text-sm text-slate-400 transition hover:border-slate-500 hover:text-slate-200">
+              <label className={`flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed text-sm transition ${isDark ? "border-slate-700 bg-[#0e1215] text-slate-400 hover:border-slate-500 hover:text-slate-200" : "border-slate-300 bg-slate-50 text-slate-500 hover:border-slate-400 hover:text-slate-700"}`}>
                 <ImagePlus size={22} />
                 <span>Rasm tanlash (8 MB gacha)</span>
                 <input
@@ -293,7 +294,7 @@ export default function RoomModal({
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+          <div className={`flex justify-end gap-3 pt-3 border-t ${isDark ? "border-slate-800" : "border-slate-200"}`}>
             <button type="button" onClick={onClose} className={actionButtonClass}>
               {t('common.cancel')}
             </button>
@@ -302,6 +303,35 @@ export default function RoomModal({
             </Button>
           </div>
         </form>
+  );
+
+  if (initialData) {
+    return (
+        <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+          <SheetContent
+            side="right"
+            className={`h-full w-full overflow-y-auto border-l p-6 sm:max-w-[620px] ${isDark ? "border-slate-800 bg-[#090d10] text-white" : "border-slate-200 bg-white text-slate-900"}`}
+          >
+            <SheetHeader className="mb-2 p-0 pr-10">
+              <SheetTitle className={`text-xl ${isDark ? "text-white" : "text-slate-900"}`}>
+                {t('rooms.modalTitleEdit')}
+              </SheetTitle>
+            </SheetHeader>
+            {form}
+          </SheetContent>
+        </Sheet>
+    );
+  }
+
+  return (
+    <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={t('rooms.modalTitleAdd')}
+        maxWidth="max-w-[620px]"
+        variant="dark"
+    >
+        {form}
     </Modal>
   );
 }

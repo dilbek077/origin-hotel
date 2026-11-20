@@ -116,6 +116,7 @@ interface DisplayRoomItem {
   colorB: string;
   imageUrl?: string;
   isAvailable: boolean;
+  availabilityLabel: string;
 }
 
 const ROOM_TYPE_METADATA: Record<
@@ -204,7 +205,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     const handleUpdate = () => {
-      setRooms(StorageService.getRooms());
+      setRooms([...StorageService.getRooms()]);
     };
     handleUpdate();
     window.addEventListener("origin-hotel-storage-change", handleUpdate);
@@ -292,11 +293,12 @@ export default function LandingPage() {
         colorA: meta.colorA,
         colorB: meta.colorB,
         imageUrl: room.imageUrl,
-        isAvailable: StorageService.checkRoomAvailability(room.id, checkIn, checkOut),
+        isAvailable: room.status === "Bo'sh",
+        availabilityLabel: room.status,
       };
     });
   }, [rooms, checkIn, checkOut]);
-  const roomPreviewCount = isSmallScreen ? 2 : 4;
+  const roomPreviewCount = isSmallScreen ? 2 : 3;
   const visibleRooms = showAllRooms ? displayRooms : displayRooms.slice(0, roomPreviewCount);
 
   useEffect(() => {
@@ -339,7 +341,22 @@ export default function LandingPage() {
   const [selectedFacility, setSelectedFacility] = useState<FacilityKey | null>(null);
   const [visitorReviews] = useState<GuestReview[]>(readStoredReviews);
   const [guestName, setGuestName] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
+  const [guestPhone, setGuestPhone] = useState("+998 ");
+
+  const handleGuestPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const prefix = "+998 ";
+    let raw = e.target.value;
+    if (!raw.startsWith(prefix)) {
+      raw = prefix;
+    }
+    const digits = raw.slice(prefix.length).replace(/\D/g, "").slice(0, 9);
+    let formatted = prefix;
+    if (digits.length > 0) formatted += digits.slice(0, 2);
+    if (digits.length > 2) formatted += " " + digits.slice(2, 5);
+    if (digits.length > 5) formatted += " " + digits.slice(5, 7);
+    if (digits.length > 7) formatted += " " + digits.slice(7, 9);
+    setGuestPhone(formatted);
+  };
   const [payMethod, setPayMethod] = useState<"hotel" | "card">("hotel");
   const [bookingCode, setBookingCode] = useState("");
   const [formError, setFormError] = useState("");
@@ -373,7 +390,7 @@ export default function LandingPage() {
     setSelectedRoomId(roomId);
     setSelectedExtras({});
     setGuestName("");
-    setGuestPhone("");
+    setGuestPhone("+998 ");
     setPayMethod("hotel");
     setModalStep(0);
     setFormError("");
@@ -489,7 +506,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div ref={landingRef} className="landing-page-root">
+    <div ref={landingRef} className={`landing-page-root ${isDark ? "dark" : ""}`} data-theme={isDark ? "dark" : "light"}>
       {/* HEADER */}
       <header className="landing-header">
         <div className="wrap nav" data-reveal>
@@ -552,7 +569,7 @@ export default function LandingPage() {
                 <b>★ 4.9</b> 1 200 dan ortiq mehmon bahosi
               </div>
               <h1 className="serif">
-                Shahar markazidagi <em>sokin</em> oromgoh
+                Shahar markazidagi <em>shinam</em> mehmonxona
               </h1>
               <p>
                 Qarshi markazida zamonaviy xonalar, shinam nonushta va 24 soat ishlaydigan qabulxona. Xush
@@ -641,7 +658,7 @@ export default function LandingPage() {
         {/* XONALAR SECTION */}
         <section id="xonalar">
           <div className="wrap">
-            <div className="h" data-reveal>
+            <div className="h">
               <h2 className="serif">Sizga mos xonani tanlang</h2>
               <p>Narxlar bir kecha uchun, barcha soliqlar bilan. Xonani tanlang va bir necha soniyada onlayn band qiling.</p>
             </div>
@@ -657,7 +674,10 @@ export default function LandingPage() {
                   <ChevronLeft size={20} aria-hidden="true" />
                 </button>
               )}
-              <div className="rooms" ref={roomsTrackRef}>
+              <div
+                className={`rooms${visibleRooms.length === 1 ? " rooms--single" : visibleRooms.length === 2 ? " rooms--double" : ""}`}
+                ref={roomsTrackRef}
+              >
                 {visibleRooms.map((room) => (
                 <article key={room.id} className="room" data-reveal>
                   <div className="pic">
@@ -684,8 +704,8 @@ export default function LandingPage() {
                       </svg>
                     )}
                     <span className="tag">{room.tag}</span>
-                    <span className={`avail-tag ${room.isAvailable ? "ok" : "busy"}`}>
-                      {room.isAvailable ? "Bo‘sh" : "Band"}
+                    <span className={`avail-tag ${room.isAvailable ? "ok" : room.availabilityLabel === "Tozalashda" ? "cleaning" : "busy"}`}>
+                      {room.availabilityLabel}
                     </span>
                   </div>
                   <div className="rb">
@@ -747,63 +767,63 @@ export default function LandingPage() {
         </section>
 
         {/* QULAYLIKLAR SECTION */}
-        <section id="qulayliklar" className="dark">
+        <section id="qulayliklar" className="facilities-section">
           <div className="wrap">
             <div className="h" data-reveal>
               <h2 className="serif">Qulayliklar</h2>
               <p>Qulay turar joy uchun kerakli hamma narsa bir joyda.</p>
             </div>
             <div className="feat">
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("wifi")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("wifi")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a6 6 0 0 1 8 0M12 19h.01" />
                 </svg>
                 <h3>Tezkor Wi-Fi</h3>
                 <p>Barcha xonalarda bepul va barqaror internet.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("breakfast")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("breakfast")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M6 3v8M10 3v8M6 7h4M8 11v10M17 3c-2 2-2 6 0 8v10" />
                 </svg>
                 <h3>Nonushta</h3>
                 <p>Har kuni 07:00 dan 10:30 gacha shved stoli.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("transfer")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("transfer")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M3 16l2-8h14l2 8M5 16v3M19 16v3M7 12h10" />
                 </svg>
                 <h3>Transfer</h3>
                 <p>Aeroport va vokzaldan olib ketamiz.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("security")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("security")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z" />
                 </svg>
                 <h3>Xavfsizlik</h3>
                 <p>Kuzatuv va xonadagi seyf har doim ishlaydi.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("meeting")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("meeting")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-5h4v5" />
                 </svg>
                 <h3>Yig‘ilish zali</h3>
                 <p>20 kishigacha, proyektor va ovoz tizimi bilan.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("reception")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("reception")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M12 8v4l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
                 </svg>
                 <h3>24/7 qabulxona</h3>
                 <p>Istalgan vaqtda ro‘yxatdan o‘tish mumkin.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("parking")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("parking")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M5 17h14M7 17V7h10v10M9 21h6" />
                 </svg>
                 <h3>Avtoturargoh</h3>
                 <p>Mehmonlar uchun bepul va qo‘riqlanadigan.</p>
               </button>
-              <button type="button" className="f" data-reveal onClick={() => setSelectedFacility("spa")}>
+              <button type="button" className="f" onClick={() => setSelectedFacility("spa")}>
                 <svg viewBox="0 0 24 24">
                   <path d="M4 14c3-4 5 4 8 0s5 4 8 0M4 8c3-4 5 4 8 0s5 4 8 0" />
                 </svg>
@@ -944,7 +964,7 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="landing-footer">
         <div className="wrap">
-          <div className="fg" data-reveal>
+          <div className="fg">
             <div>
               <a className="logo" href="#top" style={{ display: "flex", color: "#fff", padding: 0 }}>
                 <i aria-hidden="true"><Hotel size={20} /></i>
@@ -1139,7 +1159,7 @@ export default function LandingPage() {
                           id="bp"
                           type="tel"
                           value={guestPhone}
-                          onChange={(e) => setGuestPhone(e.target.value)}
+                          onChange={handleGuestPhoneChange}
                           placeholder="+998 90 123 45 67"
                           autoComplete="tel"
                           required

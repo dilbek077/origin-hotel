@@ -95,6 +95,38 @@ body.dark {
   color: #fff;
 }
 
+[data-theme="light"] .landing-header {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid #e5e7eb;
+  color: #0f172a;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .landing-header .logo,
+[data-theme="light"] .landing-header .nav a.l,
+[data-theme="light"] .landing-header .nav a.login-btn {
+  color: #0f172a;
+}
+
+[data-theme="light"] .landing-header .nav a.l {
+  color: #475569;
+}
+
+[data-theme="light"] .landing-header .nav a.l:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+[data-theme="light"] .landing-header .nav a.login-btn {
+  border-color: #e2e8f0;
+  background: #fff;
+}
+
+[data-theme="light"] .landing-header .nav-actions > .btn {
+  background: #0f172a;
+  color: #fff;
+}
+
 .landing-header .nav {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -304,6 +336,56 @@ body.dark {
   position: relative;
   overflow: hidden;
   padding: 90px 0 150px;
+}
+
+[data-theme="light"] .landing-hero {
+  background: radial-gradient(760px 440px at 88% 12%, rgba(200, 161, 90, 0.2), transparent 68%),
+    linear-gradient(135deg, #eaf0f7 0%, #dfe7f1 58%, #cbd8e8 100%);
+  color: #0f172a;
+}
+
+[data-theme="light"] .landing-hero::before {
+  background-image: linear-gradient(rgba(15, 23, 42, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.09) 1px, transparent 1px);
+}
+
+[data-theme="light"] .landing-hero::after {
+  background: linear-gradient(180deg, transparent, rgba(226, 232, 240, 0.6));
+}
+
+[data-theme="light"] .landing-hero .ph {
+  opacity: 1;
+  background: linear-gradient(90deg, rgba(223, 231, 241, 0.94) 0%, rgba(203, 216, 232, 0.42) 52%, rgba(51, 65, 85, 0.34) 100%),
+    linear-gradient(180deg, rgba(219, 228, 239, 0.12), rgba(30, 41, 59, 0.24)),
+    var(--photo) center 24%/cover no-repeat;
+}
+
+[data-theme="light"] .landing-hero .badge {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: #dbe3ec;
+  color: #475569;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .landing-hero p {
+  color: #334155;
+}
+
+[data-theme="light"] .landing-hero .hero-trust li {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: #dbe3ec;
+  color: #334155;
+}
+
+[data-theme="light"] .landing-hero .cta .btn:not(.o) {
+  background: #0f172a;
+  color: #fff;
+}
+
+[data-theme="light"] .landing-hero .cta .btn.o {
+  background: rgba(255, 255, 255, 0.72);
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
 .landing-hero::before {
@@ -587,12 +669,23 @@ body.dark {
   .landing-page-root .rooms {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
 }
 
 @media (min-width: 1500px) {
   .landing-page-root .rooms {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.landing-page-root .rooms.rooms--single {
+  grid-template-columns: minmax(280px, 420px);
+  justify-content: center;
+}
+
+.landing-page-root .rooms.rooms--double {
+  grid-template-columns: repeat(2, minmax(0, 420px));
+  justify-content: center;
 }
 
 .landing-page-root .room {
@@ -667,6 +760,12 @@ body.dark {
 
 .landing-page-root .avail-tag.busy {
   background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.landing-page-root .avail-tag.cleaning {
+  background: rgba(245, 158, 11, 0.92);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
@@ -858,6 +957,23 @@ body.dark {
   text-align: left;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
+}
+
+[data-theme="light"] .landing-page-root .facilities-section {
+  background: #f1f5f9;
+}
+
+[data-theme="light"] .landing-page-root .f {
+  border-color: #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .landing-page-root .f:hover {
+  background: #fff;
+  border-color: #cbd5e1;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.09);
 }
 
 .landing-page-root [data-reveal].reveal-pending {
@@ -1133,20 +1249,24 @@ body.dark {
 .landing-footer {
   background: #0b1220;
   color: #94a3b8;
-  padding: 64px 0 0;
+  padding: 36px 0 0;
   font-size: 14px;
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
 }
 
 .landing-footer .fg {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
-  gap: 36px;
-  padding-bottom: 44px;
+  gap: 28px;
+  padding-bottom: 24px;
 }
 
 .landing-footer .fg h4 {
   color: #fff;
-  margin: 0 0 14px;
+  margin: 0 0 8px;
   font-size: 15px;
 }
 
@@ -1172,7 +1292,7 @@ body.dark {
 .landing-footer .fg a,
 .landing-footer .fg span {
   display: block;
-  padding: 4px 0;
+  padding: 2px 0;
   color: #94a3b8;
 }
 
@@ -1181,13 +1301,13 @@ body.dark {
 }
 
 .landing-footer .fg p {
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   max-width: 300px;
 }
 
 .landing-footer .fb {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px 0;
+  padding: 12px 0;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;

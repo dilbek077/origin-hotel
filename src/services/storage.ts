@@ -2,6 +2,7 @@ import type { Room } from "@/types/room";
 import type { Guest } from "@/types/guest";
 import type { Booking } from "@/types/booking";
 import type { Transaction } from "@/types/finance";
+import { addHotelNotification } from "./notificationSettings";
 
 const ROOMS_KEY = "origin_hotel_rooms";
 const GUESTS_KEY = "origin_hotel_guests";
@@ -232,6 +233,7 @@ export const StorageService = {
     rooms[index] = room;
     try {
       this.saveRooms(rooms);
+      addHotelNotification("roomStatus", "Xona holati o‘zgardi", `#${room.number} — ${room.status}`);
     } catch (error) {
       if (error instanceof Error) return { success: false, error: error.message };
       throw error;
@@ -368,6 +370,7 @@ export const StorageService = {
     };
     bookings.unshift(newBooking);
     this.saveBookings(bookings);
+    addHotelNotification("newBooking", "Yangi bron", `${newBooking.guest} — xona ${newBooking.room}`);
 
     // Agar statusi "Yashamoqda" bo'lsa, xonani avtomatik "Band" holatiga o'tkazish
     if (newBooking.status === "Yashamoqda") {
@@ -397,6 +400,30 @@ export const StorageService = {
 
     bookings[idx] = booking;
     this.saveBookings(bookings);
+
+    // Xona holatini bron statusiga qarab yangilash
+    const rooms = this.getRooms();
+    const room = rooms.find((r) => r.id === booking.roomId);
+    if (room) {
+      if (booking.status === "Yashamoqda") {
+        room.status = "Band";
+        this.saveRooms(rooms);
+      } else if (booking.status === "Tugatilgan" || booking.status === "Bekor") {
+        // Shu xonada boshqa faol bron bor-yo'qligini tekshirish
+        const hasActiveBooking = bookings.some(
+          (b) => b.roomId === booking.roomId && b.id !== booking.id &&
+            (b.status === "Yashamoqda"),
+        );
+        if (!hasActiveBooking) {
+          room.status = booking.status === "Tugatilgan" ? "Tozalashda" : "Bo'sh";
+          this.saveRooms(rooms);
+        }
+      }
+    }
+
+    if (booking.status === "Bekor") {
+      addHotelNotification("bookingCancel", "Bron bekor qilindi", `${booking.guest} — xona ${booking.room}`);
+    }
     return { success: true };
   },
 
@@ -415,6 +442,7 @@ export const StorageService = {
       room.status = "Band";
       this.saveRooms(rooms);
     }
+    addHotelNotification("checkInOut", "Mehmon kelishi", `${booking.guest} — xona ${booking.room}`);
     return true;
   },
 
@@ -442,13 +470,33 @@ export const StorageService = {
       description: `${booking.room} uchun to‘lov (Mehmon: ${booking.guest})`,
       amount: booking.price,
     });
+    addHotelNotification("checkInOut", "Mehmon ketishi", `${booking.guest} — xona ${booking.room}`);
 
     return true;
   },
 
   deleteBooking(id: number): boolean {
-    const bookings = this.getBookings().filter((b) => b.id !== id);
+    const allBookings = this.getBookings();
+    const deletedBooking = allBookings.find((booking) => booking.id === id);
+    const bookings = allBookings.filter((b) => b.id !== id);
     this.saveBookings(bookings);
+    if (deletedBooking) {
+      // Agar o'chirilgan bron "Yashamoqda" bo'lsa, xonani bo'shatish
+      if (deletedBooking.status === "Yashamoqda") {
+        const hasOtherActive = bookings.some(
+          (b) => b.roomId === deletedBooking.roomId && b.status === "Yashamoqda",
+        );
+        if (!hasOtherActive) {
+          const rooms = this.getRooms();
+          const room = rooms.find((r) => r.id === deletedBooking.roomId);
+          if (room) {
+            room.status = "Bo'sh";
+            this.saveRooms(rooms);
+          }
+        }
+      }
+      addHotelNotification("bookingCancel", "Bron bekor qilindi", `${deletedBooking.guest} — xona ${deletedBooking.room}`);
+    }
     return true;
   },
 
@@ -482,6 +530,11 @@ export const StorageService = {
     };
     txs.unshift(newTx);
     this.saveTransactions(txs);
+    addHotelNotification(
+      "financeAlert",
+      newTx.type === "income" ? "Yangi kirim" : "Yangi chiqim",
+      `${newTx.description} — ${newTx.amount.toLocaleString("uz-UZ")} so‘m`,
+    );
     return { success: true, transaction: newTx };
   },
 

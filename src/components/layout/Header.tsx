@@ -3,7 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe, LogOut, UserRound } from 'lucide-react';
 import { useTranslation, LANGUAGES } from '@/i18n';
 import { useTheme } from '@/theme';
-import { NOTIFICATION_SETTINGS_CHANGED, readNotificationSettings } from '@/services/notificationSettings';
+import {
+  HOTEL_NOTIFICATIONS_CHANGED,
+  markHotelNotificationsRead,
+  readHotelNotifications,
+  type HotelNotification,
+} from '@/services/notificationSettings';
 import { PROFILE_SETTINGS_CHANGED } from '@/services/profileSettings';
 
 const PAGE_TITLES: Record<string, string> = {
@@ -43,7 +48,7 @@ export default function Header() {
   const [notificationsClosing, setNotificationsClosing] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const notificationsTimer = useRef<number | null>(null);
-  const [notificationSettings, setNotificationSettings] = useState(readNotificationSettings);
+  const [hotelNotifications, setHotelNotifications] = useState<HotelNotification[]>(readHotelNotifications);
   const profilePath = (localStorage.getItem('role') ?? 'STAFF') === 'ADMIN'
     ? '/admin/profil'
     : '/staff/profil';
@@ -118,6 +123,7 @@ export default function Header() {
     }
     setNotificationsClosing(false);
     setNotificationsOpen(true);
+    markHotelNotificationsRead();
   };
 
   useEffect(() => {
@@ -137,14 +143,14 @@ export default function Header() {
   }, [notificationsOpen, closeNotifications]);
 
   useEffect(() => {
-    const refreshNotificationSettings = () => setNotificationSettings(readNotificationSettings());
+    const refreshHotelNotifications = () => setHotelNotifications(readHotelNotifications());
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === 'origin_notifications') refreshNotificationSettings();
+      if (event.key === 'origin_hotel_notifications') refreshHotelNotifications();
     };
-    window.addEventListener(NOTIFICATION_SETTINGS_CHANGED, refreshNotificationSettings);
+    window.addEventListener(HOTEL_NOTIFICATIONS_CHANGED, refreshHotelNotifications);
     window.addEventListener('storage', handleStorage);
     return () => {
-      window.removeEventListener(NOTIFICATION_SETTINGS_CHANGED, refreshNotificationSettings);
+      window.removeEventListener(HOTEL_NOTIFICATIONS_CHANGED, refreshHotelNotifications);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);
@@ -163,13 +169,7 @@ export default function Header() {
     dashboardPath === '/admin' && pathname.startsWith('/admin/sozlamalar/')
       ? ['nav.settings', pageTitleKey]
       : [pageTitleKey];
-  const enabledNotifications = [
-    notificationSettings.newBooking && 'notifications.newBooking',
-    notificationSettings.bookingCancel && 'notifications.bookingCancel',
-    notificationSettings.checkInOut && 'notifications.checkInOut',
-    notificationSettings.roomStatus && 'notifications.roomStatus',
-    notificationSettings.financeAlert && 'notifications.financeAlert',
-  ].filter((key): key is string => Boolean(key));
+  const unreadNotifications = hotelNotifications.filter((item) => !item.read).length;
 
   const handleLogout = () => {
     ['token', 'role', 'username'].forEach((key) => localStorage.removeItem(key));
@@ -335,37 +335,45 @@ export default function Header() {
             aria-controls="header-notifications"
           >
             <Bell size={18} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+            {unreadNotifications > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
+                {unreadNotifications > 9 ? '9+' : unreadNotifications}
+              </span>
+            )}
           </button>
           {notificationsOpen && (
             <div
-              className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-2"
+              className="absolute right-0 top-full z-50 pt-2"
             >
               <div
                 id="header-notifications"
                 role="dialog"
                 aria-label={t('nav.notifications')}
                 data-state={notificationsClosing ? 'closing' : 'open'}
-                className="notification-menu rounded-xl border border-border bg-popover p-4 shadow-lg text-popover-foreground"
+                className="notification-menu w-[360px] max-w-[calc(100vw-32px)] rounded-xl border border-border bg-popover p-4 shadow-lg text-popover-foreground"
               >
                 <div className="flex items-center gap-2">
                   <Bell size={16} className="text-foreground" />
                   <h2 className="text-sm font-semibold text-foreground">{t('nav.notifications')}</h2>
                 </div>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {enabledNotifications.length > 0
-                    ? t('notifications.enabledDescription')
-                    : t('notifications.noneEnabled')}
-                </p>
-                {enabledNotifications.length > 0 && (
-                  <ul className="mt-3 space-y-1.5">
-                    {enabledNotifications.map((key) => (
-                      <li key={key} className="flex items-center gap-2 rounded-lg bg-muted/60 px-2.5 py-2 text-xs text-foreground">
-                        <Check size={14} className="shrink-0 text-muted-foreground" />
-                        <span>{t(key)}</span>
+                {hotelNotifications.length > 0 ? (
+                  <ul className="mt-3 max-h-80 space-y-2 overflow-y-auto">
+                    {hotelNotifications.map((item) => (
+                      <li key={item.id} className="rounded-lg border border-border bg-muted/40 px-3 py-2.5">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-xs font-semibold text-foreground">{item.title}</p>
+                          <time className="shrink-0 text-[10px] text-muted-foreground">
+                            {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </time>
+                        </div>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{item.message}</p>
                       </li>
                     ))}
                   </ul>
+                ) : (
+                  <p className="mt-3 rounded-lg border border-dashed border-border px-3 py-6 text-center text-xs text-muted-foreground">
+                    Hozircha yangi bildirishnoma yo‘q
+                  </p>
                 )}
               </div>
             </div>

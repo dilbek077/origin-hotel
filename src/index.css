@@ -78,8 +78,8 @@
   --ring: #eef2f7;
 
   --champagne: #d5b47b;
-  --ink: #0e1417;
-  --ink-soft: #1a2530;
+  --ink: #f8fafc;
+  --ink-soft: #cbd5e1;
   --page: var(--background);
   --surface: #0a0f13;
   --muted-text: #8b98a8;
@@ -146,8 +146,8 @@ html {
 
 html.dark {
   --champagne: #d5b47b;
-  --ink: #0e1417;
-  --ink-soft: #1a2530;
+  --ink: #f8fafc;
+  --ink-soft: #cbd5e1;
   --page: var(--background);
   --surface: #0c141a;
   --muted-text: #9aa7b4;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle2, Mail, Phone, Save, ShieldCheck, UserRound } from 'lucide-react';
+import { CheckCircle2, Mail, Phone, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from '@/i18n';
@@ -14,8 +14,8 @@ export default function Profile() {
   const roleLabel = role === 'ADMIN' ? t('profile.admin') : t('profile.staff');
 
   const inputClass =
-    'w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring';
-  const labelClass = 'mb-2 block text-sm font-medium text-foreground';
+    'h-12 w-full rounded-lg border border-input bg-background px-4 text-base text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring';
+  const labelClass = 'mb-2.5 block text-base font-medium text-foreground';
   const cardClass = 'gap-0 overflow-hidden border-border bg-card py-0 shadow-sm';
 
   const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
@@ -28,18 +28,18 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-full bg-muted/20 px-4 py-6 text-foreground sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl space-y-6">
+    <div className="min-h-full bg-muted/20 px-5 py-8 text-foreground sm:px-8 lg:px-10">
+      <div className="mx-auto max-w-[1500px] space-y-7">
         <header>
-          <h1 className="text-2xl font-semibold tracking-tight">{t('nav.profile')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('profile.description')}</p>
+          <h1 className="text-3xl font-semibold tracking-tight">{t('nav.profile')}</h1>
+          <p className="mt-2 text-base text-muted-foreground">{t('profile.description')}</p>
         </header>
 
         <form onSubmit={handleSave}>
-          <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
             <Card className={cardClass}>
-              <div className="flex items-center gap-3 border-b border-border px-5 py-4 sm:px-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+              <div className="flex items-center gap-4 border-b border-border px-6 py-5 sm:px-7">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-base font-semibold text-primary">
                   {initial}
                 </div>
                 <div>
@@ -48,7 +48,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="space-y-5 p-5 sm:p-6">
+              <div className="space-y-6 p-6 sm:p-7">
                 <div>
                   <label htmlFor="profile-name" className={labelClass}>{t('settings.fullName')}</label>
                   <input
@@ -69,7 +69,20 @@ export default function Profile() {
                       id="profile-phone"
                       type="tel"
                       value={profile.phone}
-                      onChange={(event) => setProfile({ ...profile, phone: event.target.value })}
+                      onChange={(event) => {
+                        const prefix = "+998 ";
+                        let raw = event.target.value;
+                        if (!raw.startsWith(prefix)) {
+                          raw = prefix;
+                        }
+                        const digits = raw.slice(prefix.length).replace(/\D/g, "").slice(0, 9);
+                        let formatted = prefix;
+                        if (digits.length > 0) formatted += digits.slice(0, 2);
+                        if (digits.length > 2) formatted += " " + digits.slice(2, 5);
+                        if (digits.length > 5) formatted += " " + digits.slice(5, 7);
+                        if (digits.length > 7) formatted += " " + digits.slice(7, 9);
+                        setProfile({ ...profile, phone: formatted });
+                      }}
                       className={`${inputClass} pl-9`}
                       autoComplete="tel"
                     />
@@ -89,10 +102,10 @@ export default function Profile() {
               </div>
             </Card>
 
-            <div className="space-y-5">
+            <div className="space-y-6">
               <Card className={cardClass}>
-                <div className="flex items-center gap-3 border-b border-border px-5 py-4 sm:px-6">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                <div className="flex items-center gap-4 border-b border-border px-6 py-5 sm:px-7">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400">
                     <Mail size={18} />
                   </div>
                   <div>
@@ -100,7 +113,7 @@ export default function Profile() {
                     <p className="text-xs text-muted-foreground">{t('profile.accountDescription')}</p>
                   </div>
                 </div>
-                <div className="space-y-5 p-5 sm:p-6">
+                <div className="space-y-6 p-6 sm:p-7">
                   <div>
                     <label htmlFor="profile-email" className={labelClass}>{t('profile.accountEmail')}</label>
                     <input
@@ -124,23 +137,6 @@ export default function Profile() {
                 </div>
               </Card>
 
-              <Card className={cardClass}>
-                <div className="flex items-center gap-3 border-b border-border px-5 py-4 sm:px-6">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                    <ShieldCheck size={18} />
-                  </div>
-                  <div>
-                    <h2 className="font-semibold">{t('profile.security')}</h2>
-                    <p className="text-xs text-muted-foreground">{t('profile.securityDescription')}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-5 sm:p-6">
-                  <UserRound size={17} className="mt-0.5 shrink-0 text-muted-foreground" />
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {t('profile.accessRole')} <span className="font-medium text-foreground">{roleLabel}</span>
-                  </p>
-                </div>
-              </Card>
             </div>
           </div>
 

@@ -105,50 +105,72 @@ export default function Finance() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {/* Jami daromad */}
-        <div className={isDark ? "bg-[#0c1117] rounded-2xl border border-slate-800/80 p-5 flex items-center gap-4 shadow-sm" : "bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4 shadow-sm"}>
-          <div className="w-12 h-12 rounded-xl bg-[#092218] border border-emerald-900/40 text-emerald-400 flex items-center justify-center shrink-0">
-            <ArrowDownLeft className="w-5 h-5" />
+        <div className={isDark ? "min-h-36 rounded-lg border border-slate-800/80 bg-card p-4 shadow-sm" : "min-h-36 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"}>
+          <div className="flex items-center justify-between">
+            <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>Jami daromad (kirim)</p>
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
+            isDark
+              ? "bg-[#092218] border border-emerald-900/40 text-emerald-400"
+              : "bg-emerald-50 border border-emerald-200 text-emerald-700"
+            }`}>
+              <ArrowDownLeft className="h-4 w-4" />
+            </div>
           </div>
-          <div>
-            <p className="text-xs text-slate-400">Jami daromad (kirim)</p>
-            <p className="text-2xl font-bold text-emerald-400 mt-0.5">{formatCurrency(totalIncome)}</p>
-            <span className="text-xs text-slate-500 mt-0.5 block">
+          <div className="mt-3 min-w-0">
+            <p className={`whitespace-nowrap text-xl font-bold tracking-tight ${isDark ? "text-emerald-400" : "text-emerald-700"}`}>{formatCurrency(totalIncome)}</p>
+            <span className={`mt-0.5 block text-xs ${isDark ? "text-slate-500" : "text-slate-600"}`}>
               {transactions.filter((tItem) => tItem.type === "income").length} ta amal
             </span>
           </div>
         </div>
 
         {/* Jami xarajat */}
-        <div className={isDark ? "bg-[#0c1117] rounded-2xl border border-slate-800/80 p-5 flex items-center gap-4 shadow-sm" : "bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4 shadow-sm"}>
-          <div className="w-12 h-12 rounded-xl bg-[#261016] border border-rose-900/40 text-rose-400 flex items-center justify-center shrink-0">
-            <ArrowUpRight className="w-5 h-5" />
+        <div className={isDark ? "min-h-36 rounded-lg border border-slate-800/80 bg-card p-4 shadow-sm" : "min-h-36 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"}>
+          <div className="flex items-center justify-between">
+            <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>Jami xarajat (chiqim)</p>
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
+            isDark
+              ? "bg-[#261016] border border-rose-900/40 text-rose-400"
+              : "bg-rose-50 border border-rose-200 text-rose-700"
+            }`}>
+              <ArrowUpRight className="h-4 w-4" />
+            </div>
           </div>
-          <div>
-            <p className="text-xs text-slate-400">Jami xarajat (chiqim)</p>
-            <p className="text-2xl font-bold text-rose-500 mt-0.5">{formatCurrency(totalExpense)}</p>
-            <span className="text-xs text-slate-500 mt-0.5 block">
+          <div className="mt-3 min-w-0">
+            <p className={`whitespace-nowrap text-xl font-bold tracking-tight ${isDark ? "text-rose-400" : "text-rose-700"}`}>{formatCurrency(totalExpense)}</p>
+            <span className={`mt-0.5 block text-xs ${isDark ? "text-slate-500" : "text-slate-600"}`}>
               {transactions.filter((tItem) => tItem.type === "expense").length} ta amal
             </span>
           </div>
         </div>
 
         {/* Sof foyda */}
-        <div className={isDark ? "bg-[#0c1117] rounded-2xl border border-slate-800/80 p-5 flex items-center gap-4 shadow-sm" : "bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4 shadow-sm"}>
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+        <div className={isDark ? "min-h-36 rounded-lg border border-slate-800/80 bg-card p-4 shadow-sm" : "min-h-36 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"}>
+          <div className="flex items-center justify-between">
+            <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>{t('finance.netProfit')}</p>
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
             netProfit >= 0
-              ? "bg-[#092218] border border-emerald-900/40 text-emerald-400"
-              : "bg-[#261016] border border-rose-900/40 text-rose-400"
-          }`}>
-            <Wallet className="w-5 h-5" />
+              ? isDark
+                ? "bg-[#092218] border border-emerald-900/40 text-emerald-400"
+                : "bg-emerald-50 border border-emerald-200 text-emerald-700"
+              : isDark
+                ? "bg-[#261016] border border-rose-900/40 text-rose-400"
+                : "bg-rose-50 border border-rose-200 text-rose-700"
+            }`}>
+              <Wallet className="h-4 w-4" />
+            </div>
           </div>
-          <div>
-            <p className="text-xs text-slate-400">{t('finance.netProfit')}</p>
-            <p className={`text-2xl font-bold mt-0.5 ${netProfit >= 0 ? "text-emerald-400" : "text-rose-500"}`}>
+          <div className="mt-3 min-w-0">
+            <p className={`whitespace-nowrap text-xl font-bold tracking-tight ${
+              netProfit >= 0
+                ? isDark ? "text-emerald-400" : "text-emerald-700"
+                : isDark ? "text-rose-400" : "text-rose-700"
+            }`}>
               {netProfit < 0 ? `–${formatCurrency(Math.abs(netProfit))}` : formatCurrency(netProfit)}
             </p>
-            <span className="text-xs text-slate-500 mt-0.5 block">
+            <span className={`mt-0.5 block text-xs ${isDark ? "text-slate-500" : "text-slate-600"}`}>
               Kirim − chiqim
             </span>
           </div>

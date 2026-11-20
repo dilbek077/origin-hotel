@@ -8,7 +8,6 @@ import {
   Wallet,
   BarChart3,
   Settings,
-  ArrowLeftRight,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 
@@ -26,7 +25,6 @@ const hotelNavItems: NavItem[] = [
   { labelKey: 'nav.rooms', path: '/admin/xonalar', icon: <BedDouble size={17} /> },
   { labelKey: 'nav.guests', path: '/admin/mehmonlar', icon: <Users size={17} /> },
   { labelKey: 'nav.bookings', path: '/admin/bronlar', icon: <CalendarCheck size={17} /> },
-  { labelKey: 'nav.checkInOut', path: '/admin/bronlar/kelish-ketish', icon: <ArrowLeftRight size={17} /> },
 ];
 
 const financeNavItems: NavItem[] = [
@@ -39,7 +37,6 @@ const staffNavItems: NavItem[] = [
   { labelKey: 'nav.rooms', path: '/staff/xonalar', icon: <BedDouble size={17} /> },
   { labelKey: 'nav.guests', path: '/staff/mehmonlar', icon: <Users size={17} /> },
   { labelKey: 'nav.bookings', path: '/staff/bronlar', icon: <CalendarCheck size={17} /> },
-  { labelKey: 'nav.checkInOut', path: '/staff/bronlar/kelish-ketish', icon: <ArrowLeftRight size={17} /> },
 ];
 
 export default function Sidebar() {

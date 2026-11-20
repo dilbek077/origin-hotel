@@ -8,6 +8,13 @@ import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import { useTheme } from '@/theme';
 import { useTranslation } from '@/i18n';
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const STATUS_OPTIONS = ["Barchasi", "Bo'sh", "Band", "Tozalashda", "Ta'mirda"] as const;
 
@@ -137,9 +144,6 @@ export default function Rooms() {
   const statShell = isDark
     ? "border-[#1c252d] bg-[#0b1015] text-slate-400"
     : "border-slate-200 bg-slate-50 text-slate-600";
-  const panelInner = isDark
-    ? "border-[#1c252d] bg-[#0d1419] shadow-[inset_0_1px_0_rgba(148,163,184,0.04)]"
-    : "border-slate-200 bg-slate-50 shadow-[inset_0_1px_0_rgba(148,163,184,0.12)]";
 
   return (
     <div className={pageShell}>
@@ -165,55 +169,61 @@ export default function Rooms() {
         </div>
 
         <div className="p-5 sm:p-6">
-          <div className={`rounded-[18px] border p-4 ${panelInner}`}>
-            <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_0.8fr]">
-              <div className="relative">
-                <Search size={16} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
-                <input
-                  type="text"
-                  placeholder={t('rooms.searchPlaceholder')}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className={`w-full rounded-xl border py-3 pl-10 pr-4 text-sm outline-none ${fieldShell}`}
-                />
-              </div>
-
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className={`rounded-xl border px-3 py-3 text-sm outline-none ${fieldShell}`}
-              >
-                {STATUS_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt} className="bg-slate-900 text-white">
-                    {opt === "Barchasi" ? t('common.all') : translateStatus(opt)}
-                  </option>
-                ))}
-              </select>
-
-              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
-                {vacantCount} ta bo‘sh
-              </div>
-
-              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
-                {occupiedCount} ta band
-              </div>
-
-              <div className={`rounded-xl border px-3 py-3 text-sm ${statShell}`}>
-                {rooms.length} ta jami
-              </div>
+          <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:[grid-template-columns:repeat(5,minmax(0,1fr))]">
+            <div className="relative min-w-0">
+              <Search size={16} className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-slate-500" : "text-slate-400"}`} />
+              <input
+                type="text"
+                placeholder={t('rooms.searchPlaceholder')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className={`h-16 w-full rounded-xl border py-4 pl-11 pr-4 text-base shadow-sm outline-none transition-colors ${fieldShell}`}
+              />
             </div>
-          </div>
 
-          <div className={`mt-5 rounded-[18px] border p-4 ${panelInner}`}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                O‘chirib bo‘lishi mumkin: <span className={`font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>{filtered.length} ta xona</span>
-              </p>
-              <div className={`flex gap-2 text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                <span className={isDark ? "rounded-full border border-[#1c252d] bg-[#0d1419] px-2.5 py-1 text-slate-200" : "rounded-full border border-slate-200 bg-white px-2.5 py-1 text-slate-700"}>Barchasi</span>
-                <span className={isDark ? "rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-emerald-300" : "rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700"}>Bo‘sh</span>
-                <span className={isDark ? "rounded-full border border-red-500/40 bg-red-500/10 px-2.5 py-1 text-red-300" : "rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-red-700"}>Band</span>
-              </div>
+            <div className="min-w-0">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger
+                  size="default"
+                  className={`h-16 w-full rounded-xl border px-4 text-base shadow-sm transition-colors ${fieldShell}`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent
+                  className={isDark ? "border-slate-700 bg-slate-950 text-slate-100" : "border-slate-200 bg-white text-slate-900"}
+                >
+                  {STATUS_OPTIONS.map((opt) => (
+                    <SelectItem
+                      key={opt}
+                      value={opt}
+                      className={`py-2.5 text-base ${isDark ? "focus:bg-slate-800 focus:text-white" : "focus:bg-slate-100 focus:text-slate-950"}`}
+                    >
+                      {opt === "Barchasi" ? t('common.all') : translateStatus(opt)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className={`flex h-16 items-center gap-3 rounded-xl border px-4 shadow-sm ${statShell}`}>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-600">
+                <BedDouble className="h-4 w-4" />
+              </span>
+              <span className="text-base font-medium">{vacantCount} ta bo‘sh</span>
+            </div>
+
+            <div className={`flex h-16 items-center gap-3 rounded-xl border px-4 shadow-sm ${statShell}`}>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-rose-500/20 bg-rose-500/10 text-rose-600">
+                <BedDouble className="h-4 w-4" />
+              </span>
+              <span className="text-base font-medium">{occupiedCount} ta band</span>
+            </div>
+
+            <div className={`flex h-16 items-center gap-3 rounded-xl border px-4 shadow-sm ${statShell}`}>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-sky-500/20 bg-sky-500/10 text-sky-600">
+                <BedDouble className="h-4 w-4" />
+              </span>
+              <span className="text-base font-medium">{rooms.length} ta jami</span>
             </div>
           </div>
 

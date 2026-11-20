@@ -21,22 +21,55 @@ export default function GuestModal({
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+998 ");
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const prefix = "+998 ";
+    let raw = e.target.value;
+
+    // Prefiksni o'chirmaslik
+    if (!raw.startsWith(prefix)) {
+      raw = prefix;
+    }
+
+    // Prefiksdan keyingi qismdan faqat raqamlarni olish
+    const digits = raw.slice(prefix.length).replace(/\D/g, "").slice(0, 9);
+
+    // Formatlash: XX XXX XX XX
+    let formatted = prefix;
+    if (digits.length > 0) formatted += digits.slice(0, 2);
+    if (digits.length > 2) formatted += " " + digits.slice(2, 5);
+    if (digits.length > 5) formatted += " " + digits.slice(5, 7);
+    if (digits.length > 7) formatted += " " + digits.slice(7, 9);
+
+    setPhone(formatted);
+  };
   const [passport, setPassport] = useState("");
   const [notes, setNotes] = useState("");
   const [address, setAddress] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const prefix = "+998 ";
     if (initialData) {
       setFullName(initialData.fullName);
-      setPhone(initialData.phone || "");
+      // Mavjud raqamni formatlash
+      const existingPhone = initialData.phone || "";
+      const digits = existingPhone.replace(/\D/g, "");
+      // Agar 998 bilan boshlansa, undan keyingi 9 ta raqam
+      const localDigits = digits.startsWith("998") ? digits.slice(3, 12) : digits.slice(0, 9);
+      let formatted = prefix;
+      if (localDigits.length > 0) formatted += localDigits.slice(0, 2);
+      if (localDigits.length > 2) formatted += " " + localDigits.slice(2, 5);
+      if (localDigits.length > 5) formatted += " " + localDigits.slice(5, 7);
+      if (localDigits.length > 7) formatted += " " + localDigits.slice(7, 9);
+      setPhone(formatted);
       setPassport(initialData.passport || "");
       setNotes(initialData.notes || "");
       setAddress(initialData.address || "");
     } else {
       setFullName("");
-      setPhone("");
+      setPhone(prefix);
       setPassport("");
       setNotes("");
       setAddress("");
@@ -110,9 +143,9 @@ export default function GuestModal({
               {t('common.phone')}
             </label>
             <input
-              type="text"
+              type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={handlePhoneChange}
               placeholder="+998 90 123 45 67"
               className={inputClass}
             />

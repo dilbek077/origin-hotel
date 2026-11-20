@@ -172,7 +172,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-[1.9rem] font-bold tracking-tight text-foreground">
+                <div className="whitespace-nowrap text-2xl font-bold tracking-tight text-foreground">
                   {formatCurrency(totalIncome || 128450000)}
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
