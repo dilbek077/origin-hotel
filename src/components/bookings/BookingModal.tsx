@@ -56,6 +56,7 @@ export default function BookingModal({
   const calculatedNights = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
   const selectedRoom = rooms.find((r) => r.id === roomId);
+  const selectedGuest = guests.find((g) => g.id === guestId);
   const autoPrice = (selectedRoom?.pricePerNight || 350000) * (calculatedNights > 0 ? calculatedNights : 1);
   const finalPrice = customPrice !== "" ? Number(customPrice) : autoPrice;
 
@@ -165,12 +166,27 @@ export default function BookingModal({
             >
               {guests.map((g) => (
                 <option key={g.id} value={g.id} className={isDark ? "bg-[#0b1015] text-white" : "bg-white text-slate-900"}>
-                  {g.fullName} ({g.phone || "-"})
+                  {g.fullName}
                 </option>
               ))}
             </select>
           </div>
 
+          <div>
+            <label className={labelClass}>
+              Telefon raqami
+            </label>
+            <input
+              type="text"
+              value={selectedGuest?.phone || "-"}
+              readOnly
+              tabIndex={-1}
+              className={`${inputClass} ${isDark ? "cursor-default text-slate-300" : "cursor-default text-gray-600"}`}
+            />
+          </div>
+        </div>
+
+        <div>
           <div>
             <label className={labelClass}>
               {t('bookings.selectRoom')} *

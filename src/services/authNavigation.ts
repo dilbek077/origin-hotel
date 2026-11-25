@@ -1,5 +1,11 @@
 /** Resolve only known application destinations; never redirect to an external URL. */
-export function getPostLoginPath(role: 'ADMIN' | 'STAFF', from: unknown): string {
+export function getPostLoginPath(role: 'ADMIN' | 'STAFF' | 'GUEST' | string, from: unknown): string {
+  if (role === 'GUEST') {
+    return typeof from === 'string' && from.startsWith('/') && !from.startsWith('/login') && !from.startsWith('/register')
+      ? from
+      : '/';
+  }
+
   const base = role === 'ADMIN' ? '/admin' : '/staff';
   if (typeof from !== 'string' || !/^\/(admin|staff)(\/|$)/.test(from)) return base;
   const path = from.split(/[?#]/, 1)[0];

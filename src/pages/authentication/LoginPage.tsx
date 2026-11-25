@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getPostLoginPath } from '@/services/authNavigation';
 import {
   ArrowRight,
   Check,
+  CheckCircle2,
   ChevronDown,
   Eye,
   EyeOff,
@@ -17,7 +18,8 @@ import {
   UserRound,
 } from 'lucide-react';
 import { LANGUAGES, useTranslation } from '@/i18n';
-import { MOCK_USERS, authenticateMockUser, type MockUser } from '@/services/mockAuth';
+import { MOCK_USERS, authenticateMockUser, storeUserSession, type MockUser } from '@/services/mockAuth';
+import { BookingStateService } from '@/services/bookingState';
 import { useTheme } from '@/theme';
 
 const HERO_IMAGE = '/origin-hotel-hero.jpg';
@@ -36,6 +38,9 @@ export default function LoginPage() {
   const languageMenuTimer = useRef<number | null>(null);
   const { t, locale, setLocale } = useTranslation();
   const { isDark, toggleTheme } = useTheme();
+
+  const pendingBooking = BookingStateService.getPendingBooking();
+  const fromBooking = Boolean(location.state?.fromBooking || pendingBooking);
 
   const closeLanguageMenu = useCallback(() => {
     if (languageMenuTimer.current !== null) return;
@@ -91,10 +96,13 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem('token', `mock-token-${user.id}`);
-      localStorage.setItem('role', user.role);
-      localStorage.setItem('username', user.name);
-      navigate(getPostLoginPath(user.role, location.state?.from), { replace: true });
+      storeUserSession(user);
+
+      if (user.role === 'GUEST' || fromBooking) {
+        navigate('/', { replace: true, state: { resumeBooking: true } });
+      } else {
+        navigate(getPostLoginPath(user.role, location.state?.from), { replace: true });
+      }
     } catch {
       setError('Tizimga kirishda xatolik yuz berdi. Qayta urinib ko‘ring.');
     } finally {
@@ -259,6 +267,19 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {fromBooking && (
+              <div className={`mb-5 flex items-start gap-2.5 rounded-xl border p-3.5 text-xs leading-relaxed ${
+                isDark
+                  ? 'border-[#303a3e] bg-[#10181d] text-slate-300'
+                  : 'border-[#ddd7cb] bg-[#fbf9f5] text-slate-700'
+              }`}>
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#c8a15a]" />
+                <span>
+                  Bron qilishni yakunlash uchun hisobingizga kiring. Tanlangan xona va sanalaringiz saqlab qolindi.
+                </span>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <div>
                 <label
@@ -331,6 +352,21 @@ export default function LoginPage() {
                 {!loading && <ArrowRight className="h-4 w-4" />}
               </button>
             </form>
+
+            <div className={`mt-5 border-t pt-4 text-center text-xs ${
+              isDark ? 'border-slate-800 text-slate-400' : 'border-slate-100 text-slate-500'
+            }`}>
+              Hisobingiz yo‘qmi?{' '}
+              <Link
+                to="/register"
+                state={{ fromBooking }}
+                className={`font-semibold underline-offset-4 hover:underline ${
+                  isDark ? 'text-[#f4d28a]' : 'text-[#a77b32]'
+                }`}
+              >
+                Ro‘yxatdan o‘tish
+              </Link>
+            </div>
 
             <details className={`mt-6 border-t pt-4 ${
               isDark ? 'border-slate-800' : 'border-slate-100'

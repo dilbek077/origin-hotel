@@ -86,10 +86,11 @@ export default function Finance() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
           <Button
             type="button"
             onClick={() => handleOpenAdd("income")}
+            className="w-full sm:w-auto"
           >
             <Plus size={16} />
             <span>Kirim qo‘shish</span>
@@ -97,6 +98,7 @@ export default function Finance() {
           <Button
             type="button"
             onClick={() => handleOpenAdd("expense")}
+            className="w-full sm:w-auto"
           >
             <Minus size={16} />
             <span>Chiqim qo‘shish</span>

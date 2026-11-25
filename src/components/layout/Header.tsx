@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe, LogOut, UserRound } from 'lucide-react';
+import { Bell, Check, ChevronDown, ChevronRight, Home, Sun, Moon, Globe, LogOut, UserRound, Menu } from 'lucide-react';
 import { useTranslation, LANGUAGES } from '@/i18n';
 import { useTheme } from '@/theme';
 import {
@@ -31,7 +31,11 @@ const PAGE_TITLES: Record<string, string> = {
   '/staff/bronlar/kelish-ketish': 'nav.checkInOut',
 };
 
-export default function Header() {
+interface HeaderProps {
+  onOpenMenu: () => void;
+}
+
+export default function Header({ onOpenMenu }: HeaderProps) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { t, locale, setLocale } = useTranslation();
@@ -177,8 +181,17 @@ export default function Header() {
   };
 
   return (
-    <header className="relative z-50 flex h-16 items-center justify-between px-6 bg-card border-b border-border transition-colors">
+    <header className="relative z-50 flex h-16 shrink-0 items-center justify-between gap-2 px-3 bg-card border-b border-border transition-colors sm:px-6">
       {/* Left: Breadcrumbs */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <button
+          type="button"
+          onClick={onOpenMenu}
+          aria-label="Menyuni ochish"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-muted/50 text-foreground transition hover:bg-muted md:hidden"
+        >
+          <Menu size={18} />
+        </button>
       <nav aria-label="Breadcrumb" className="min-w-0">
         <ol className="flex min-w-0 items-center gap-2 text-sm">
           {isDashboard ? (
@@ -227,9 +240,10 @@ export default function Header() {
           )}
         </ol>
       </nav>
+      </div>
 
       {/* Header controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
         {/* Quick Theme Toggle */}
         <button
           type="button"

@@ -1,8 +1,11 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { Car, ChevronLeft, ChevronRight, Clock, Hotel, Sun, Moon, Wifi } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Car, ChevronDown, ChevronLeft, ChevronRight, Clock, Hotel, LogOut, Sun, Moon, UserRound, Wifi } from "lucide-react";
 import { useTheme } from "@/theme";
 import { StorageService } from "@/services/storage";
+import { isUserAuthenticated, getStoredCurrentUser, logoutUser } from "@/services/mockAuth";
+import { BookingStateService } from "@/services/bookingState";
+import { AuthRequiredModal } from "@/components/bookings/AuthRequiredModal";
 import { HOTEL_INFORMATION, type HotelInfoKey } from "@/data/hotelInformation";
 import type { Room } from "@/types/room";
 import "@/origin-landing.css";
@@ -194,6 +197,21 @@ const formatDateDisplay = (v: string) => v.split("-").reverse().join(".");
 
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [currentUser, setCurrentUser] = useState(() => getStoredCurrentUser());
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const syncAuth = () => setCurrentUser(getStoredCurrentUser());
+    syncAuth();
+    window.addEventListener("origin-hotel-auth-change", syncAuth);
+    window.addEventListener("storage", syncAuth);
+    return () => {
+      window.removeEventListener("origin-hotel-auth-change", syncAuth);
+      window.removeEventListener("storage", syncAuth);
+    };
+  }, []);
 
   // Admin paneldagi xonalarni storage dan yuklash va o'zgarishlarni real-time kuzatish
   const [rooms, setRooms] = useState<Room[]>(() => StorageService.getRooms());
@@ -334,14 +352,19 @@ export default function LandingPage() {
 
   // Modal holati
   const [modalOpen, setModalOpen] = useState(false);
+  const [authRequiredOpen, setAuthRequiredOpen] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [modalStep, setModalStep] = useState<number>(0);
   const [selectedExtras, setSelectedExtras] = useState<Record<string, boolean>>({});
   const [detailsRoom, setDetailsRoom] = useState<DisplayRoomItem | null>(null);
   const [selectedFacility, setSelectedFacility] = useState<FacilityKey | null>(null);
   const [visitorReviews] = useState<GuestReview[]>(readStoredReviews);
+  
+  // Mehmon shaxsiy ma'lumotlari
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("+998 ");
+  const [guestPassport, setGuestPassport] = useState("");
+  const [guestAddress, setGuestAddress] = useState("");
 
   const handleGuestPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const prefix = "+998 ";
@@ -357,6 +380,16 @@ export default function LandingPage() {
     if (digits.length > 7) formatted += " " + digits.slice(7, 9);
     setGuestPhone(formatted);
   };
+
+  const handlePassportChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cleaned = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 9);
+    let formatted = cleaned;
+    if (cleaned.length > 2) {
+      formatted = cleaned.slice(0, 2) + " " + cleaned.slice(2);
+    }
+    setGuestPassport(formatted);
+  };
+
   const [payMethod, setPayMethod] = useState<"hotel" | "card">("hotel");
   const [bookingCode, setBookingCode] = useState("");
   const [formError, setFormError] = useState("");
@@ -387,10 +420,22 @@ export default function LandingPage() {
 
   // Modalni ochish
   const handleOpenBooking = (roomId: number) => {
+    if (!isUserAuthenticated()) {
+      BookingStateService.savePendingBooking({
+        roomId,
+        roomName: displayRooms.find((room) => room.id === roomId)?.name,
+        roomNumber: displayRooms.find((room) => room.id === roomId)?.roomNumber,
+        checkIn,
+        checkOut,
+        guests,
+        payMethod,
+      });
+      setAuthRequiredOpen(true);
+      return;
+    }
+
     setSelectedRoomId(roomId);
     setSelectedExtras({});
-    setGuestName("");
-    setGuestPhone("+998 ");
     setPayMethod("hotel");
     setModalStep(0);
     setFormError("");
@@ -402,6 +447,30 @@ export default function LandingPage() {
     setModalOpen(false);
   };
 
+  useEffect(() => {
+    if (!location.state?.resumeBooking) return;
+    if (!isUserAuthenticated()) return;
+
+    const pending = BookingStateService.getPendingBooking();
+    if (!pending) return;
+
+    setCheckIn(pending.checkIn);
+    setCheckOut(pending.checkOut);
+    setGuests(pending.guests);
+    setPayMethod(pending.payMethod || "hotel");
+    setSelectedRoomId(pending.roomId);
+    setSelectedExtras({});
+    setModalStep(0);
+    setFormError("");
+    setModalOpen(true);
+
+    const currentUser = getStoredCurrentUser();
+    if (currentUser?.name) setGuestName(currentUser.name);
+    if (currentUser?.phone) setGuestPhone(currentUser.phone);
+
+    BookingStateService.clearPendingBooking();
+  }, [location.state]);
+
   const handleOpenRoomDetails = (room: DisplayRoomItem) => {
     setDetailsRoom(room);
   };
@@ -412,36 +481,47 @@ export default function LandingPage() {
 
   useEffect(() => {
     document.body.style.overflow =
-      modalOpen || detailsRoom || selectedFacility ? "hidden" : "";
+      modalOpen || authRequiredOpen || detailsRoom || selectedFacility ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [modalOpen, detailsRoom, selectedFacility]);
+  }, [modalOpen, authRequiredOpen, detailsRoom, selectedFacility]);
 
   // ESC orqali yopish
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (modalOpen) handleCloseModal();
+        if (authRequiredOpen) setAuthRequiredOpen(false);
         if (detailsRoom) handleCloseRoomDetails();
         if (selectedFacility) setSelectedFacility(null);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [modalOpen, detailsRoom, selectedFacility]);
+  }, [modalOpen, authRequiredOpen, detailsRoom, selectedFacility]);
 
   // Bronni tasdiqlash
   const handleConfirmBooking = () => {
     const trimmedName = guestName.trim();
     const cleanPhone = guestPhone.replace(/\D/g, "");
+    const cleanPassport = guestPassport.trim();
+    const cleanAddress = guestAddress.trim();
 
     if (trimmedName.length < 3) {
-      setFormError("Ism va familiyangizni kiriting.");
+      setFormError("Ism va familiyangizni to‘liq kiriting.");
       return;
     }
     if (cleanPhone.length < 9) {
       setFormError("Telefon raqamini to‘liq kiriting.");
+      return;
+    }
+    if (cleanPassport.length < 7) {
+      setFormError("Pasport seriya va raqamini kiriting (masalan: AA 1234567).");
+      return;
+    }
+    if (cleanAddress.length < 3) {
+      setFormError("Yashash manzilingizni kiriting.");
       return;
     }
     if (!selectedRoom) {
@@ -466,18 +546,21 @@ export default function LandingPage() {
 
     try {
       const guestsList = StorageService.getGuests();
-      const existingGuest = guestsList.find((g) => g.fullName.toLowerCase() === trimmedName.toLowerCase());
+      const existingGuest = guestsList.find(
+        (g) => g.phone === guestPhone.trim() || g.fullName.toLowerCase() === trimmedName.toLowerCase()
+      );
 
       let guestId = existingGuest ? existingGuest.id : Date.now();
       if (!existingGuest) {
-        StorageService.addGuest({
+        const added = StorageService.addGuest({
           fullName: trimmedName,
           phone: guestPhone.trim(),
-          passport: "AA" + Math.floor(1000000 + Math.random() * 8999999),
+          passport: cleanPassport,
           notes: `Saytdan bron: ${code}, ${payMethod === "card" ? "Karta" : "Mehmonxonada"}`,
-          address: "Qarshi shahri",
+          address: cleanAddress,
           lastVisit: checkIn,
         });
+        guestId = added.id;
       }
 
       const res = StorageService.addBooking({
@@ -507,6 +590,13 @@ export default function LandingPage() {
 
   return (
     <div ref={landingRef} className={`landing-page-root ${isDark ? "dark" : ""}`} data-theme={isDark ? "dark" : "light"}>
+      <AuthRequiredModal
+        isOpen={authRequiredOpen}
+        onClose={() => setAuthRequiredOpen(false)}
+        pendingBooking={BookingStateService.getPendingBooking()}
+        onLogin={() => navigate("/login", { state: { fromBooking: true } })}
+        onRegister={() => navigate("/register", { state: { fromBooking: true } })}
+      />
       {/* HEADER */}
       <header className="landing-header">
         <div className="wrap nav" data-reveal>
@@ -542,9 +632,56 @@ export default function LandingPage() {
                 <Moon size={19} strokeWidth={2.1} />
               )}
             </button>
-            <Link to="/login" className="login-btn" title="Admin panelga kirish">
-              Kirish
-            </Link>
+            {currentUser ? (
+              <div className="account-menu">
+                <button
+                  type="button"
+                  className="account-menu-button"
+                  aria-haspopup="menu"
+                  aria-expanded={accountMenuOpen}
+                  onClick={() => setAccountMenuOpen((open) => !open)}
+                >
+                  <span className="account-avatar"><UserRound size={16} /></span>
+                  <span className="account-name">{currentUser.name}</span>
+                  <ChevronDown size={14} className={accountMenuOpen ? "account-chevron open" : "account-chevron"} />
+                </button>
+                {accountMenuOpen && (
+                  <div className="account-dropdown" role="menu">
+                    <div className="account-dropdown-head">
+                      <b>{currentUser.name}</b>
+                      <span>{currentUser.role === "GUEST" ? "Mehmon" : "Xodim"}</span>
+                    </div>
+                    {currentUser.role === "ADMIN" && (
+                      <button type="button" role="menuitem" onClick={() => navigate("/admin")}>
+                        Boshqaruv paneli
+                      </button>
+                    )}
+                    {currentUser.role === "STAFF" && (
+                      <button type="button" role="menuitem" onClick={() => navigate("/staff")}>
+                        Boshqaruv paneli
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="account-logout"
+                      onClick={() => {
+                        logoutUser();
+                        setAccountMenuOpen(false);
+                        setCurrentUser(null);
+                      }}
+                    >
+                      <LogOut size={15} />
+                      Chiqish
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="login-btn" title="Tizimga kirish">
+                Kirish
+              </Link>
+            )}
             <button
               className="btn"
               onClick={() => {
@@ -981,6 +1118,7 @@ export default function LandingPage() {
               <a href="#qulayliklar">Qulayliklar</a>
               <a href="#sharhlar">Sharhlar</a>
               <a href="#manzil">Manzil</a>
+              <Link to="/login" style={{ opacity: 0.75 }}>Admin panel</Link>
             </div>
             <div>
               <h4>Ish vaqti</h4>
@@ -998,6 +1136,9 @@ export default function LandingPage() {
           </div>
           <div className="fb">
             <span>© 2026 Origin Hotel. Barcha huquqlar himoyalangan.</span>
+            <Link to="/login" style={{ color: "inherit", opacity: 0.65, textDecoration: "none", fontSize: "13px" }}>
+              Xodimlar / Admin tizimi
+            </Link>
             <span>Qarshi, O‘zbekiston</span>
           </div>
         </div>
@@ -1086,36 +1227,51 @@ export default function LandingPage() {
             {/* STEP 0: XULOSA */}
             {modalStep === 0 && (
               <div>
-                {nightsCount <= 0 ? (
-                  <div>
-                    <h3 id="mt">Sanalarni tekshiring</h3>
-                    <p className="mm">
-                      Ketish sanasi kelish sanasidan keyin bo‘lishi kerak. Sahifa tepasidagi qidiruv panelida sanalarni
-                      to‘g‘rilang.
-                    </p>
-                    <button className="btn dk w" onClick={handleCloseModal}>
-                      Tushunarli
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <h3 id="mt">#{selectedRoom.roomNumber} · {selectedRoom.name} xonasi</h3>
-                    <div className="sm">
-                      <div>
-                        <span>Kelish</span>
-                        <b>{formatDateDisplay(checkIn)}</b>
-                      </div>
-                      <div>
-                        <span>Ketish</span>
-                        <b>{formatDateDisplay(checkOut)}</b>
-                      </div>
-                      <div>
-                        <span>Mehmonlar</span>
-                        <b>{guests}</b>
-                      </div>
+                <div>
+                  <h3 id="mt">#{selectedRoom.roomNumber} · {selectedRoom.name} xonasi</h3>
+                  <div className="sm booking-summary-edit">
+                    <div>
+                      <label htmlFor="modal-checkin">Kelish</label>
+                      <input
+                        id="modal-checkin"
+                        type="date"
+                        min={todayIso}
+                        value={checkIn}
+                        onChange={(event) => setCheckIn(event.target.value)}
+                      />
                     </div>
+                    <div>
+                      <label htmlFor="modal-checkout">Ketish</label>
+                      <input
+                        id="modal-checkout"
+                        type="date"
+                        min={checkIn || todayIso}
+                        value={checkOut}
+                        onChange={(event) => setCheckOut(event.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="modal-guests">Mehmonlar</label>
+                      <select
+                        id="modal-guests"
+                        value={guests}
+                        onChange={(event) => setGuests(event.target.value)}
+                      >
+                        <option value="1 kishi">1 kishi</option>
+                        <option value="2 kishi">2 kishi</option>
+                        <option value="3 kishi">3 kishi</option>
+                        <option value="4 kishi">4 kishi</option>
+                      </select>
+                    </div>
+                  </div>
 
-                    <form
+                  {nightsCount <= 0 && (
+                    <p className="err" role="alert">
+                      Ketish sanasi kelish sanasidan keyin bo‘lishi kerak.
+                    </p>
+                  )}
+
+                  <form
                       onSubmit={(event) => {
                         event.preventDefault();
                         handleConfirmBooking();
@@ -1143,18 +1299,18 @@ export default function LandingPage() {
                       ))}
 
                       <div className="fld">
-                        <label htmlFor="bn">Ism va familiya</label>
+                        <label htmlFor="bn">To‘liq ism va familiya *</label>
                         <input
                           id="bn"
                           value={guestName}
                           onChange={(e) => setGuestName(e.target.value)}
-                          placeholder="Masalan, Aliyev Jasur"
+                          placeholder="Masalan: Aliyev Jasur"
                           autoComplete="name"
                           required
                         />
                       </div>
                       <div className="fld">
-                        <label htmlFor="bp">Telefon raqami</label>
+                        <label htmlFor="bp">Telefon raqami *</label>
                         <input
                           id="bp"
                           type="tel"
@@ -1162,6 +1318,28 @@ export default function LandingPage() {
                           onChange={handleGuestPhoneChange}
                           placeholder="+998 90 123 45 67"
                           autoComplete="tel"
+                          required
+                        />
+                      </div>
+                      <div className="fld">
+                        <label htmlFor="bpass">Pasport seriya va raqami *</label>
+                        <input
+                          id="bpass"
+                          value={guestPassport}
+                          onChange={handlePassportChange}
+                          placeholder="Masalan: AA 1234567"
+                          maxLength={10}
+                          style={{ textTransform: "uppercase", letterSpacing: "1px", fontWeight: 600 }}
+                          required
+                        />
+                      </div>
+                      <div className="fld">
+                        <label htmlFor="baddr">Doimiy yashash manzili *</label>
+                        <input
+                          id="baddr"
+                          value={guestAddress}
+                          onChange={(e) => setGuestAddress(e.target.value)}
+                          placeholder="Masalan: Toshkent shahri"
                           required
                         />
                       </div>
@@ -1196,12 +1374,11 @@ export default function LandingPage() {
                         <b>{fmt(calculateTotal)} so‘m</b>
                       </div>
 
-                      <button className="btn dk w" type="submit">
+                      <button className="btn dk w" type="submit" disabled={nightsCount <= 0}>
                         Bronni tasdiqlash
                       </button>
                     </form>
-                  </div>
-                )}
+                </div>
               </div>
             )}
 

@@ -5,6 +5,7 @@ import { RouteError, PageLoading } from "@/shared/ui"
 import { lazyWithRetry } from "@/shared/lib"
 import MainLayout from "@/layouts/MainLayout"
 import LoginPage from "@/pages/authentication/LoginPage"
+import RegisterPage from "@/pages/authentication/RegisterPage"
 import LandingPage from "@/pages/LandingPage"
 import LocationPage from "@/pages/LocationPage"
 
@@ -48,13 +49,17 @@ const router = createBrowserRouter([
     element: <LocationPage />,
   },
 
-  // Auth (login) sahifasi
+  // Auth (login & register) sahifalari
   {
     errorElement: <RouteError />,
     children: [
       {
         path: "/login",
         element: <LoginPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterPage />,
       },
     ],
   },

@@ -127,11 +127,118 @@ body.dark {
   color: #fff;
 }
 
-.landing-header .nav {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+.landing-header .account-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.landing-header .account-menu-button {
+  min-height: 44px;
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+  padding: 5px 9px 5px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  cursor: pointer;
+}
+
+.landing-header .account-avatar {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #c8a15a;
+  color: #111827;
+}
+
+.landing-header .account-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.landing-header .account-chevron {
+  transition: transform 0.2s ease;
+}
+
+.landing-header .account-chevron.open {
+  transform: rotate(180deg);
+}
+
+.landing-header .account-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 220px;
+  z-index: 100;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+.landing-header .account-dropdown-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 6px;
+}
+
+.landing-header .account-dropdown-head b {
+  font-size: 13px;
+}
+
+.landing-header .account-dropdown-head span {
+  color: var(--mut);
+  font-size: 12px;
+}
+
+.landing-header .account-dropdown button {
+  width: 100%;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.landing-header .account-dropdown button:hover {
+  background: var(--soft);
+}
+
+.landing-header .account-dropdown .account-logout {
+  color: #dc2626;
+}
+
+[data-theme="light"] .landing-header .account-menu-button {
+  border-color: #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.landing-header .nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
   height: 76px;
 }
 
@@ -142,14 +249,13 @@ body.dark {
   font-weight: 700;
   font-size: 20px;
   color: #fff;
-  justify-self: start;
+  flex-shrink: 0;
 }
 
 .landing-header .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
-  justify-self: center;
+  gap: 10px;
 }
 
 .landing-header .nav-actions {
@@ -157,17 +263,13 @@ body.dark {
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 1100px) {
-  .landing-header .nav {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
   .landing-header .nav-links {
     display: none;
   }
-
   .landing-header .nav-actions {
     gap: 10px;
   }
@@ -970,6 +1072,14 @@ body.dark {
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
 }
 
+[data-theme="light"] .landing-page-root .f h3 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .landing-page-root .f p {
+  color: #64748b;
+}
+
 [data-theme="light"] .landing-page-root .f:hover {
   background: #fff;
   border-color: #cbd5e1;
@@ -1536,6 +1646,39 @@ body.dark {
   font-size: 12px;
 }
 
+.landing-page-root .booking-summary-edit div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.landing-page-root .booking-summary-edit label {
+  color: var(--mut);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.landing-page-root .booking-summary-edit input,
+.landing-page-root .booking-summary-edit select {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  padding: 7px 8px;
+}
+
+.landing-page-root .booking-summary-edit input:focus,
+.landing-page-root .booking-summary-edit select:focus {
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
 .landing-page-root label.ex {
   display: flex;
   align-items: center;
@@ -1889,3 +2032,4 @@ body.dark {
     scroll-behavior: auto !important;
   }
 }
+

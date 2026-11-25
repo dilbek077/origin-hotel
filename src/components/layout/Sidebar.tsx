@@ -11,6 +11,12 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 
+interface SidebarProps {
+  mobileMenuOpen: boolean;
+  onNavigate: () => void;
+  onClose: () => void;
+}
+
 interface NavItem {
   labelKey: string;
   path: string;
@@ -39,7 +45,7 @@ const staffNavItems: NavItem[] = [
   { labelKey: 'nav.bookings', path: '/staff/bronlar', icon: <CalendarCheck size={17} /> },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileMenuOpen, onNavigate, onClose }: SidebarProps) {
   const role = localStorage.getItem('role') ?? 'STAFF';
   const { t } = useTranslation();
   const isAdmin = role === 'ADMIN';
@@ -55,6 +61,7 @@ export default function Sidebar() {
         <NavLink
           key={item.path}
           to={item.path}
+          onClick={onNavigate}
           end={
             item.path === '/admin' ||
             item.path === '/staff' ||
@@ -77,7 +84,21 @@ export default function Sidebar() {
   );
 
   return (
-    <aside className="flex h-full min-h-0 w-60 shrink-0 flex-col border-r border-border bg-card text-card-foreground select-none transition-colors">
+    <>
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          aria-label="Menyuni yopish"
+          className="fixed inset-0 z-50 bg-black/45 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      <aside
+        aria-label="Asosiy menyu"
+        className={`fixed inset-y-0 left-0 z-[60] flex h-full min-h-0 w-[min(18rem,calc(100vw-3rem))] shrink-0 flex-col border-r border-border bg-card text-card-foreground select-none transition-transform duration-200 md:static md:z-auto md:w-60 md:translate-x-0 ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
       {/* Brand Header */}
       <div className="flex items-center justify-between px-4 h-16 border-b border-border">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -112,6 +133,7 @@ export default function Sidebar() {
               </div>
               <NavLink
                 to="/admin/sozlamalar"
+                onClick={onNavigate}
                 className={({ isActive }) =>
                   [
                     'flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors',
@@ -130,6 +152,7 @@ export default function Sidebar() {
           renderNavGroup('Xodimlar paneli', staffNavItems)
         )}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

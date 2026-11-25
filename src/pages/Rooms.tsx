@@ -148,9 +148,9 @@ export default function Rooms() {
   return (
     <div className={pageShell}>
       <div className={panelShell}>
-        <div className={`mb-0 flex items-center justify-between gap-4 border-b px-6 py-5 ${headerBorder}`}>
-          <div>
-            <h1 className={`text-[2.1rem] font-bold tracking-[-0.04em] ${isDark ? "text-white" : "text-slate-900"}`}>
+        <div className={`mb-0 flex flex-col items-start justify-between gap-4 border-b px-4 py-5 sm:flex-row sm:items-center sm:px-6 ${headerBorder}`}>
+          <div className="min-w-0">
+            <h1 className={`text-2xl font-bold tracking-[-0.04em] sm:text-[2.1rem] ${isDark ? "text-white" : "text-slate-900"}`}>
               {t('nav.rooms')}
             </h1>
             <p className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>
@@ -161,7 +161,7 @@ export default function Rooms() {
           <Button
             type="button"
             onClick={handleOpenAdd}
-            className="self-start sm:self-auto"
+            className="w-full sm:w-auto"
           >
             <Plus className="size-4" />
             Xona qo‘shish
